@@ -291,6 +291,30 @@ const TREND_PLATFORMS = ["TikTok", "Instagram", "Facebook", "YouTube", "X / Thre
 const GOALS = ["Land clients", "Grow my audience", "Build authority", "Sell a product or service", "Get brand deals"];
 const HOOK_STYLES = ["Question", "Bold claim", "Mistake / warning", "Curiosity gap", "Before / after", "POV", "List / number", "Story", "Test / challenge", "Money / price"];
 const STATUSES = [["planned", "Planned"], ["shot", "Shot"], ["edited", "Edited"], ["posted", "Posted"]];
+// [id, label, clips per month, podcast episodes, shoot days]
+const PACKAGES = [
+  ["general", "General: 12 clips / mo", 12, 0, 2],
+  ["general_pod", "General + podcast: 12 clips + 1 episode", 12, 1, 3],
+  ["starter", "Starter: 4 clips / mo", 4, 0, 1],
+  ["custom", "Custom", null, null, null],
+];
+const packageOf = c => PACKAGES.find(p => p[0] === c.package) || null;
+// Built-in brief when Claude isn't available: [month number, name, what, date day or 0]
+const SEASONAL = [
+  [1, "New Year reset", "Goals, fresh starts and 'this is the year' content peaks the first 2 weeks.", 1], [1, "Tax season kickoff", "Owners start thinking about write-offs and receipts.", 0],
+  [2, "Valentine's Day", "Gift guides, couples content and 'show your partner' formats.", 14], [2, "American Heart Month", "Heart-health angles for fitness and health niches.", 0],
+  [3, "Spring cleaning", "Before/after, declutter and refresh content spikes.", 20], [3, "March Madness brackets", "Bracket and 'versus' formats work for any niche.", 0],
+  [4, "Tax Day", "Money, pricing and 'what I spent' content.", 15], [4, "Spring project season", "Home and outdoor projects start; contractors get busy.", 0],
+  [5, "Mother's Day", "Tributes, gift ideas and 'mom owns the business' stories.", 0], [5, "Memorial Day", "Summer kickoff, sales and veteran-owned business features.", 0], [5, "Mental Health Awareness Month", "Burnout and stress stories from owners.", 0],
+  [6, "Father's Day", "Dad-owned businesses, trades passed down, tools and gifts.", 0], [6, "Men's Health Month", "Hormone, fitness and check-up angles.", 0], [6, "Summer kickoff", "Pools, patios, outdoor work and summer body content.", 21],
+  [7, "Fourth of July", "Made-in-USA, local pride and cookout content.", 4], [7, "Peak summer heat", "Heat safety on job sites, AC and hydration content.", 0],
+  [8, "Back to school", "Routines, schedules and family-budget content.", 0], [8, "End-of-summer projects", "'Beat the fall rush' offers.", 0],
+  [9, "Labor Day", "Celebrate the trades and the crews behind the work.", 0], [9, "Q4 planning", "Owners plan budgets and marketing for the year's end.", 0],
+  [10, "Halloween", "Costume, spooky 'horror story' job and haunted-house formats.", 31], [10, "Breast Cancer Awareness Month", "Pink-month tie-ins for health, fitness and local businesses.", 0], [10, "Fall maintenance", "Roofs, gutters, HVAC and pre-winter checklists.", 0],
+  [11, "Black Friday / Small Business Saturday", "Offers, gift cards and 'shop local' features.", 0], [11, "Thanksgiving", "Gratitude posts, crew thank-yous and customer stories.", 0], [11, "Movember", "Men's health and mustache challenges.", 0],
+  [12, "Holiday season", "Gift guides, year-end offers and party content.", 0], [12, "Year in review", "Best-of recaps, numbers and lessons from the year.", 31],
+];
+const EVERGREEN = [["Day in the life", "POV of a real workday, start to finish."], ["Before / after reveal", "Transformation with a hard cut or match cut."], ["Tier list / ranking", "Rank tools, mistakes or local spots."], ["Myth vs fact", "Bust one belief customers have."]];
 const STARTERS = ["Construction", "Fitness", "Hormones & men's health", "Real estate", "Auto detailing", "Restaurants"];
 const LANE_DEFAULTS = { audience: "", platform: PLATFORMS[0], goal: GOALS[0], city: "", notes: "", subs: [] };
 const COMPLIANCE = "If any part of this touches health, hormones, TRT, peptides, supplements, weight loss, medical treatment, finance or legal topics: make no cure, treatment-outcome or income claims, don't give dosing, frame results as individual, point viewers to a licensed provider, and keep it within TikTok/Meta/YouTube health and ad policies. Mention the compliance risk in pitfalls.";
@@ -338,7 +362,7 @@ const EXAMPLE_PLAN = {
   caption: "Cracked and stained this morning. Epoxy flake floor by tonight.", hashtags: ["epoxyfloor", "garagemakeover", "construction", "satisfying"],
   cta: "Link's in the bio.", pitfalls: ["Fumes and dust: keep the phone bagged near grinding", "Plan the match cut before you shoot the before"],
 };
-const EXAMPLE_CLIENT = { id: "exclient", example: true, kind: "client", name: "Summit Roofing", type: "retainer", monthly: 1500, shorts: 4, podcasts: 1, status: "active" };
+const EXAMPLE_CLIENT = { id: "exclient", example: true, kind: "client", name: "Summit Roofing", type: "retainer", package: "general_pod", monthly: 1500, shorts: 12, podcasts: 1, shootDays: 3, status: "active" };
 
 // ---------- built-in industry maps ----------
 // [name, what it is, sample hook, surprising?, regulated?]
@@ -407,6 +431,7 @@ function offlineIdeas(p, lens, focus, count = 6) {
   const targets = focus ? [focus] : p.subs.length ? p.subs : [p.laneName];
   let pool = shuffle(HOOKS);
   if (lens && lens !== "Surprise me") pool = [...pool.filter(f => f("x")[1] === lens), ...pool.filter(f => f("x")[1] !== lens)];
+  while (pool.length < count) pool = pool.concat(shuffle(HOOKS));
   return pool.slice(0, count).map((f, i) => {
     const sub = targets[i % targets.length];
     const [hook, cat] = f(sub.toLowerCase());
@@ -580,10 +605,11 @@ Top:
 ${byViews.slice(0, 3).map(line).join("\n")}
 ${list.length > 3 ? "Weakest:\n" + byViews.slice(-2).map(line).join("\n") : ""}${ins ? `\nTheir pattern notes: working = ${arr(ins.working).join("; ")}. Try next = ${arr(ins.try_next).join("; ")}.` : ""}`;
 }
-function activeTrends(laneId) { return store.all("trend").filter(t => daysAgo(t.created) <= 21 && (!t.laneId || !laneId || t.laneId === laneId)); }
-function trendsBlock(laneId) {
-  const t = activeTrends(laneId);
-  return t.length ? `\n\nTrends the creator spotted recently (riff on one or two where they genuinely fit):\n${t.slice(0, 6).map(x => `- [${x.platform}] ${x.name}: ${x.what}`).join("\n")}` : "";
+const freshTrend = (t, month) => t.source === "brief" ? t.month === (month || todayStr().slice(0, 7)) : daysAgo(t.created) <= 21;
+function activeTrends(laneId, month) { return store.all("trend").filter(t => freshTrend(t, month) && (!t.laneId || !laneId || t.laneId === laneId)); }
+function trendsBlock(laneId, month) {
+  const t = activeTrends(laneId, month);
+  return t.length ? `\n\nTrends the creator spotted recently (riff on one or two where they genuinely fit):\n${t.slice(0, 10).map(x => `- [${x.source === "brief" ? x.type || "Monthly" : x.platform}] ${x.name}${x.date ? ` (${fmtDay(x.date)})` : ""}: ${x.what}`).join("\n")}` : "";
 }
 
 // ---------- Claude ----------
@@ -702,27 +728,28 @@ Reply with ONLY a JSON object:
 "clips": 4-6 of {"moment": the answer to capture for a short-form clip, "hook": the on-screen hook text for that clip},
 "promo_caption" (under 220 chars), "hashtags": 3-6 without #, "pitfalls": 2-4 short strings.`;
 }
+const shootDays = c => Math.max(1, Math.min(8, +c.shootDays || (packageOf(c) || [])[4] || Math.ceil(((+c.shorts || 0) + (+c.podcasts || 0)) / 6) || 1));
 function monthPrompt(p, client, month, avoid) {
   return `${CREATOR}
 
 Plan the content for the retainer client ${client.name} for ${monthLabel(month)}.
-Deliverables this month: ${client.shorts || 0} short-form videos and ${client.podcasts || 0} podcast episodes.
+Package: ${(packageOf(client) || ["", "Custom"])[1]}. Deliverables this month: ${client.shorts || 0} short-form clips and ${client.podcasts || 0} podcast episodes, filmed over ${shootDays(client)} shoot day${shootDays(client) > 1 ? "s" : ""}.
 Client notes: ${client.notes || "none"}
 
-${laneBlock(p)}${resultsBlock(p.laneId)}${trendsBlock(p.laneId)}
+${laneBlock(p)}${resultsBlock(p.laneId)}${trendsBlock(p.laneId, month)}
 
 Already planned or used (don't repeat): ${avoid.length ? avoid.join(" | ") : "none"}
 
-Build a month that feels planned, not random: mix formats, build on each other, and batch shoots so the creator films several pieces in one visit (give pieces the same "week" when they can be filmed together). Think about seasonality for this industry in ${monthLabel(month)}.
+Build a month that feels planned, not random. Batch everything into ${shootDays(client)} shoot day${shootDays(client) > 1 ? "s" : ""} so the creator is not on set every week: "week" is the shoot day number (1-${shootDays(client)}), and every piece on the same day must be filmable at the same location in one visit. Mix formats across the clips (talking head, B-roll process, before/after, owner on camera, customer moment). Use this month's seasonal moments and trends above where they fit. Spread post dates evenly so the client posts 2-3 times a week.
 ${COMPLIANCE}
 
 Reply with ONLY a JSON array of ${(+client.shorts || 0) + (+client.podcasts || 0)} objects:
-"type" ("short" or "podcast"), "week" (1-4, the shoot week), "sub", "title" (max 70 chars), "hook" (first spoken line, or the episode's opening question), "format", "angle" (1 sentence), "why" (1 sentence), "difficulty" ("Easy" | "Medium" | "Heavy"), "runtime_sec" (number; podcasts in seconds too).`;
+"type" ("short" or "podcast"), "week" (shoot day number), "sub", "title" (max 70 chars), "hook" (first spoken line, or the episode's opening question), "format", "angle" (1 sentence), "why" (1 sentence), "difficulty" ("Easy" | "Medium" | "Heavy"), "runtime_sec" (number; podcasts in seconds too).`;
 }
 function trendPrompt(trend, lanesList) {
   return `${CREATOR}
 
-They spotted this trend on ${trend.platform}:
+${trend.source === "brief" ? `From their ${monthLabel(trend.month)} trend brief (${trend.type}${trend.date ? ", " + fmtDay(trend.date) : ""}):` : `They spotted this trend on ${trend.platform}:`}
 Name: ${trend.name}
 What happens in it: ${trend.what}
 
@@ -734,6 +761,25 @@ ${COMPLIANCE}
 
 Reply with ONLY a JSON array, 2 ideas per industry, each:
 "laneName" (exactly one of: ${lanesList.map(l => JSON.stringify(l.name)).join(", ")}), "sub", "title" (max 60 chars), "hook" (max 15 words), "format", "angle" (1 sentence: how the trend maps onto this industry), "why" (1 sentence), "difficulty" ("Easy" | "Medium" | "Heavy"), "runtime_sec".`;
+}
+const BRIEF_TYPES = ["Date", "Seasonal", "Format", "Industry"];
+function briefPrompt(month, L) {
+  const mName = monthLabel(month).split(" ")[0];
+  return `${CREATOR}
+
+Build their trend brief for ${monthLabel(month)}: what they should know before planning the month's content. Keep it practical.
+
+Their industries:
+${L.map(l => laneBlock(profileOf(l))).join("\n\n")}
+
+Include:
+- For everyone: holidays, awareness months, cultural dates and seasonal behavior in ${monthLabel(month)} (US unless a city says otherwise).
+- 2-3 short-form formats that reliably perform on TikTok, Instagram Reels and Facebook Reels and fit this month.
+- For each industry: seasonal demand, what customers worry about or search for this month, and industry events or deadlines.
+You can't see live platform data, so don't claim a specific sound or meme is trending right now and don't invent numbers. Favor what reliably happens every ${mName}.
+
+Reply with ONLY a JSON array of 10-16 objects:
+"laneName" ("All" or exactly one of: ${L.map(l => JSON.stringify(l.name)).join(", ")}), "type" (${BRIEF_TYPES.map(t => JSON.stringify(t)).join(" | ")}), "name" (max 50 chars), "what" (1-2 sentences: what it is and how to use it in content), "date" ("YYYY-MM-DD" if tied to a day in ${monthLabel(month)}, else ""), "hook" (a sample first line, max 14 words).`;
 }
 function insightPrompt(laneName, list) {
   const rows = list.map(p => `- "${p.hook.line}" | ${p.type} | ${p.hookStyle} | ${p.format || "-"} | ${p.sub || p.laneName} | posted ${weekday(p.results.posted || p.postDate) || "?"} on ${p.results.platform || "?"} | views ${p.results.views}, watch ${p.results.watch || "?"}%, likes ${p.results.likes || 0}, comments ${p.results.comments || 0}, shares ${p.results.shares || 0}, saves ${p.results.saves || 0}, follows ${p.results.follows || 0}, leads ${p.results.leads || 0}${p.results.notes ? ` | notes: ${p.results.notes}` : ""}`).join("\n");
@@ -878,17 +924,18 @@ async function planMonth(client) {
   if (!total) { toast("Set this client's monthly deliverables first"); return; }
   state.planningClient = client.id;
   const fallback = () => {
-    const shorts = offlineIdeas(p, "Surprise me", null, +client.shorts || 0).map((x, i) => ({ ...x, week: (i % 4) + 1 }));
-    const pods = Array.from({ length: +client.podcasts || 0 }, (_, i) => ({ id: uid("idea"), type: "podcast", sub: p.subs[0] || p.laneName, title: `Inside ${client.name}${i ? " (part " + (i + 1) + ")" : ""}`, hook: "How did this business really start?", format: "Owner interview", angle: `Sit down with the owner of ${client.name}.`, why: "Shows how the owner runs the business.", difficulty: "Medium", runtime_sec: 1800, week: 2 + i }));
+    const shorts = offlineIdeas(p, "Surprise me", null, +client.shorts || 0).map((x, i) => ({ ...x, week: (i % shootDays(client)) + 1 }));
+    const pods = Array.from({ length: +client.podcasts || 0 }, (_, i) => ({ week: 1, id: uid("idea"), type: "podcast", sub: p.subs[0] || p.laneName, title: `Inside ${client.name}${i ? " (part " + (i + 1) + ")" : ""}`, hook: "How did this business really start?", format: "Owner interview", angle: `Sit down with the owner of ${client.name}.`, why: "Shows how the owner runs the business.", difficulty: "Medium", runtime_sec: 1800 }));
     return [...shorts, ...pods];
   };
   const list = await ask(monthPrompt(p, client, m, avoid), "month",
     out => { const l = asList(out, "ideas", "items").map(normalizeIdea).filter(i => i.hook); return l.length ? l : null; }, fallback);
   state.planningClient = null;
   if (!list) return;
-  const days = new Date(+m.slice(0, 4), +m.slice(5, 7), 0).getDate();
+  const days = new Date(+m.slice(0, 4), +m.slice(5, 7), 0).getDate(), n = shootDays(client);
   for (const i of list) {
-    const day = Math.min(days, 1 + (i.week - 1) * 7 + 1);
+    const k = Math.min(n, Math.max(1, i.week));
+    const day = Math.min(days, 2 + Math.round((k - 1) * (days - 6) / Math.max(1, n)));
     await store.put({ ...i, kind: "idea", id: i.id || uid("idea"), created: Date.now(), clientId: client.id, laneId: lane ? lane.id : null, laneName: p.laneName, month: m, date: `${m}-${pad(day)}` });
   }
   toast(`${list.length} ideas added to ${client.name}'s month`);
@@ -906,6 +953,30 @@ async function adaptTrend(trend) {
   if (!list) return;
   const withLane = list.map(i => { const l = L.find(x => same(x.name, i.laneName)) || L[0]; return { ...i, laneId: l.id, laneName: l.name, lens: "Trend format", trendId: trend.id }; });
   await edit(store.get(trend.id), t => { t.ideas = withLane; });
+}
+
+// ---------- monthly trend brief ----------
+function offlineBrief(month) {
+  const mn = +month.slice(5, 7);
+  return [
+    ...SEASONAL.filter(x => x[0] === mn).map(([, name, what, day]) => ({ laneName: "All", type: day ? "Date" : "Seasonal", name, what, date: day ? `${month}-${pad(day)}` : "", hook: "" })),
+    ...shuffle(EVERGREEN).slice(0, 2).map(([name, what]) => ({ laneName: "All", type: "Format", name, what, date: "", hook: "" })),
+  ];
+}
+async function findTrends(month) {
+  const L = lanes();
+  if (!L.length) { toast("Add an industry first"); go("ideas", "ideas"); return; }
+  const items = await ask(briefPrompt(month, L), "brief",
+    out => { const l = asList(out, "trends", "items").filter(x => x && x.name).map(x => ({ laneName: str(x.laneName), type: BRIEF_TYPES.includes(x.type) ? x.type : "Seasonal", name: str(x.name).slice(0, 60), what: str(x.what), date: /^\d{4}-\d{2}-\d{2}$/.test(str(x.date)) && str(x.date).startsWith(month) ? x.date : "", hook: str(x.hook) })); return l.length ? l : null; },
+    () => offlineBrief(month));
+  if (!items) return;
+  for (const t of store.all("trend").filter(t => t.source === "brief" && t.month === month)) await store.del(t.id);
+  let n = 0;
+  for (const it of items) {
+    const lane = L.find(l => same(l.name, it.laneName));
+    await store.put({ kind: "trend", id: uid("trend"), created: Date.now() - n++, source: "brief", month, platform: "Monthly brief", ...it, laneId: lane ? lane.id : null, ideas: [] });
+  }
+  toast(`${items.length} trends found for ${monthLabel(month)}`);
 }
 
 // ---------- patterns ----------
@@ -981,6 +1052,14 @@ function viewMonth() {
       h("input", { class: "t", id: "goal", type: "number", inputmode: "numeric", min: "0", step: "50", value: goal || "", placeholder: "Monthly revenue goal, e.g. 6000", "aria-label": "Monthly revenue goal" }),
       h("button", { class: "btn", type: "submit" }, "Set goal")),
 
+    (() => {
+      const bn = store.all("trend").filter(t => t.source === "brief" && t.month === m).length;
+      return h("section", { class: "panel row between" },
+        h("div", { style: "min-width:0" }, h("div", { class: "eyebrow", text: "Trend brief" }), h("div", { style: "font-weight:600", text: bn ? `${bn} trends for ${monthLabel(m).split(" ")[0]}` : `No ${monthLabel(m).split(" ")[0]} trends yet` }),
+          h("div", { class: "small muted", text: bn ? "Used in every month plan and idea batch" : "Find them before you plan clients' months" })),
+        state.busy === "brief" ? h("span", { class: "status" }, h("span", { class: "rec" }), "Finding…")
+          : h("button", { class: "btn sm " + (bn ? "" : "go"), onclick: () => { go("ideas", "trends"); if (!bn) findTrends(m); } }, bn ? "See brief" : "Find trends"));
+    })(),
     h("section", { class: "panel stack" },
       h("div", { class: "row between" }, h("h2", { class: "h-sec", text: "Calendar" }),
         h("div", { class: "legend" }, h("span", null, h("i", { class: "dot shoot" }), "Shoot"), h("span", null, h("i", { class: "dot post" }), "Post"))),
@@ -1022,8 +1101,8 @@ function clientCard(c, m) {
   return h("div", { class: "client" },
     h("div", { class: "row between" }, h("div", null, h("b", { class: "name", text: c.name }), " ", c.example ? h("span", { class: "tag ex", text: "Example" }) : null),
       h("span", { class: "tag " + (c.type === "retainer" ? "lane" : "shoot"), text: c.type === "retainer" ? `${money(c.monthly)}/mo retainer` : `${money(c.price)} project` })),
-    h("div", { class: "small muted", text: [lane ? lane.name : "", c.type === "project" && c.projectDate ? "Shoot " + fmtDay(c.projectDate) : "", c.contact].filter(Boolean).join(" · ") }),
-    c.type === "retainer" ? [deliv("Short-form", shorts, +c.shorts), deliv("Podcast", pods, +c.podcasts)] : null,
+    h("div", { class: "small muted", text: [packageOf(c) && c.type === "retainer" ? packageOf(c)[1].split(":")[0] + " package" : "", c.type === "retainer" ? `${shootDays(c)} shoot day${shootDays(c) > 1 ? "s" : ""}` : "", lane ? lane.name : "", c.type === "project" && c.projectDate ? "Shoot " + fmtDay(c.projectDate) : "", c.contact].filter(Boolean).join(" · ") }),
+    c.type === "retainer" ? [deliv("Clips", shorts, +c.shorts), deliv("Podcast", pods, +c.podcasts)] : null,
     busy ? busyLine(`Planning ${c.name}'s month. About 30–60 seconds.`) : null,
     c.example ? null : h("div", { class: "row" },
       c.type === "retainer" ? h("button", { class: "btn sm go", disabled: state.busy || null, onclick: () => planMonth(c) }, pending.length ? "Plan more for this month" : `Plan ${monthLabel(m).split(" ")[0]}`) : null,
@@ -1031,19 +1110,19 @@ function clientCard(c, m) {
       h("button", { class: "btn sm ghost", onclick: () => { state.editClient = c.id; render(); } }, "Edit")),
     pending.length ? h("div", { class: "stack" }, h("div", { class: "eyebrow", text: `Ready to plan · ${pending.length}` }),
       pending.sort((a, b) => str(a.date).localeCompare(str(b.date))).map(i => h("div", { class: "lib-item" },
-        h("div", null, h("b", { style: "font-size:16px", text: i.title }), h("span", { class: "small muted", text: `${i.type === "podcast" ? "Podcast" : "Short"} · shoot week of ${fmtDay(i.date)}` })),
+        h("div", null, h("b", { style: "font-size:16px", text: i.title }), h("span", { class: "small muted", text: `${i.type === "podcast" ? "Podcast" : "Clip"} · shoot day ${i.week || 1}, ${fmtDay(i.date)}` })),
         h("div", { class: "row" }, h("button", { class: "btn sm go", onclick: () => buildPlan(i) }, "Plan"), h("button", { class: "btn sm ghost", "aria-label": "Remove idea", onclick: () => store.del(i.id) }, "×"))))) : null);
 }
 let confirmClientDel = null;
 function clientForm(c) {
-  const isNew = !c; c = c || { type: "retainer", status: "active", shorts: 4, podcasts: 1 };
+  const isNew = !c; c = c || { type: "retainer", status: "active", package: "general", shorts: 12, podcasts: 0, shootDays: 2 };
   const t = c.type;
   const L = lanes();
   const submit = e => {
     e.preventDefault();
     const name = val("c-name"); if (!name) { toast("Add the client's name"); return; }
     const doc = { ...(isNew ? {} : clone(c)), kind: "client", id: isNew ? uid("client") : c.id, created: c.created || Date.now(), name, laneId: val("c-lane") || null, type: val("c-type"), status: val("c-status"),
-      monthly: +val("c-monthly") || 0, shorts: +val("c-shorts") || 0, podcasts: +val("c-pods") || 0, price: +val("c-price") || 0, projectDate: val("c-pdate"), contact: val("c-contact"), notes: val("c-notes") };
+      monthly: +val("c-monthly") || 0, package: val("c-pkg"), shorts: +val("c-shorts") || 0, podcasts: +val("c-pods") || 0, shootDays: +val("c-days") || 1, price: +val("c-price") || 0, projectDate: val("c-pdate"), contact: val("c-contact"), notes: val("c-notes") };
     store.put(doc); state.editClient = null; toast(`Saved ${name}`);
   };
   return h("form", { class: "panel stack", style: "margin-bottom:12px", onsubmit: submit },
@@ -1054,9 +1133,14 @@ function clientForm(c) {
       h("label", { class: "f" }, "Status", selectEl("c-status", [["active", "Active"], ["lead", "Lead"], ["paused", "Paused"]], c.status)),
       h("label", { class: "f full" }, "Type", selectEl("c-type", [["retainer", "Monthly retainer"], ["project", "Large project"]], t, { onchange: e => { $("#c-ret").hidden = e.target.value !== "retainer"; $("#c-proj").hidden = e.target.value !== "project"; } })),
       h("div", { class: "fields full", id: "c-ret", hidden: t !== "retainer" || null },
+        h("label", { class: "f full" }, "Package", selectEl("c-pkg", PACKAGES.map(x => [x[0], x[1]]), c.package || "custom", { onchange: e => {
+          const pk = PACKAGES.find(x => x[0] === e.target.value); if (!pk || pk[2] == null) return;
+          $("#c-shorts").value = pk[2]; $("#c-pods").value = pk[3]; $("#c-days").value = pk[4];
+        } })),
         h("label", { class: "f full" }, "Monthly price ($)", h("input", { class: "t", id: "c-monthly", type: "number", inputmode: "numeric", min: "0", step: "50", value: c.monthly || "", placeholder: "1500" })),
-        h("label", { class: "f" }, "Short-form / month", h("input", { class: "t", id: "c-shorts", type: "number", inputmode: "numeric", min: "0", value: c.shorts ?? 4 })),
-        h("label", { class: "f" }, "Podcast eps / month", h("input", { class: "t", id: "c-pods", type: "number", inputmode: "numeric", min: "0", value: c.podcasts ?? 1 }))),
+        h("label", { class: "f" }, "Clips / month", h("input", { class: "t", id: "c-shorts", type: "number", inputmode: "numeric", min: "0", value: c.shorts ?? 12, oninput: () => { $("#c-pkg").value = "custom"; } })),
+        h("label", { class: "f" }, "Podcast eps / month", h("input", { class: "t", id: "c-pods", type: "number", inputmode: "numeric", min: "0", value: c.podcasts ?? 0, oninput: () => { $("#c-pkg").value = "custom"; } })),
+        h("label", { class: "f full" }, "Shoot days / month", h("input", { class: "t", id: "c-days", type: "number", inputmode: "numeric", min: "1", max: "8", value: c.shootDays || shootDays(c) }))),
       h("div", { class: "fields full", id: "c-proj", hidden: t !== "project" || null },
         h("label", { class: "f" }, "Project price ($)", h("input", { class: "t", id: "c-price", type: "number", inputmode: "numeric", min: "0", step: "50", value: c.price || "", placeholder: "1250" })),
         h("label", { class: "f" }, "Shoot date", h("input", { class: "t", id: "c-pdate", type: "date", value: c.projectDate || "" }))),
@@ -1109,7 +1193,7 @@ function viewIdeaEngine() {
 }
 let confirmTrendDel = null;
 function viewTrends() {
-  const L = lanes(), all = store.all("trend");
+  const L = lanes(), logged = store.all("trend").filter(t => t.source !== "brief");
   const submit = e => {
     e.preventDefault();
     const name = val("t-name"), what = val("t-what");
@@ -1119,6 +1203,7 @@ function viewTrends() {
     toast("Trend logged");
   };
   return [
+    briefPanel(state.month),
     h("p", { class: "small muted", style: "margin:0", text: "Log trends the moment you see them on TikTok, Instagram or Facebook. Claude adapts each one to your industries, and uses anything under 3 weeks old when it writes new ideas." }),
     h("form", { class: "panel stack", onsubmit: submit },
       h("h2", { class: "h-sec", text: "Log a trend" }),
@@ -1130,19 +1215,40 @@ function viewTrends() {
         h("label", { class: "f full" }, "Link (optional)", h("input", { class: "t", id: "t-link", type: "url", placeholder: "https://" }))),
       h("button", { class: "btn primary", type: "submit" }, "Log trend")),
     noteEl(),
-    all.length ? h("section", { class: "panel" }, all.map(t => {
-      const age = daysAgo(t.created), lane = t.laneId && store.get(t.laneId);
-      const busy = state.busy === "trend" && state.adapting === t.id;
-      return h("div", { class: "trend" },
-        h("div", { class: "meta" }, h("span", { class: "tag lane", text: t.platform }), h("span", { class: age > 21 ? "tag" : "tag shoot", text: age > 21 ? "Aging" : age === 0 ? "Today" : `${age}d ago` }), h("span", { text: lane ? lane.name : "All industries" })),
-        h("h3", { text: t.name }), h("div", { class: "small", text: t.what }),
-        t.link && /^https?:\/\//.test(t.link) ? h("a", { href: t.link, target: "_blank", rel: "noopener", class: "small", style: "color:var(--tally);overflow-wrap:anywhere", text: t.link }) : null,
-        busy ? busyLine("Adapting to your industries. About 20–40 seconds.") : h("div", { class: "row" },
-          h("button", { class: "btn sm go", disabled: state.busy || null, onclick: () => adaptTrend(t) }, arr(t.ideas).length ? "Adapt again" : "Adapt to my industries"),
-          h("button", { class: "btn sm ghost", onclick: () => { if (confirmTrendDel === t.id) { store.del(t.id); confirmTrendDel = null; } else { confirmTrendDel = t.id; render(); } } }, confirmTrendDel === t.id ? "Tap to remove" : "Remove")),
-        arr(t.ideas).length ? h("div", { class: "ideas" }, t.ideas.map(ideaCard)) : null);
-    })) : h("div", { class: "empty", text: "No trends logged yet. The next time something pops up in your feed, log it here." }),
+    logged.length ? h("section", { class: "panel" }, h("h2", { class: "h-sec", style: "margin-bottom:8px", text: "Trends you logged" }), logged.map(trendCard))
+      : h("div", { class: "empty", text: "No trends logged yet. The next time something pops up in your feed, log it here." }),
   ];
+}
+function trendCard(t) {
+  const age = daysAgo(t.created), lane = t.laneId && store.get(t.laneId), brief = t.source === "brief";
+  const busy = state.busy === "trend" && state.adapting === t.id;
+  return h("div", { class: "trend" },
+    h("div", { class: "meta" },
+      brief ? h("span", { class: "tag lane", text: t.type || "Seasonal" }) : h("span", { class: "tag lane", text: t.platform }),
+      brief ? (t.date ? h("span", { class: "tag shoot", text: fmtDay(t.date) }) : null) : h("span", { class: age > 21 ? "tag" : "tag shoot", text: age > 21 ? "Aging" : age === 0 ? "Today" : `${age}d ago` }),
+      h("span", { text: lane ? lane.name : "All industries" })),
+    h("h3", { text: t.name }), h("div", { class: "small", text: t.what }),
+    t.hook ? h("div", { class: "hook small", text: t.hook }) : null,
+    t.link && /^https?:\/\//.test(t.link) ? h("a", { href: t.link, target: "_blank", rel: "noopener", class: "small", style: "color:var(--tally);overflow-wrap:anywhere", text: t.link }) : null,
+    busy ? busyLine("Adapting to your industries. About 20–40 seconds.") : h("div", { class: "row" },
+      h("button", { class: "btn sm go", disabled: state.busy || null, onclick: () => adaptTrend(t) }, arr(t.ideas).length ? "Adapt again" : "Adapt to my industries"),
+      h("button", { class: "btn sm ghost", onclick: () => { if (confirmTrendDel === t.id) { store.del(t.id); confirmTrendDel = null; } else { confirmTrendDel = t.id; render(); } } }, confirmTrendDel === t.id ? "Tap to remove" : "Remove")),
+    arr(t.ideas).length ? h("div", { class: "ideas" }, t.ideas.map(ideaCard)) : null);
+}
+function briefPanel(m) {
+  const items = store.all("trend").filter(t => t.source === "brief" && t.month === m);
+  const busy = state.busy === "brief";
+  const groups = [["All", items.filter(t => !t.laneId)], ...lanes().map(l => [l.name, items.filter(t => t.laneId === l.id)])].filter(g => g[1].length);
+  const order = t => (t.date || "9999") + t.type;
+  return h("section", { class: "panel stack" },
+    h("div", { class: "monthnav" },
+      h("button", { class: "btn sm", "aria-label": "Previous month", onclick: () => { state.month = shiftMonth(m, -1); render(); } }, "‹"),
+      h("div", { style: "text-align:center" }, h("div", { class: "eyebrow", text: "Monthly trend brief" }), h("h2", { class: "h-sec", text: monthLabel(m) })),
+      h("button", { class: "btn sm", "aria-label": "Next month", onclick: () => { state.month = shiftMonth(m, 1); render(); } }, "›")),
+    h("p", { class: "small muted", style: "margin:0", text: "Dates, seasonal demand and formats for each of your industries. Claude works from what it knows, not live feeds, so also log what you actually see in your feed below. This month's brief feeds every idea and month plan." }),
+    busy ? busyLine(`Finding ${monthLabel(m)} trends. About 30–60 seconds.`) : h("button", { class: "btn " + (items.length ? "" : "primary"), disabled: state.busy || null, onclick: () => findTrends(m) }, items.length ? `Find again (replaces these ${items.length})` : `Find ${monthLabel(m).split(" ")[0]} trends`),
+    groups.map(([name, list]) => h("div", { class: "stack" }, h("div", { class: "eyebrow", text: name === "All" ? "For every industry" : name }),
+      h("div", null, list.sort((a, b) => order(a).localeCompare(order(b))).map(trendCard)))));
 }
 
 // ---------- NICHES ----------
