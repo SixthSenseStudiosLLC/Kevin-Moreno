@@ -114,6 +114,47 @@ nav.tabs button { background: none; border: 0; cursor: pointer; font: 700 15px v
 nav.tabs button span { font: 500 11px var(--f-body) }
 nav.tabs button[aria-current="page"] { color: var(--hot) }
 .toast { position: fixed; left: 50%; bottom: calc(var(--tabbar) + 14px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 10px; font-size: 13px; z-index: 6; max-width: calc(100% - 32px) }
+
+/* Grids that open up on wide screens */
+.idea-grid { display: grid; gap: 8px }
+.client-grid { display: grid }
+.client-item { padding: 12px 0; border-top: 1px solid var(--line) }
+.client-grid > .client-item:first-child { border-top: 0; padding-top: 0 }
+.client-grid > form { grid-column: 1 / -1 }
+.side-brand { display: none }
+/* Breakdown: one column on phones in reading order, two columns on desktop */
+.bd-grid { display: flex; flex-direction: column; gap: 16px }
+.bd-side, .bd-main { display: contents }
+.o1 { order: 1 } .o2 { order: 2 } .o3 { order: 3 } .o4 { order: 4 } .o5 { order: 5 } .o6 { order: 6 } .o7 { order: 7 }
+
+@media (min-width: 1000px) {
+  :root { --tabbar: 0px; --side: 232px }
+  body { font-size: 15.5px }
+  .wrap { max-width: none; margin: 0 0 0 var(--side); padding-inline: 44px; padding-block: 32px 56px }
+  .wrap > * { max-width: 1240px }
+  .top .brand { display: none }
+  .top { justify-content: flex-end; margin-bottom: 4px }
+  .h1 { font-size: 38px }
+  nav.tabs { top: 0; right: auto; width: var(--side); border-top: 0; border-right: 1px solid var(--line); padding: 0; display: flex; flex-direction: column }
+  .side-brand { display: block; font: 800 26px/1 var(--f-display); letter-spacing: -.02em; padding: 30px 28px 26px }
+  .side-brand i { font-style: normal; color: var(--hot) }
+  nav.tabs .in { grid-template-columns: 1fr; grid-auto-rows: 60px; height: auto; max-width: none; margin: 0; align-content: start; padding-inline: 12px; gap: 4px }
+  nav.tabs button { place-content: center start; padding-left: 16px; text-align: left; font-size: 18px; border-radius: 10px }
+  nav.tabs button:hover { background: var(--bg) }
+  nav.tabs button[aria-current="page"] { background: var(--hot-soft) }
+  .toast { bottom: 28px; left: calc(50% + var(--side) / 2) }
+  .idea-grid { grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; align-items: start }
+  .trend { padding: 20px 22px }
+  .trend h3 { font-size: 24px }
+  .client-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 36px }
+  .client-grid > .client-item:nth-child(2) { border-top: 0; padding-top: 0 }
+  .bd-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 8fr); gap: 20px; align-items: start }
+  .bd-side { display: grid; gap: 16px; position: sticky; top: 20px; max-height: calc(100vh - 40px); overflow-y: auto; padding-right: 2px }
+  .bd-main { display: grid; gap: 16px }
+  .bd-main .idea-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) }
+  .trend .for .btn.hot { flex: 0 0 auto !important; min-width: 220px }
+  .trend > .small { max-width: 75ch }
+}
 </style>
 
 <div class="wrap">
@@ -123,7 +164,7 @@ nav.tabs button[aria-current="page"] { color: var(--hot) }
   </header>
   <main id="view" class="view" aria-live="polite"></main>
 </div>
-<nav class="tabs" aria-label="Sections"><div class="in" id="tabs"></div></nav>
+<nav class="tabs" aria-label="Sections"><div class="side-brand" aria-hidden="true">Trend<i>/</i>Board</div><div class="in" id="tabs"></div></nav>
 <div class="toast" id="toast" hidden></div>
 
 <script>
@@ -429,7 +470,7 @@ function trendCard(t) {
     [...groups, ...exampleGroups].map(([c, ideas]) => h("div", { class: "group" },
       c ? h("div", { class: "group-head" }, h("b", { text: c.name }),
         ideas.every(isSaved) ? h("span", { class: "tag keep", text: "All saved" }) : h("button", { class: "btn sm ghost", onclick: async () => { for (const i of ideas) if (!isSaved(i)) await saveIdea(i, true); toast(`Saved to ${c.name}`); } }, "Save all")) : null,
-      ideas.map(i => c ? ideaCard(i, { savedFlag: isSaved(i), onSave: () => saveIdea(i) }) : ideaCard(i, {})))));
+      h("div", { class: "idea-grid" }, ideas.map(i => c ? ideaCard(i, { savedFlag: isSaved(i), onSave: () => saveIdea(i) }) : ideaCard(i, {}))))));
 }
 
 function viewTrends() {
@@ -495,10 +536,10 @@ function viewClients() {
     h("div", { class: "row between" }, h("h1", { class: "h1", text: "Retainer clients" }),
       state.editClient === "new" ? null : h("button", { class: "btn sm", onclick: () => { state.editClient = "new"; render(); } }, "+ Add client")),
     state.editClient === "new" ? clientForm(null) : null,
-    cs.length ? h("section", { class: "panel" }, cs.map(c => {
+    cs.length ? h("section", { class: "panel client-grid" }, cs.map(c => {
       if (state.editClient === c.id) return clientForm(c);
       const n = savedThisMonth(c.id).length, goal = +c.clips || 12, busy = state.busy === "fill_" + c.id;
-      return h("div", { class: "stack", style: "padding:12px 0;border-top:1px solid var(--line)" },
+      return h("div", { class: "stack client-item" },
         h("div", { class: "client", style: "border:0;padding:0" },
           h("div", null, h("b", { text: c.name }), h("span", { class: "small muted", text: [c.industry, `${n} of ${goal} clips saved for ${monthName()}`, c.breakdown ? "Broken down ✓" : ""].filter(Boolean).join(" · ") }),
             h("div", { class: "meter" }, h("i", { style: `width:${Math.min(100, n / goal * 100)}%` }))),
@@ -521,42 +562,45 @@ function viewBreakdown(c) {
   const hasInfo = str(c.info) || productList(c).length || str(c.goals) || str(c.sells);
   const ideaOpts = i => ({ savedFlag: isSaved(i), onSave: () => saveIdea(i) });
   const total = b ? b.pillars.reduce((s, p) => s + p.per_month, 0) || 1 : 1;
-  return [
+  const fed = state.editClient === c.id ? h("div", { class: "o1" }, clientForm(c)) : h("section", { class: "panel stack o1" },
+    h("div", { class: "row between" }, h("div", { class: "h2", text: "What you've fed in" }), h("button", { class: "btn sm", onclick: () => { state.editClient = c.id; render(); } }, hasInfo ? "Edit info" : "Add info")),
+    hasInfo ? h("div", { class: "small muted", text: `${str(c.info).length ? Math.round(str(c.info).length / 5) + " words of notes" : "No pasted notes yet"} · ${productList(c).length} products listed${c.goals ? " · goal set" : ""}` })
+      : h("p", { class: "small", style: "margin:0", text: "Paste their website's About and product pages, your call notes and their product list. The more you give, the more specific the breakdown." }),
+    busy ? busyRow(`Breaking down ${c.name}… about 30–60 seconds`) :
+      h("button", { class: "btn hot", disabled: state.busy || !hasInfo || null, onclick: () => breakDown(c) }, b ? "Break it down again" : `Break down ${c.name}`),
+    noteFor("bd_" + c.id));
+  const head = [
     h("button", { class: "back", onclick: () => { state.clientView = null; render(); } }, "‹ All clients"),
     h("div", { class: "stack" }, h("div", { class: "label", text: "Client breakdown" }), h("h1", { class: "h1", text: c.name }),
       h("div", { class: "small muted", text: [c.industry, productList(c).length ? `${productList(c).length} products` : "", c.goals].filter(Boolean).join(" · ") })),
-    state.editClient === c.id ? clientForm(c) : h("section", { class: "panel stack" },
-      h("div", { class: "row between" }, h("div", { class: "h2", text: "What you've fed in" }), h("button", { class: "btn sm", onclick: () => { state.editClient = c.id; render(); } }, hasInfo ? "Edit info" : "Add info")),
-      hasInfo ? h("div", { class: "small muted", text: `${str(c.info).length ? Math.round(str(c.info).length / 5) + " words of notes" : "No pasted notes yet"} · ${productList(c).length} products listed${c.goals ? " · goal set" : ""}` })
-        : h("p", { class: "small", style: "margin:0", text: "Paste their website's About and product pages, your call notes and their product list. The more you give, the more specific the breakdown." }),
-      busy ? busyRow(`Breaking down ${c.name}… about 30–60 seconds`) :
-        h("button", { class: "btn hot", disabled: state.busy || !hasInfo || null, onclick: () => breakDown(c) }, b ? "Break it down again" : `Break down ${c.name}`),
-      noteFor("bd_" + c.id)),
-    b ? [
-      h("section", { class: "panel stack" }, h("div", { class: "row between" }, h("div", { class: "h2", text: "Snapshot" }), h("button", { class: "btn sm ghost", onclick: () => copy(breakdownText(c)) }, "Copy as pitch")),
-        h("div", { text: b.snapshot.what }),
-        b.snapshot.customers ? h("div", { class: "small" }, h("b", null, "Customers: "), b.snapshot.customers) : null,
-        b.snapshot.edge ? h("div", { class: "small" }, h("b", null, "What sets them apart: "), b.snapshot.edge) : null,
-        b.snapshot.gaps.length ? [h("div", { class: "label", text: "What their video is missing" }), h("ul", { class: "plain" }, b.snapshot.gaps.map(g => h("li", { text: g })))] : null),
-      h("section", { class: "panel stack" },
-        h("div", { class: "h2", text: `Monthly mix · ${c.clips || 12} clips` }),
-        h("div", { class: "mix", role: "img", "aria-label": b.pillars.map(p => `${p.name} ${p.per_month}`).join(", ") }, b.pillars.map((p, i) => h("i", { style: `width:${p.per_month / total * 100}%;background:${PILLAR_COLORS[i % PILLAR_COLORS.length]}` }))),
-        h("div", { class: "legend" }, b.pillars.map((p, i) => h("span", null, h("i", { style: `background:${PILLAR_COLORS[i % PILLAR_COLORS.length]}` }), `${p.name} · ${p.per_month}`))),
-        b.pillars.map(p => h("div", { class: "pillar" },
-          h("div", { class: "pillar-head" }, h("b", { text: p.name }), h("span", { class: "count", text: p.per_month })),
-          h("div", { class: "small muted", text: p.why }),
-          p.ideas.map(i => ideaCard(i, ideaOpts(i)))))),
-      b.product_series.length ? h("section", { class: "panel stack" },
-        h("div", { class: "h2", text: "Product education series" }),
-        h("p", { class: "small muted", style: "margin:0", text: "One reel per product, each teaching one thing. Film them with the product in hand, on a job site or wherever it lives." }),
-        b.product_series.map(p => h("div", { class: "stack", style: "gap:6px" }, h("div", { class: "row" }, h("span", { class: "tag hot", text: p.product }), h("span", { class: "small muted", text: p.angle })), ideaCard(p.idea, ideaOpts(p.idea))))) : null,
-      b.services.length ? h("section", { class: "panel stack" }, h("div", { class: "h2", text: "More ways to help them" }),
-        b.services.map(x => h("div", { class: "svc" }, h("b", { text: x.name }), h("div", { class: "small muted", text: x.why }), x.pitch ? h("div", { class: "small" }, h("b", null, "Say: "), `“${x.pitch}”`) : null))) : null,
-      b.questions.length ? h("section", { class: "panel stack" }, h("div", { class: "row between" }, h("div", { class: "h2", text: "Ask at your next meeting" }), h("button", { class: "btn sm ghost", onclick: () => copy(b.questions.map((q, i) => `${i + 1}. ${q}`).join("\n")) }, "Copy")),
-        h("ol", { class: "qs" }, b.questions.map(q => h("li", { text: q })))) : null,
-      h("button", { class: "btn hot block", disabled: state.busy || null, onclick: () => fillMonth(c) }, `Fill ${monthName()} with this mix`),
-    ] : null,
   ];
+  if (!b) return [...head, h("div", { class: "bd-grid" }, h("div", { class: "bd-side" }, fed), h("div", { class: "bd-main" },
+    h("div", { class: "panel empty o2", text: "Your breakdown shows up here: a snapshot of the business, a monthly content mix, one educational reel per product, more services to pitch and questions for your next meeting." })))];
+  const snapshot = h("section", { class: "panel stack o2" }, h("div", { class: "row between" }, h("div", { class: "h2", text: "Snapshot" }), h("button", { class: "btn sm ghost", onclick: () => copy(breakdownText(c)) }, "Copy as pitch")),
+    h("div", { text: b.snapshot.what }),
+    b.snapshot.customers ? h("div", { class: "small" }, h("b", null, "Customers: "), b.snapshot.customers) : null,
+    b.snapshot.edge ? h("div", { class: "small" }, h("b", null, "What sets them apart: "), b.snapshot.edge) : null,
+    b.snapshot.gaps.length ? [h("div", { class: "label", text: "What their video is missing" }), h("ul", { class: "plain" }, b.snapshot.gaps.map(g => h("li", { text: g })))] : null);
+  const mix = h("section", { class: "panel stack o3" },
+    h("div", { class: "h2", text: `Monthly mix · ${c.clips || 12} clips` }),
+    h("div", { class: "mix", role: "img", "aria-label": b.pillars.map(p => `${p.name} ${p.per_month}`).join(", ") }, b.pillars.map((p, i) => h("i", { style: `width:${p.per_month / total * 100}%;background:${PILLAR_COLORS[i % PILLAR_COLORS.length]}` }))),
+    h("div", { class: "legend" }, b.pillars.map((p, i) => h("span", null, h("i", { style: `background:${PILLAR_COLORS[i % PILLAR_COLORS.length]}` }), `${p.name} · ${p.per_month}`))),
+    b.pillars.map(p => h("div", { class: "pillar" },
+      h("div", { class: "pillar-head" }, h("b", { text: p.name }), h("span", { class: "count", text: p.per_month })),
+      h("div", { class: "small muted", text: p.why }),
+      h("div", { class: "idea-grid" }, p.ideas.map(i => ideaCard(i, ideaOpts(i)))))));
+  const products = b.product_series.length ? h("section", { class: "panel stack o4" },
+    h("div", { class: "h2", text: "Product education series" }),
+    h("p", { class: "small muted", style: "margin:0", text: "One reel per product, each teaching one thing. Film them with the product in hand, on a job site or wherever it lives." }),
+    h("div", { class: "idea-grid" }, b.product_series.map(p => h("div", { class: "stack", style: "gap:6px;align-content:start" }, h("div", { class: "row" }, h("span", { class: "tag hot", text: p.product }), h("span", { class: "small muted", text: p.angle })), ideaCard(p.idea, ideaOpts(p.idea)))))) : null;
+  const services = b.services.length ? h("section", { class: "panel stack o5" }, h("div", { class: "h2", text: "More ways to help them" }),
+    b.services.map(x => h("div", { class: "svc" }, h("b", { text: x.name }), h("div", { class: "small muted", text: x.why }), x.pitch ? h("div", { class: "small" }, h("b", null, "Say: "), `“${x.pitch}”`) : null))) : null;
+  const questions = b.questions.length ? h("section", { class: "panel stack o6" }, h("div", { class: "row between" }, h("div", { class: "h2", text: "Ask at your next meeting" }), h("button", { class: "btn sm ghost", onclick: () => copy(b.questions.map((q, i) => `${i + 1}. ${q}`).join("\n")) }, "Copy")),
+    h("ol", { class: "qs" }, b.questions.map(q => h("li", { text: q })))) : null;
+  const fill = h("button", { class: "btn hot block o7", disabled: state.busy || null, onclick: () => fillMonth(c) }, `Fill ${monthName()} with this mix`);
+  return [...head, h("div", { class: "bd-grid" },
+    h("div", { class: "bd-side" }, fed, snapshot, services, questions),
+    h("div", { class: "bd-main" }, mix, products, fill))];
 }
 
 function viewBank() {
@@ -570,7 +614,7 @@ function viewBank() {
     client ? h("div", { class: "row between" },
       h("span", { class: "small muted", text: `${savedThisMonth(client.id).length} of ${client.clips || 12} for ${monthName()} · ${list.filter(i => i.done).length} filmed` }),
       list.length ? h("button", { class: "btn sm", onclick: () => copy(`${client.name}: ${monthName()} shot list\n\n` + exportText()) }, "Copy shot list") : null) : null,
-    list.length ? list.map(i => h("div", { class: "stack", style: "gap:4px" }, f === "all" ? h("div", { class: "label", text: i.clientName }) : null, ideaCard(i, { bank: true })))
+    list.length ? h("div", { class: "idea-grid" }, list.map(i => h("div", { class: "stack", style: "gap:4px;align-content:start" }, f === "all" ? h("div", { class: "label", text: i.clientName }) : null, ideaCard(i, { bank: true }))))
       : h("div", { class: "empty", text: "No saved clips yet. Get ideas from a trend and tap “Save to client”." }),
   ];
 }
