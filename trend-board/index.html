@@ -93,6 +93,20 @@ textarea.t { resize: vertical }
 .client b { font-family: var(--f-display); font-size: 18px; display: block }
 .meter { height: 6px; background: var(--chip); border-radius: 99px; overflow: hidden; margin-top: 6px }
 .meter > i { display: block; height: 100%; background: var(--keep) }
+.back { background: none; border: 0; padding: 4px 0; cursor: pointer; color: var(--muted); font-weight: 600; font-size: 14px; justify-self: start }
+.pillar { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line) }
+.pillar:first-of-type { border-top: 0; padding-top: 0 }
+.pillar-head { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: baseline }
+.pillar-head b { font-family: var(--f-display); font-size: 18px; line-height: 1.15 }
+.count { font: 800 22px/1 var(--f-display); color: var(--hot); font-variant-numeric: tabular-nums }
+.mix { display: flex; height: 12px; border-radius: 99px; overflow: hidden; gap: 2px }
+.mix i { display: block; height: 100% }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--muted) }
+.legend span { display: inline-flex; align-items: center; gap: 6px }
+.legend i { width: 9px; height: 9px; border-radius: 2px; display: inline-block }
+ol.qs, ul.plain { margin: 0; padding-left: 20px; display: grid; gap: 5px; font-size: 14px }
+.svc { display: grid; gap: 2px; padding: 10px 0; border-top: 1px solid var(--line) }
+.svc:first-of-type { border-top: 0; padding-top: 0 }
 
 nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); z-index: 5 }
 nav.tabs .in { max-width: 620px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); height: var(--tabbar) }
@@ -216,7 +230,7 @@ const ERR = {
   refused: "Claude declined that one. Reword the trend and try again.",
 };
 const errMsg = e => ERR[e && e.code] || "Couldn't reach Claude. Check your connection and try again.";
-const state = { tab: lsGet("trendboard.tab", "trends"), pick: {}, busy: null, ctl: null, note: "", noteFor: null, bankClient: "all", editClient: null, showAdd: false };
+const state = { tab: lsGet("trendboard.tab", "trends"), pick: {}, busy: null, ctl: null, note: "", noteFor: null, bankClient: "all", editClient: null, showAdd: false, clientView: null };
 
 async function ask(key, prompt) {
   if (!live()) { state.note = blocked ? ERR.not_granted : "Generating ideas needs Claude. Open this page in the Claude app."; state.noteFor = key; render(); return null; }
@@ -228,7 +242,11 @@ async function ask(key, prompt) {
   } finally { state.busy = null; state.ctl = null; render(); }
 }
 const listOf = out => Array.isArray(out) ? out : out && (out.ideas || out.trends || out.items) || [];
-const clientBlock = c => `- ${c.name}: ${c.industry || "industry not set"}. Sells: ${c.sells || "not set"}. Audience: ${c.audience || "not set"}. Notes: ${c.notes || "none"}.`;
+const productList = c => str(c.products).split(/\n+/).map(str).filter(Boolean);
+const clientBlock = c => `- ${c.name}: ${c.industry || "industry not set"}. Sells: ${c.sells || "not set"}. Audience: ${c.audience || "not set"}. Notes: ${c.notes || "none"}.${
+  productList(c).length ? ` Products: ${productList(c).slice(0, 15).join(", ")}.` : ""}${
+  c.goals ? ` Content the creator wants to make for them: ${c.goals}.` : ""}${
+  c.breakdown ? ` Content pillars: ${arr(c.breakdown.pillars).map(p => p.name).join(", ")}.` : ""}`;
 const IDEA_SHAPE = `"clientName" (exactly as written above), "title" (max 60 chars), "hook" (first line spoken or on screen, max 14 words), "film" (3-4 short shot lines: what to film on-site), "caption" (ready to post, under 180 chars), "why" (1 short sentence: why it works for this client)`;
 function normIdea(x, cs) {
   const c = cs.find(c => same(c.name, x.clientName)) || (cs.length === 1 ? cs[0] : null);
@@ -283,26 +301,78 @@ Reply with ONLY a JSON array of 8 objects: "name" (what people would call it, ma
 async function fillMonth(c) {
   const need = Math.max(1, (+c.clips || 12) - savedThisMonth(c.id).length);
   const ts = trends().filter(t => daysAgo(t.created) <= 35).slice(0, 12);
-  if (!ts.length) { toast("Add or find some trends first"); go("trends"); return; }
+  const mix = c.breakdown ? arr(c.breakdown.pillars) : [];
+  if (!ts.length && !mix.length) { toast("Add trends or break down this client first"); go("trends"); return; }
   const out = await ask("fill_" + c.id, `You are a short-form strategist for a videographer. ${c.name} is a monthly retainer client and still needs ${need} clip ideas for ${monthName()}.
 
 Client:
 ${clientBlock(c)}
 
-Trends to build from (use a mix, at least 3 different trends; name the one each idea uses):
+${mix.length ? `Follow their monthly content mix (scale to ${need} clips): ${mix.map(p => `${p.name} ${p.per_month}`).join(", ")}. Product education clips should each teach one clear thing about one product.\n` : ""}${ts.length ? `Trends to build from (use them where they fit; name the one each idea uses, or "" if none):
 ${ts.map((t, i) => `${i + 1}. ${t.name}: ${t.what}`).join("\n")}
-
+` : ""}
 Every clip must be filmable at ${c.name}'s location, and the whole set should be shootable in 1-2 visits. Mix formats so the month doesn't feel repetitive.
 Don't repeat: ${avoidFor([c]).join(" | ") || "none"}
 ${COMPLIANCE}
 
-Reply with ONLY a JSON array of ${need} objects: ${IDEA_SHAPE}, "trend" (the trend name it uses).`);
+Reply with ONLY a JSON array of ${need} objects: ${IDEA_SHAPE}, "trend" (the trend name it uses, or the content pillar if no trend).`);
   if (!out) return;
   const ideas = listOf(out).map(x => { const i = normIdea({ ...x, clientName: c.name }, [c]); return i && { ...i, trend: str(x.trend) }; }).filter(Boolean);
   if (!ideas.length) { state.note = ERR.invalid_json; state.noteFor = "fill_" + c.id; render(); return; }
   for (const i of ideas) await saveIdea(i, true);
   toast(`${ideas.length} ideas added to ${c.name}`);
   state.bankClient = c.id; go("bank");
+}
+
+async function breakDown(c) {
+  const clips = +c.clips || 12;
+  const out = await ask("bd_" + c.id, `You are a content strategist for a videographer who sells monthly video retainers (${clips} short-form clips a month, filmed on-site) to local businesses. They also offer business-owner podcasts. Break down how they can help this client grow with video, so they can plan the work and pitch it.
+
+Client: ${c.name}
+Industry: ${c.industry || "not set"}
+What they sell: ${c.sells || "not set"}
+Customers: ${c.audience || "not set"}
+Notes: ${c.notes || "none"}
+Products / services (one per line):
+${productList(c).join("\n") || "none listed"}
+
+What the creator wants to do for them: ${c.goals || "not said"}
+
+Everything else the creator gathered (website copy, call notes, reviews):
+${str(c.info).slice(0, 7000) || "nothing yet"}
+
+Use only what's above for facts about the company. Don't invent products, prices, awards or history; if something is unknown, say so in "gaps" or ask it in "questions".
+${COMPLIANCE}
+
+An IDEA is {"title" (max 60 chars), "hook" (max 14 words), "film" (3-4 short shot lines), "caption" (under 180 chars), "why" (1 sentence)}.
+
+Reply with ONLY a JSON object:
+"snapshot": {"what" (1-2 sentences), "customers" (1 sentence), "edge" (what sets them apart, 1 sentence), "gaps" (2-3 things their video/social is probably missing)},
+"pillars": 3-5 content pillars that make up the monthly mix, each {"name", "why" (1 sentence), "per_month" (number of clips; all pillars add up to exactly ${clips}), "ideas" (2 IDEAs)},
+"product_series": 4-8 educational reels, one product each, each {"product", "angle" (e.g. how to choose, common mistake, how it's installed, vs the alternative, how to care for it), "idea" (1 IDEA)},
+"services": 3-5 other ways the creator can help beyond the monthly clips, each {"name", "why" (1 sentence), "pitch" (1 sentence the creator could say to the owner)},
+"questions": 5-8 questions to ask the client at the next meeting to make the content better.`);
+  if (!out || typeof out !== "object") return;
+  const idea = x => x && str(x.hook) ? { id: uid("gen"), clientId: c.id, clientName: c.name, title: str(x.title, "Clip idea").slice(0, 80), hook: str(x.hook), film: arr(x.film).map(str).filter(Boolean).slice(0, 5), caption: str(x.caption), why: str(x.why) } : null;
+  const sn = out.snapshot || {};
+  const bd = {
+    created: Date.now(),
+    snapshot: { what: str(sn.what), customers: str(sn.customers), edge: str(sn.edge), gaps: arr(sn.gaps).map(str).filter(Boolean) },
+    pillars: arr(out.pillars).map(p => ({ name: str(p.name), why: str(p.why), per_month: Math.max(0, Math.round(+p.per_month || 0)), ideas: arr(p.ideas).map(x => { const i = idea(x); return i && { ...i, trend: str(p.name) }; }).filter(Boolean) })).filter(p => p.name),
+    product_series: arr(out.product_series).map(p => ({ product: str(p.product), angle: str(p.angle), idea: (i => i && { ...i, trend: "Product education" })(idea(p.idea)) })).filter(p => p.product && p.idea),
+    services: arr(out.services).map(x => ({ name: str(x.name), why: str(x.why), pitch: str(x.pitch) })).filter(x => x.name),
+    questions: arr(out.questions).map(str).filter(Boolean),
+  };
+  if (!bd.pillars.length) { state.note = ERR.invalid_json; state.noteFor = "bd_" + c.id; render(); return; }
+  await edit(store.get(c.id), d => { d.breakdown = bd; });
+  toast(`${c.name} broken down`);
+}
+function breakdownText(c) {
+  const b = c.breakdown; if (!b) return "";
+  return [`${c.name}: how video can help`, "", b.snapshot.what, `Customers: ${b.snapshot.customers}`, `What sets them apart: ${b.snapshot.edge}`, "",
+    `Monthly mix (${c.clips || 12} clips):`, ...b.pillars.map(p => `• ${p.name}: ${p.per_month} (${p.why})`), "",
+    "Product education series:", ...b.product_series.map(p => `• ${p.product}: ${p.idea.hook}`), "",
+    "Beyond the monthly clips:", ...b.services.map(x => `• ${x.name}: ${x.pitch}`)].join("\n");
 }
 
 async function saveIdea(i, quiet) {
@@ -312,7 +382,7 @@ async function saveIdea(i, quiet) {
 const isSaved = g => saved().some(s => s.genId && s.genId === g.id);
 
 // ---------- views ----------
-function go(tab) { state.tab = tab; lsSet("trendboard.tab", tab); state.note = ""; render(); scrollTo({ top: 0 }); }
+function go(tab) { if (tab !== "clients") state.clientView = null; state.tab = tab; lsSet("trendboard.tab", tab); state.note = ""; render(); scrollTo({ top: 0 }); }
 const busyRow = text => h("div", { class: "row between" }, h("div", { class: "status" }, h("span", { class: "pulse" }), text), h("button", { class: "btn sm", onclick: () => state.ctl && state.ctl.abort() }, "Stop"));
 const noteFor = key => state.note && state.noteFor === key ? h("div", { class: "note", text: state.note }) : null;
 
@@ -398,7 +468,7 @@ function clientForm(c) {
     e.preventDefault();
     const name = val("c-name"); if (!name) { toast("Add the business name"); return; }
     state.editClient = null;
-    store.put({ ...(isNew ? {} : clone(c)), kind: "client", id: isNew ? uid("client") : c.id, created: c.created || Date.now(), name, industry: val("c-ind"), sells: val("c-sells"), audience: val("c-aud"), notes: val("c-notes"), clips: +val("c-clips") || 12 });
+    store.put({ ...(isNew ? {} : clone(c)), kind: "client", id: isNew ? uid("client") : c.id, created: c.created || Date.now(), name, industry: val("c-ind"), sells: val("c-sells"), audience: val("c-aud"), notes: val("c-notes"), clips: +val("c-clips") || 12, products: val("c-products"), goals: val("c-goals"), info: val("c-info") });
     toast(`Saved ${name}`);
   };
   return h("form", { class: "panel stack", onsubmit: submit },
@@ -409,13 +479,18 @@ function clientForm(c) {
       h("label", { class: "f" }, "Clips per month", h("input", { class: "t", id: "c-clips", type: "number", inputmode: "numeric", min: "1", value: c.clips || 12 })),
       h("label", { class: "f full" }, "What they sell", h("input", { class: "t", id: "c-sells", value: c.sells || "", placeholder: "e.g. Roof replacements, storm repairs" })),
       h("label", { class: "f full" }, "Who their customers are", h("input", { class: "t", id: "c-aud", value: c.audience || "", placeholder: "e.g. Homeowners 35–65" })),
-      h("label", { class: "f full" }, "Notes", h("textarea", { class: "t", id: "c-notes", rows: "2", placeholder: "Tone, who's comfortable on camera, things to avoid" }, c.notes || ""))),
+      h("label", { class: "f full" }, "Notes", h("textarea", { class: "t", id: "c-notes", rows: "2", placeholder: "Tone, who's comfortable on camera, things to avoid" }, c.notes || "")),
+      h("label", { class: "f full" }, "Products or services, one per line", h("textarea", { class: "t", id: "c-products", rows: "4", placeholder: "e.g.\nPavers\nRetaining wall block\nMulch & stone" }, c.products || "")),
+      h("label", { class: "f full" }, "What you want to do for them", h("textarea", { class: "t", id: "c-goals", rows: "2", placeholder: "e.g. Film job sites and make educational reels about their products" }, c.goals || "")),
+      h("label", { class: "f full" }, "Everything else (paste anything)", h("textarea", { class: "t", id: "c-info", rows: "6", placeholder: "Paste their website's About and product pages, notes from your call, Google reviews, what the owner told you" }, c.info || ""))),
     h("div", { class: "row" }, h("button", { class: "btn hot", type: "submit" }, "Save client"),
       h("button", { class: "btn ghost", type: "button", onclick: () => { state.editClient = null; render(); } }, "Cancel"),
       isNew ? null : h("button", { class: "btn ghost", type: "button", onclick: () => { if (state.confirm === c.id) { store.del(c.id); state.editClient = null; } else { state.confirm = c.id; render(); } } }, state.confirm === c.id ? "Tap again to delete" : "Delete")));
 }
 function viewClients() {
   const cs = clients();
+  const open = state.clientView && store.get(state.clientView);
+  if (open) return viewBreakdown(open);
   return [
     h("div", { class: "row between" }, h("h1", { class: "h1", text: "Retainer clients" }),
       state.editClient === "new" ? null : h("button", { class: "btn sm", onclick: () => { state.editClient = "new"; render(); } }, "+ Add client")),
@@ -425,17 +500,62 @@ function viewClients() {
       const n = savedThisMonth(c.id).length, goal = +c.clips || 12, busy = state.busy === "fill_" + c.id;
       return h("div", { class: "stack", style: "padding:12px 0;border-top:1px solid var(--line)" },
         h("div", { class: "client", style: "border:0;padding:0" },
-          h("div", null, h("b", { text: c.name }), h("span", { class: "small muted", text: [c.industry, `${n} of ${goal} clips saved for ${monthName()}`].filter(Boolean).join(" · ") }),
+          h("div", null, h("b", { text: c.name }), h("span", { class: "small muted", text: [c.industry, `${n} of ${goal} clips saved for ${monthName()}`, c.breakdown ? "Broken down ✓" : ""].filter(Boolean).join(" · ") }),
             h("div", { class: "meter" }, h("i", { style: `width:${Math.min(100, n / goal * 100)}%` }))),
           h("button", { class: "btn sm ghost", onclick: () => { state.editClient = c.id; render(); } }, "Edit")),
         busy ? busyRow(`Filling ${c.name}'s month from your trends…`) : h("div", { class: "row" },
-          h("button", { class: "btn sm hot", disabled: state.busy || n >= goal || null, onclick: () => fillMonth(c) }, n >= goal ? "Month is full ✓" : `Fill ${monthName()} from trends (${goal - n})`),
+          h("button", { class: "btn sm " + (c.breakdown ? "" : "hot"), onclick: () => { state.clientView = c.id; render(); scrollTo({ top: 0 }); } }, c.breakdown ? "Breakdown" : "Break it down"),
+          h("button", { class: "btn sm " + (c.breakdown ? "hot" : ""), disabled: state.busy || n >= goal || null, onclick: () => fillMonth(c) }, n >= goal ? "Month is full ✓" : `Fill ${monthName()} (${goal - n})`),
           h("button", { class: "btn sm", onclick: () => { state.bankClient = c.id; go("bank"); } }, "See clips")),
         noteFor("fill_" + c.id));
     })) : state.editClient === "new" ? null : h("div", { class: "panel stack" },
       h("div", { class: "h2", text: "Add your first client" }),
       h("p", { class: "small muted", style: "margin:0", text: "Each client gets ideas written for their business, and a clip bank that counts toward their monthly package (12 clips by default)." }),
       h("button", { class: "btn hot", onclick: () => { state.editClient = "new"; render(); } }, "+ Add client")),
+  ];
+}
+
+const PILLAR_COLORS = ["var(--hot)", "var(--keep)", "var(--ink)", "var(--muted)", "#C88A12"];
+function viewBreakdown(c) {
+  const b = c.breakdown, busy = state.busy === "bd_" + c.id;
+  const hasInfo = str(c.info) || productList(c).length || str(c.goals) || str(c.sells);
+  const ideaOpts = i => ({ savedFlag: isSaved(i), onSave: () => saveIdea(i) });
+  const total = b ? b.pillars.reduce((s, p) => s + p.per_month, 0) || 1 : 1;
+  return [
+    h("button", { class: "back", onclick: () => { state.clientView = null; render(); } }, "‹ All clients"),
+    h("div", { class: "stack" }, h("div", { class: "label", text: "Client breakdown" }), h("h1", { class: "h1", text: c.name }),
+      h("div", { class: "small muted", text: [c.industry, productList(c).length ? `${productList(c).length} products` : "", c.goals].filter(Boolean).join(" · ") })),
+    state.editClient === c.id ? clientForm(c) : h("section", { class: "panel stack" },
+      h("div", { class: "row between" }, h("div", { class: "h2", text: "What you've fed in" }), h("button", { class: "btn sm", onclick: () => { state.editClient = c.id; render(); } }, hasInfo ? "Edit info" : "Add info")),
+      hasInfo ? h("div", { class: "small muted", text: `${str(c.info).length ? Math.round(str(c.info).length / 5) + " words of notes" : "No pasted notes yet"} · ${productList(c).length} products listed${c.goals ? " · goal set" : ""}` })
+        : h("p", { class: "small", style: "margin:0", text: "Paste their website's About and product pages, your call notes and their product list. The more you give, the more specific the breakdown." }),
+      busy ? busyRow(`Breaking down ${c.name}… about 30–60 seconds`) :
+        h("button", { class: "btn hot", disabled: state.busy || !hasInfo || null, onclick: () => breakDown(c) }, b ? "Break it down again" : `Break down ${c.name}`),
+      noteFor("bd_" + c.id)),
+    b ? [
+      h("section", { class: "panel stack" }, h("div", { class: "row between" }, h("div", { class: "h2", text: "Snapshot" }), h("button", { class: "btn sm ghost", onclick: () => copy(breakdownText(c)) }, "Copy as pitch")),
+        h("div", { text: b.snapshot.what }),
+        b.snapshot.customers ? h("div", { class: "small" }, h("b", null, "Customers: "), b.snapshot.customers) : null,
+        b.snapshot.edge ? h("div", { class: "small" }, h("b", null, "What sets them apart: "), b.snapshot.edge) : null,
+        b.snapshot.gaps.length ? [h("div", { class: "label", text: "What their video is missing" }), h("ul", { class: "plain" }, b.snapshot.gaps.map(g => h("li", { text: g })))] : null),
+      h("section", { class: "panel stack" },
+        h("div", { class: "h2", text: `Monthly mix · ${c.clips || 12} clips` }),
+        h("div", { class: "mix", role: "img", "aria-label": b.pillars.map(p => `${p.name} ${p.per_month}`).join(", ") }, b.pillars.map((p, i) => h("i", { style: `width:${p.per_month / total * 100}%;background:${PILLAR_COLORS[i % PILLAR_COLORS.length]}` }))),
+        h("div", { class: "legend" }, b.pillars.map((p, i) => h("span", null, h("i", { style: `background:${PILLAR_COLORS[i % PILLAR_COLORS.length]}` }), `${p.name} · ${p.per_month}`))),
+        b.pillars.map(p => h("div", { class: "pillar" },
+          h("div", { class: "pillar-head" }, h("b", { text: p.name }), h("span", { class: "count", text: p.per_month })),
+          h("div", { class: "small muted", text: p.why }),
+          p.ideas.map(i => ideaCard(i, ideaOpts(i)))))),
+      b.product_series.length ? h("section", { class: "panel stack" },
+        h("div", { class: "h2", text: "Product education series" }),
+        h("p", { class: "small muted", style: "margin:0", text: "One reel per product, each teaching one thing. Film them with the product in hand, on a job site or wherever it lives." }),
+        b.product_series.map(p => h("div", { class: "stack", style: "gap:6px" }, h("div", { class: "row" }, h("span", { class: "tag hot", text: p.product }), h("span", { class: "small muted", text: p.angle })), ideaCard(p.idea, ideaOpts(p.idea))))) : null,
+      b.services.length ? h("section", { class: "panel stack" }, h("div", { class: "h2", text: "More ways to help them" }),
+        b.services.map(x => h("div", { class: "svc" }, h("b", { text: x.name }), h("div", { class: "small muted", text: x.why }), x.pitch ? h("div", { class: "small" }, h("b", null, "Say: "), `“${x.pitch}”`) : null))) : null,
+      b.questions.length ? h("section", { class: "panel stack" }, h("div", { class: "row between" }, h("div", { class: "h2", text: "Ask at your next meeting" }), h("button", { class: "btn sm ghost", onclick: () => copy(b.questions.map((q, i) => `${i + 1}. ${q}`).join("\n")) }, "Copy")),
+        h("ol", { class: "qs" }, b.questions.map(q => h("li", { text: q })))) : null,
+      h("button", { class: "btn hot block", disabled: state.busy || null, onclick: () => fillMonth(c) }, `Fill ${monthName()} with this mix`),
+    ] : null,
   ];
 }
 
