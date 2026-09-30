@@ -1,0 +1,642 @@
+<title>Shot Caller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one-column phone app, clapperboard slate header, bottom tab bar (Ideas → Plan → Field → Library) */
+:root {
+  --bg: #EDF0EE; --surface: #FFFFFF; --ink: #14181A; --muted: #59635E; --line: #D2D8D4;
+  --tally: #BF2E37; --go: #2B7552; --slate: #1C2225; --slate-ink: #F1F4F2; --chip: #E2E7E4;
+  --f-display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --tabbar: 64px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #101315; --surface: #191E20; --ink: #E8ECE9; --muted: #95A09A; --line: #2B3235;
+  --tally: #EE5A61; --go: #58B688; --slate: #242B2E; --slate-ink: #F1F4F2; --chip: #232A2C; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #101315; --surface: #191E20; --ink: #E8ECE9; --muted: #95A09A; --line: #2B3235;
+  --tally: #EE5A61; --go: #58B688; --slate: #242B2E; --slate-ink: #F1F4F2; --chip: #232A2C; color-scheme: dark }
+
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--f-body); -webkit-font-smoothing: antialiased }
+.wrap { max-width: 640px; margin: 0 auto; padding-inline: 16px; padding-block: 0 calc(var(--tabbar) + 32px + env(safe-area-inset-bottom, 0px)) }
+h1, h2, h3 { margin: 0; text-wrap: balance }
+button, input, select, textarea { font: inherit; color: inherit }
+:focus-visible { outline: 2px solid var(--tally); outline-offset: 2px }
+
+/* Slate header */
+.slate { background: var(--slate); color: var(--slate-ink); margin-inline: -16px; padding-inline: 16px; padding-block: 0 14px }
+.sticks { height: 14px; margin-inline: -16px; background: repeating-linear-gradient(-45deg, var(--slate-ink) 0 14px, var(--slate) 14px 28px) }
+.slate-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding-top: 12px }
+.brand { font: 800 34px/0.95 var(--f-display); letter-spacing: .01em; text-transform: uppercase }
+.brand b { color: var(--tally) }
+.slate-meta { font: 500 11px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .08em; opacity: .75; text-align: right }
+.mode { font: 500 11px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; margin-top: 8px; opacity: .8 }
+.mode i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--go); margin-right: 6px; font-style: normal }
+.mode.off i { background: #A9A9A0 }
+
+/* Sections */
+.view { display: grid; gap: 18px; padding-top: 18px }
+.eyebrow { font: 500 11px var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted) }
+.h-display { font: 800 30px/1 var(--f-display); text-transform: uppercase; letter-spacing: .01em }
+.h-sec { font: 700 20px/1.1 var(--f-display); text-transform: uppercase; letter-spacing: .03em }
+.muted { color: var(--muted) }
+.small { font-size: 13px }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px }
+.stack { display: grid; gap: 10px }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+.between { justify-content: space-between }
+
+details.lane > summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 10px }
+details.lane > summary::-webkit-details-marker { display: none }
+details.lane > summary .caret { font: 500 12px var(--f-mono); color: var(--muted) }
+details.lane[open] > summary { margin-bottom: 12px }
+.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px }
+.fields .full { grid-column: 1 / -1 }
+@media (max-width: 440px) { .fields { grid-template-columns: 1fr } }
+label.f { display: grid; gap: 4px; font-size: 12px; color: var(--muted); min-width: 0 }
+input.t, select.t, textarea.t { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 10px 11px; font-size: 15px; color: var(--ink) }
+
+.chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; margin-inline: -16px; padding-inline: 16px }
+.chip { flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 7px 12px; font-size: 13px; cursor: pointer; white-space: nowrap }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink) }
+
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 10px 14px; font-weight: 600; font-size: 14px; cursor: pointer; min-height: 44px }
+.btn.primary { background: var(--tally); border-color: var(--tally); color: #fff }
+.btn.go { background: var(--go); border-color: var(--go); color: #fff }
+.btn.ghost { background: transparent }
+.btn.block { width: 100% }
+.btn:disabled { opacity: .55; cursor: default }
+.btn.sm { min-height: 36px; padding: 6px 11px; font-size: 13px }
+
+.status { font: 500 12px/1.4 var(--f-mono); color: var(--muted); display: flex; gap: 8px; align-items: center }
+.rec { width: 9px; height: 9px; border-radius: 50%; background: var(--tally); animation: blink 1s steps(2) infinite }
+@keyframes blink { 50% { opacity: .15 } }
+@media (prefers-reduced-motion: reduce) { .rec { animation: none } }
+.note { border-left: 3px solid var(--tally); padding: 8px 12px; background: var(--surface); border-radius: 0 8px 8px 0; font-size: 13px }
+
+/* Idea cards */
+.ideas { display: grid; gap: 12px }
+.idea { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 8px; min-width: 0 }
+.meta { font: 500 11px var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 10px }
+.tag { font: 500 10.5px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; background: var(--chip); color: var(--muted) }
+.tag.ex { background: transparent; border: 1px dashed var(--muted) }
+.idea h3 { font: 700 22px/1.05 var(--f-display); text-transform: uppercase; letter-spacing: .01em }
+.hook { font-size: 16px; font-weight: 500; line-height: 1.35 }
+.hook::before { content: "“" } .hook::after { content: "”" }
+
+/* Plan */
+.plan-head { background: var(--slate); color: var(--slate-ink); border-radius: 10px; overflow: hidden }
+.plan-head .sticks { margin: 0; height: 10px; background: repeating-linear-gradient(-45deg, var(--slate-ink) 0 10px, var(--slate) 10px 20px) }
+.plan-head .in { padding: 14px; display: grid; gap: 10px }
+.plan-head h2 { font: 800 30px/1 var(--f-display); text-transform: uppercase }
+.slate-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid rgba(241,244,242,.25) }
+.slate-grid > div { padding: 8px 10px; border-right: 1px solid rgba(241,244,242,.25); min-width: 0 }
+.slate-grid > div:last-child { border-right: 0 }
+.slate-grid .k { font: 500 10px var(--f-mono); letter-spacing: .1em; text-transform: uppercase; opacity: .65 }
+.slate-grid .v { font: 700 18px/1.1 var(--f-display); text-transform: uppercase; overflow-wrap: anywhere }
+
+.beats { display: grid }
+.beat { display: grid; grid-template-columns: 78px 1fr; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line) }
+.beat:first-child { border-top: 0; padding-top: 0 }
+.tc { font: 500 12px/1.5 var(--f-mono); color: var(--tally); font-variant-numeric: tabular-nums }
+.beat .lbl { font-weight: 600 }
+.beat .vis { font-size: 13px; color: var(--muted) }
+.beat > div { min-width: 0 }
+
+.shots { display: grid }
+.shot { display: grid; grid-template-columns: auto 1fr; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); align-items: start }
+.shot:first-child { border-top: 0; padding-top: 0 }
+.shot-no { font: 500 12px var(--f-mono); color: var(--muted); display: grid; gap: 4px; justify-items: start; font-variant-numeric: tabular-nums }
+.size { font: 700 15px var(--f-display); letter-spacing: .04em; background: var(--ink); color: var(--bg); padding: 1px 6px; border-radius: 3px }
+.roll { font: 500 10px var(--f-mono); text-transform: uppercase; letter-spacing: .06em }
+.roll.b { color: var(--go) } .roll.a { color: var(--tally) }
+.shot > div { min-width: 0 }
+ul.list { margin: 0; padding-left: 18px; display: grid; gap: 4px }
+.copybox { white-space: pre-wrap; font-size: 14px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-wrap: anywhere }
+
+/* Field mode */
+.bigline { font: 800 28px/1.05 var(--f-display); text-transform: uppercase }
+.progress { height: 8px; background: var(--chip); border-radius: 99px; overflow: hidden }
+.progress > i { display: block; height: 100%; background: var(--go); transition: width .25s }
+.check { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; padding: 12px; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; cursor: pointer; min-width: 0 }
+.check input { width: 26px; height: 26px; margin: 2px 0 0; accent-color: var(--go) }
+.check.done { opacity: .55 }
+.check.done .desc { text-decoration: line-through }
+.check.next { border-color: var(--tally); box-shadow: 0 0 0 1px var(--tally) }
+.check .desc { font-size: 16px; font-weight: 500 }
+.check > div { min-width: 0 }
+
+/* Library */
+.lib-item { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line) }
+.lib-item:first-child { border-top: 0 }
+.lib-item > div { min-width: 0 }
+.lib-item b { font: 700 18px/1.1 var(--f-display); text-transform: uppercase; display: block }
+.empty { text-align: center; padding: 22px 12px; color: var(--muted); font-size: 14px }
+
+/* Tab bar */
+nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); z-index: 5 }
+nav.tabs .in { max-width: 640px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); height: var(--tabbar) }
+nav.tabs button { background: none; border: 0; cursor: pointer; display: grid; place-content: center; gap: 2px; color: var(--muted); font: 600 12px var(--f-body) }
+nav.tabs button .k { font: 700 19px/1 var(--f-display); letter-spacing: .04em; text-transform: uppercase }
+nav.tabs button[aria-current="page"] { color: var(--ink) }
+nav.tabs button[aria-current="page"] .k { color: var(--tally) }
+.toast { position: fixed; left: 50%; bottom: calc(var(--tabbar) + 14px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 8px; font-size: 13px; z-index: 6; max-width: calc(100% - 32px) }
+</style>
+
+<div class="wrap">
+  <header class="slate">
+    <div class="sticks"></div>
+    <div class="slate-row">
+      <div class="brand">Shot<b>·</b>Caller</div>
+      <div class="slate-meta"><div id="slate-date"></div><div>Pre-pro → Field</div></div>
+    </div>
+    <div class="mode off" id="mode"><i></i><span>Starting up</span></div>
+  </header>
+  <main id="view" class="view" aria-live="polite"></main>
+</div>
+<nav class="tabs" aria-label="Sections"><div class="in" id="tabs"></div></nav>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+"use strict";
+
+// ---------- helpers ----------
+const $ = s => document.querySelector(s);
+function h(tag, attrs, ...kids) {
+  const el = document.createElement(tag);
+  if (attrs) for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === "class") el.className = v;
+    else if (k === "text") el.textContent = v;
+    else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const k of kids.flat()) if (k != null && k !== false) el.append(k instanceof Node ? k : document.createTextNode(String(k)));
+  return el;
+}
+const uid = p => p + "_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const shuffle = a => a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
+const str = (v, d = "") => (typeof v === "string" ? v : v == null ? d : String(v)).trim();
+const arr = v => Array.isArray(v) ? v : [];
+const pad = n => String(n).padStart(2, "0");
+const fmtRun = s => { s = Math.max(0, Math.round(+s || 0)); return s >= 60 ? `${Math.floor(s / 60)}:${pad(s % 60)}` : `${s}s`; };
+let toastT;
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 2200); }
+function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+async function copy(text, el) {
+  try { await navigator.clipboard.writeText(text); toast("Copied"); }
+  catch { if (el) { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); } toast("Text selected. Copy it from here."); }
+}
+
+// ---------- constants ----------
+const LENSES = ["Surprise me", "Trend format", "Industry news", "Behind the scenes", "Teach one thing", "Myth vs fact", "Client story", "Street / on location"];
+const PLATFORMS = ["TikTok / Reels / Shorts", "TikTok", "Instagram Reels", "YouTube Shorts", "YouTube long-form"];
+const GOALS = ["Land clients", "Grow my audience", "Build authority", "Sell a product or service", "Get brand deals"];
+const DEFAULT_PROFILE = { niche: "Local small businesses: restaurants, gyms, barbershops", audience: "Owners who need video but don't know where to start", platform: PLATFORMS[0], goal: GOALS[0], city: "" };
+
+// ---------- examples (shown until you pull your own) ----------
+const EXAMPLE_IDEAS = [
+  { id: "ex1", example: true, title: "What $500 of video gets a local gym", hook: "Here's exactly what a gym gets when they hire me for one day.", format: "Behind the scenes + result reveal", angle: "Show the full day compressed: setup, shots, final edit side by side with the raw footage.", why: "Owners see the process and the price together, which answers the two questions that stop them booking.", difficulty: "Medium", runtime_sec: 45 },
+  { id: "ex2", example: true, title: "3 filming mistakes every restaurant makes", hook: "If your food videos look like this, you're losing customers.", format: "Talking head + B-roll fixes", angle: "Film the bad version and the fixed version of each mistake on the same dish.", why: "Teaches something useful and quietly shows you're the fix.", difficulty: "Easy", runtime_sec: 35 },
+  { id: "ex3", example: true, title: "Rating barbershop Instagrams in my city", hook: "I rated every barbershop's Instagram near me. Only one passed.", format: "Ranking / tier list", angle: "Screen-record their feeds, give each a score and one fix, then visit the winner.", why: "Local, a little spicy, and every shop you mention has a reason to share it.", difficulty: "Medium", runtime_sec: 60 },
+];
+const EXAMPLE_PLAN = {
+  id: "explan", kind: "plan", example: true, title: "What $500 of video gets a local gym", platform: "TikTok / Reels / Shorts", runtime_sec: 45, goal: "Land clients",
+  hook: { line: "Here's exactly what a gym gets when they hire me for one day.", visual: "Walk in the gym door, camera on gimbal, owner waves" },
+  beats: [
+    { t: "0:00–0:03", label: "Hook", script: "Here's exactly what a gym gets when they hire me for one day.", visual: "Walk-in POV through front door" },
+    { t: "0:03–0:10", label: "The ask", script: "They wanted 4 Reels for the month. Here's the plan.", visual: "Shot list on phone screen, owner nodding" },
+    { t: "0:10–0:30", label: "The day", script: "Coach intro, member testimonial, two workout clips. Four hours total.", visual: "Fast montage of setups, 1–2s each" },
+    { t: "0:30–0:40", label: "Raw vs final", script: "This is the raw clip. This is what they posted.", visual: "Split screen raw vs graded edit" },
+    { t: "0:40–0:45", label: "CTA", script: "Want this for your gym? Comment GYM and I'll send the details.", visual: "Talking head, gym floor behind" },
+  ],
+  shots: [
+    { size: "WS", type: "A-roll", desc: "Walk-in POV through the front door", notes: "Gimbal, 0.5x lens", done: false },
+    { size: "MS", type: "A-roll", desc: "Owner explaining what they want", notes: "Lav mic on owner", done: false },
+    { size: "CU", type: "B-roll", desc: "Hands setting up light and tripod", notes: "Shoot 60fps for slow-mo", done: false },
+    { size: "MS", type: "B-roll", desc: "Coach demoing a lift", notes: "Low angle", done: false },
+    { size: "CU", type: "B-roll", desc: "Chalk on hands, barbell grip", notes: "", done: false },
+    { size: "MCU", type: "A-roll", desc: "Member testimonial, one sentence", notes: "Ask: what changed since you joined?", done: false },
+    { size: "OTS", type: "B-roll", desc: "Over-shoulder of you editing on laptop", notes: "Film at home after", done: false },
+    { size: "MCU", type: "A-roll", desc: "Your CTA to camera on the gym floor", notes: "3 takes, different energy", done: false },
+  ],
+  gear: [{ item: "Phone + gimbal", done: false }, { item: "2 wireless lav mics", done: false }, { item: "1 LED panel + stand", done: false }, { item: "Charged batteries + power bank", done: false }, { item: "Signed release forms", done: false }],
+  location: ["Confirm filming window when the floor is quiet (10am–12pm)", "Get verbal + written OK from every member on camera", "Check mirrors for your own reflection in wide shots"],
+  caption: "One day. Four Reels. Here's what a local gym gets when they hire me.", hashtags: ["gymmarketing", "smallbusiness", "contentcreator", "behindthescenes"],
+  cta: "Comment GYM and I'll send the details.", pitfalls: ["Don't show pricing you haven't confirmed with the client", "Mirror reflections ruin wide shots"],
+};
+
+// ---------- offline idea deck (used when Claude isn't available) ----------
+const HOOKS = [
+  n => [`Nobody in ${n} talks about this.`, "Myth vs fact"],
+  n => [`I spent a day inside a ${n} business. Here's what surprised me.`, "Behind the scenes"],
+  n => [`3 mistakes people make with ${n}.`, "Teach one thing"],
+  n => [`Before vs after: ${n} edition.`, "Trend format"],
+  n => [`Rating every ${n} spot near me.`, "Street / on location"],
+  n => [`What a ${n} owner wishes you knew.`, "Client story"],
+  n => [`I tried the viral ${n} hack so you don't have to.`, "Trend format"],
+  n => [`5am to close: a real day in ${n}.`, "Behind the scenes"],
+  n => [`The one question I ask every ${n} client first.`, "Client story"],
+  n => [`Here's what changed in ${n} this year, in 30 seconds.`, "Industry news"],
+  n => [`Stop doing this if you're in ${n}.`, "Myth vs fact"],
+  n => [`I asked strangers what they think of ${n}.`, "Street / on location"],
+];
+const FORMATS = ["Talking head + B-roll", "POV walkthrough", "Before / after", "Street interview", "Day in the life", "Ranking / tier list", "Green screen reaction", "Step-by-step tutorial", "Mini documentary"];
+function offlineIdeas(profile, lens) {
+  const n = (profile.niche || "your industry").split(/[:,(]/)[0].trim().toLowerCase();
+  let pool = HOOKS.map(f => f(n));
+  if (lens && lens !== "Surprise me") pool = [...pool.filter(p => p[1] === lens), ...shuffle(pool.filter(p => p[1] !== lens))];
+  else pool = shuffle(pool);
+  return pool.slice(0, 6).map(([hook, cat]) => ({
+    id: uid("idea"), title: hook.replace(/[.?!]$/, "").slice(0, 60), hook, format: pick(FORMATS), angle: `${cat} angle for ${profile.audience || "your audience"}.`,
+    why: `Built around your goal: ${(profile.goal || "growth").toLowerCase()}.`, difficulty: pick(["Easy", "Medium"]), runtime_sec: pick([30, 45, 60]), offline: true,
+  }));
+}
+function offlinePlan(idea, profile) {
+  const r = +idea.runtime_sec || 45, c = s => Math.round(r * s);
+  const tc = (a, b) => `${Math.floor(a / 60)}:${pad(a % 60)}–${Math.floor(b / 60)}:${pad(b % 60)}`;
+  return normalizePlan({
+    title: idea.title, platform: profile.platform, runtime_sec: r, goal: profile.goal,
+    hook: { line: idea.hook, visual: "Open mid-action, face or subject in frame in the first second" },
+    beats: [
+      { t: tc(0, 3), label: "Hook", script: idea.hook, visual: "Tight shot, movement in frame" },
+      { t: tc(3, c(.3)), label: "Setup", script: "Why this matters to the viewer, in one line.", visual: "Context wide shot" },
+      { t: tc(c(.3), c(.75)), label: "Payoff", script: idea.angle, visual: "2–3 B-roll shots per point" },
+      { t: tc(c(.75), c(.9)), label: "Proof", script: "Show the result or the reaction.", visual: "Result close-up" },
+      { t: tc(c(.9), r), label: "CTA", script: "Tell them the one thing to do next.", visual: "Talking head" },
+    ],
+    shots: [
+      { size: "CU", type: "A-roll", desc: "Hook line to camera, 3 takes" }, { size: "WS", type: "B-roll", desc: "Establishing shot of the location" },
+      { size: "MS", type: "A-roll", desc: "Main talking segment" }, { size: "CU", type: "B-roll", desc: "Hands / product / process detail" },
+      { size: "OTS", type: "B-roll", desc: "Over-the-shoulder of the work happening" }, { size: "CU", type: "B-roll", desc: "Result or reaction close-up" },
+      { size: "MCU", type: "A-roll", desc: "CTA to camera" },
+    ],
+    gear: ["Phone + stabilizer", "Wireless mic", "Charged batteries", "Release forms if people are on camera"],
+    location: ["Scout light direction before you roll", "Get permission to film on site"],
+    caption: idea.title, hashtags: [], cta: "Follow for the next one.", pitfalls: ["Built-in template: connect Claude for a plan written for this exact idea"],
+  }, idea);
+}
+
+// ---------- normalize model output ----------
+function normalizeIdea(x) {
+  return { id: uid("idea"), title: str(x.title, "Untitled idea").slice(0, 80), hook: str(x.hook), format: str(x.format), angle: str(x.angle), why: str(x.why),
+    difficulty: ["Easy", "Medium", "Heavy"].includes(x.difficulty) ? x.difficulty : "Medium", runtime_sec: Math.min(900, Math.max(5, +x.runtime_sec || 45)) };
+}
+function normalizePlan(p, idea) {
+  return {
+    kind: "plan", id: uid("plan"), created: Date.now(), ideaTitle: idea ? idea.title : "",
+    title: str(p.title, idea ? idea.title : "Shoot plan"), platform: str(p.platform), runtime_sec: +p.runtime_sec || 45, goal: str(p.goal),
+    hook: { line: str(p.hook && p.hook.line), visual: str(p.hook && p.hook.visual) },
+    beats: arr(p.beats).map(b => ({ t: str(b.t), label: str(b.label), script: str(b.script), visual: str(b.visual) })),
+    shots: arr(p.shots).map(s => ({ size: str(s.size, "MS").toUpperCase().slice(0, 4), type: /b/i.test(str(s.type)) ? "B-roll" : "A-roll", desc: str(s.desc), notes: str(s.notes), done: false })),
+    gear: arr(p.gear).map(g => ({ item: str(typeof g === "string" ? g : g.item), done: false })),
+    location: arr(p.location).map(x => str(x)), caption: str(p.caption), hashtags: arr(p.hashtags).map(x => str(x).replace(/^#/, "")).filter(Boolean),
+    cta: str(p.cta), pitfalls: arr(p.pitfalls).map(x => str(x)),
+  };
+}
+
+// ---------- storage: private db per person, else this browser ----------
+const LOCAL_KEY = "shotcaller.v1";
+const store = {
+  mode: "local", docs: lsGet(LOCAL_KEY, {}), col: null, listeners: [],
+  async init() {
+    try {
+      if (!window.claude || !window.claude.use) return;
+      const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+      if (!db || !user) return;
+      const id = await user.id();
+      if (!id) return;
+      this.col = db.collection("data/users/" + id);
+      this.mode = "db";
+      this.docs = {};
+      this.col.onSnapshot(snap => {
+        const next = {};
+        for (const d of snap.docs) next[d.id] = { ...d.data(), id: d.id };
+        this.docs = next; this.emit();
+      }, () => { setMode(); });
+    } catch { this.mode = "local"; }
+  },
+  all(kind) { return Object.values(this.docs).filter(d => d.kind === kind).sort((a, b) => (b.created || 0) - (a.created || 0)); },
+  get(id) { return this.docs[id]; },
+  async put(doc) {
+    const clean = JSON.parse(JSON.stringify(doc)); delete clean.id;
+    this.docs[doc.id] = { ...clean, id: doc.id };
+    if (this.mode === "db") { try { await this.col.doc(doc.id).set(clean); } catch (e) { toast("Couldn't save. Check your connection and try again."); } }
+    else lsSet(LOCAL_KEY, this.docs);
+    this.emit();
+  },
+  async del(id) {
+    delete this.docs[id];
+    if (this.mode === "db") { try { await this.col.doc(id).delete(); } catch { toast("Couldn't delete. Try again."); } }
+    else lsSet(LOCAL_KEY, this.docs);
+    this.emit();
+  },
+  emit() { this.listeners.forEach(f => f()); },
+};
+
+// ---------- Claude ----------
+let sample = null, sampleBlocked = false;
+const ERR = {
+  not_granted: "Claude access is off for this page, so you're getting the built-in idea deck.",
+  rate_limited: "Too many requests right now. Wait a minute, then try again.",
+  invalid_json: "Claude's answer came back in the wrong shape. Tap the button again.",
+  prompt_too_large: "Your saved list is too long to send. Remove a few saved ideas and try again.",
+  refused: "Claude declined that request. Adjust your niche wording and try again.",
+};
+const errMsg = e => ERR[e && e.code] || "Couldn't reach Claude. Check your connection and try again.";
+
+function profileBlock(p) {
+  return `Creator profile:
+- Niche / industry: ${p.niche || "not set"}
+- Audience: ${p.audience || "not set"}
+- Platform: ${p.platform}
+- Business goal: ${p.goal}
+- Based in: ${p.city || "not set"}`;
+}
+function ideasPrompt(p, lens, avoid) {
+  return `You are a short-form content strategist for a solo creator who films on location with a phone and one mic. They are building a real business, so every idea must serve their goal, not just views.
+
+${profileBlock(p)}
+
+Lens for this batch: ${lens}.
+Ideas they already saved (do not repeat these): ${avoid.length ? avoid.join(" | ") : "none"}.
+Variety seed: ${Math.random().toString(36).slice(2, 8)}
+
+Give 6 distinct video ideas they could shoot this week. Use proven short-form formats and real conversations happening in this industry that you know about. Do not invent statistics, and do not claim something is trending with specific numbers. Make hooks sound like a person talking, not an ad.
+
+Reply with ONLY a JSON array of 6 objects with these keys:
+"title" (string, max 60 chars), "hook" (the first spoken line, max 15 words), "format" (short name of the format), "angle" (1 sentence: what the video actually shows), "why" (1 sentence: why it serves the business goal), "difficulty" ("Easy" | "Medium" | "Heavy"), "runtime_sec" (number).`;
+}
+function planPrompt(p, idea) {
+  return `You are a producer writing a pre-production plan for a solo creator. They will open this on their phone on location and follow it shot by shot, so be concrete and practical.
+
+${profileBlock(p)}
+
+The video:
+- Title: ${idea.title}
+- Hook: ${idea.hook}
+- Format: ${idea.format}
+- Angle: ${idea.angle}
+- Target runtime: ${idea.runtime_sec || 45} seconds
+
+Reply with ONLY a JSON object with these keys:
+"title" (string), "platform" (string), "runtime_sec" (number), "goal" (string),
+"hook": {"line": exact first spoken line, "visual": what is on screen in the first second},
+"beats": array of 4-7 {"t": timecode range like "0:00–0:03", "label": short name, "script": what to say, "visual": what to show},
+"shots": array of 6-12 {"size": one of "ECU","CU","MCU","MS","WS","EWS","OTS","POV","TOP", "type": "A-roll" or "B-roll", "desc": the shot in under 12 words, "notes": angle, lens, frame rate or direction to talent, may be ""},
+"gear": array of short strings,
+"location": array of short strings (scouting, permissions, light, sound),
+"caption": string (ready to post, under 220 chars),
+"hashtags": array of 3-6 strings without #,
+"cta": string,
+"pitfalls": array of 2-4 short strings (what tends to go wrong on this kind of shoot).`;
+}
+
+// ---------- state ----------
+const state = {
+  tab: lsGet("shotcaller.tab", "ideas"),
+  lens: "Surprise me",
+  batch: EXAMPLE_IDEAS.slice(),
+  activePlanId: lsGet("shotcaller.active", null),
+  draftPlan: null,
+  busy: null,
+  ctl: null,
+  note: "",
+};
+function profile() { return { ...DEFAULT_PROFILE, ...(store.get("profile") || {}) }; }
+function activePlan() {
+  if (state.draftPlan && state.draftPlan.id === state.activePlanId) return state.draftPlan;
+  return (state.activePlanId && store.get(state.activePlanId)) || store.all("plan")[0] || EXAMPLE_PLAN;
+}
+function setActive(id) { state.activePlanId = id; lsSet("shotcaller.active", id); }
+function go(tab) { state.tab = tab; lsSet("shotcaller.tab", tab); render(); scrollTo({ top: 0 }); }
+
+function setMode() {
+  const m = $("#mode"), live = !!sample && !sampleBlocked;
+  m.className = "mode" + (live ? "" : " off");
+  m.lastChild.textContent = (live ? "Claude connected" : "Built-in idea deck") + " · " + (store.mode === "db" ? "saved to your account" : "saved on this device");
+}
+
+// ---------- actions ----------
+async function pullIdeas() {
+  const p = profile();
+  if (!sample || sampleBlocked) { state.batch = offlineIdeas(p, state.lens); state.note = sampleBlocked ? ERR.not_granted : ""; render(); return; }
+  state.busy = "ideas"; state.note = ""; state.ctl = new AbortController(); render();
+  try {
+    const avoid = store.all("idea").map(i => i.title).slice(0, 40);
+    const out = await sample.json(ideasPrompt(p, state.lens, avoid), { signal: state.ctl.signal, cache: false });
+    const list = arr(Array.isArray(out) ? out : out && out.ideas).map(normalizeIdea).filter(i => i.hook);
+    if (!list.length) throw { code: "invalid_json" };
+    state.batch = list;
+  } catch (e) {
+    if (e && e.code === "cancelled") state.note = "Stopped.";
+    else {
+      if (e && (e.code === "not_granted" || e.code === "sampling_disabled" || e.code === "capability_disabled")) { sampleBlocked = true; setMode(); state.batch = offlineIdeas(p, state.lens); }
+      state.note = errMsg(e);
+    }
+  } finally { state.busy = null; state.ctl = null; render(); }
+}
+
+async function buildPlan(idea) {
+  const p = profile();
+  go("plan");
+  if (!sample || sampleBlocked) { const plan = offlinePlan(idea, p); await store.put(plan); setActive(plan.id); render(); return; }
+  state.busy = "plan"; state.note = ""; state.ctl = new AbortController(); state.busyTitle = idea.title; render();
+  try {
+    const out = await sample.json(planPrompt(p, idea), { signal: state.ctl.signal, cache: false });
+    const plan = normalizePlan(out || {}, idea);
+    if (!plan.shots.length) throw { code: "invalid_json" };
+    await store.put(plan); setActive(plan.id);
+    toast("Plan saved to your library");
+  } catch (e) {
+    if (e && e.code === "cancelled") state.note = "Stopped. Your last plan is still here.";
+    else {
+      if (e && (e.code === "not_granted" || e.code === "sampling_disabled" || e.code === "capability_disabled")) {
+        sampleBlocked = true; setMode(); const plan = offlinePlan(idea, p); await store.put(plan); setActive(plan.id);
+      }
+      state.note = errMsg(e);
+    }
+  } finally { state.busy = null; state.ctl = null; render(); }
+}
+
+function saveIdea(idea) {
+  const doc = { ...idea, kind: "idea", id: idea.example ? uid("idea") : idea.id, created: Date.now() };
+  delete doc.example; delete doc.offline;
+  store.put(doc); toast("Saved to your idea bank");
+}
+function isSaved(idea) { return store.all("idea").some(i => i.title === idea.title); }
+
+// Stored docs are frozen snapshots, so edit a copy and write it back.
+function editPlan(plan, fn) {
+  if (plan.example) { fn(plan); render(); return; }
+  const next = JSON.parse(JSON.stringify(plan)); fn(next); store.put(next);
+}
+function toggle(plan, listKey, i) { editPlan(plan, p => { p[listKey][i].done = !p[listKey][i].done; }); }
+
+// ---------- views ----------
+let saveT;
+function viewIdeas() {
+  const p = profile();
+  const save = () => () => { clearTimeout(saveT); saveT = setTimeout(() => {
+    const v = id => { const el = document.getElementById(id); return el ? el.value : ""; };
+    store.put({ kind: "profile", id: "profile", niche: v("p-niche"), audience: v("p-aud"), platform: v("p-plat"), goal: v("p-goal"), city: v("p-city") });
+  }, 500); };
+  const sel = (id, k, opts) => h("select", { class: "t", id, onchange: save(k) }, opts.map(o => h("option", { value: o, selected: p[k] === o }, o)));
+  const hasProfile = !!store.get("profile");
+  const busy = state.busy === "ideas";
+
+  return [
+    h("div", { class: "stack" },
+      h("div", { class: "eyebrow", text: "Idea engine" }),
+      h("h1", { class: "h-display", text: "Never walk on set empty-handed" }),
+      h("p", { class: "muted small", style: "margin:0", text: "Set your lane once. Pull a fresh batch whenever you need one, then turn the best idea into a shoot plan." })),
+    h("details", { class: "panel lane", open: !hasProfile || null },
+      h("summary", null, h("div", null, h("div", { class: "eyebrow", text: "Your lane" }), h("div", { style: "font-weight:600", text: p.niche })), h("span", { class: "caret", text: "Edit" })),
+      h("div", { class: "fields" },
+        h("label", { class: "f full" }, "Niche or industry", h("input", { class: "t", id: "p-niche", value: p.niche, placeholder: "e.g. Real estate in Miami", oninput: save("niche") })),
+        h("label", { class: "f full" }, "Who's watching", h("input", { class: "t", id: "p-aud", value: p.audience, placeholder: "e.g. First-time home buyers", oninput: save("audience") })),
+        h("label", { class: "f" }, "Platform", sel("p-plat", "platform", PLATFORMS)),
+        h("label", { class: "f" }, "Business goal", sel("p-goal", "goal", GOALS)),
+        h("label", { class: "f full" }, "City (for local ideas)", h("input", { class: "t", id: "p-city", value: p.city, placeholder: "Optional", oninput: save("city") })))),
+    h("div", { class: "chips", role: "group", "aria-label": "Lens" }, LENSES.map(l => h("button", { class: "chip", "aria-pressed": String(state.lens === l), onclick: () => { state.lens = l; render(); } }, l))),
+    h("div", { class: "row" },
+      h("button", { class: "btn primary", style: "flex:1", disabled: busy || null, onclick: pullIdeas }, busy ? "Pulling ideas…" : "Pull 6 fresh ideas"),
+      busy ? h("button", { class: "btn", onclick: () => state.ctl && state.ctl.abort() }, "Stop") : null),
+    busy ? h("div", { class: "status" }, h("span", { class: "rec" }), "Claude is thinking. This takes 10–40 seconds.") : null,
+    state.note ? h("div", { class: "note", text: state.note }) : null,
+    h("div", { class: "ideas" }, state.batch.map(ideaCard)),
+  ];
+}
+function ideaCard(idea) {
+  const saved = isSaved(idea);
+  return h("article", { class: "idea" },
+    h("div", { class: "meta" }, idea.example ? h("span", { class: "tag ex", text: "Example" }) : null, h("span", { text: idea.format }), h("span", { text: idea.difficulty }), h("span", { text: "~" + fmtRun(idea.runtime_sec) })),
+    h("h3", { text: idea.title }),
+    h("div", { class: "hook", text: idea.hook }),
+    idea.angle ? h("div", { class: "small", text: idea.angle }) : null,
+    idea.why ? h("div", { class: "small muted", text: idea.why }) : null,
+    h("div", { class: "row", style: "margin-top:4px" },
+      h("button", { class: "btn go sm", onclick: () => buildPlan(idea) }, "Plan this shoot"),
+      h("button", { class: "btn sm", disabled: saved || null, onclick: () => saveIdea(idea) }, saved ? "Saved" : "Save idea")));
+}
+
+function viewPlan() {
+  if (state.busy === "plan") return [
+    h("div", { class: "eyebrow", text: "Pre-production" }),
+    h("h1", { class: "h-display", text: state.busyTitle }),
+    h("div", { class: "status" }, h("span", { class: "rec" }), "Writing your beat sheet, shot list and gear list. About 20–60 seconds."),
+    h("button", { class: "btn", onclick: () => state.ctl && state.ctl.abort() }, "Stop"),
+  ];
+  const p = activePlan();
+  const hashtags = p.hashtags.map(t => "#" + t).join(" ");
+  const capText = [p.caption, hashtags].filter(Boolean).join("\n\n");
+  const capBox = h("div", { class: "copybox", text: capText || "No caption yet." });
+  return [
+    state.note ? h("div", { class: "note", text: state.note }) : null,
+    p.example ? h("div", { class: "note", text: "This is an example plan. Tap “Plan this shoot” on any idea to build your own." }) : null,
+    h("section", { class: "plan-head" },
+      h("div", { class: "sticks" }),
+      h("div", { class: "in" }, h("div", { class: "eyebrow", style: "color:inherit;opacity:.7", text: "Production slate" }), h("h2", { text: p.title })),
+      h("div", { class: "slate-grid" },
+        h("div", null, h("div", { class: "k", text: "Runtime" }), h("div", { class: "v", text: fmtRun(p.runtime_sec) })),
+        h("div", null, h("div", { class: "k", text: "Shots" }), h("div", { class: "v", text: p.shots.length })),
+        h("div", null, h("div", { class: "k", text: "Goal" }), h("div", { class: "v", style: "font-size:14px", text: p.goal || "—" })))),
+    h("button", { class: "btn primary block", onclick: () => go("field") }, "Start field mode"),
+    h("section", { class: "panel stack" }, h("h2", { class: "h-sec", text: "Hook · first 3 seconds" }),
+      h("div", { class: "hook", style: "font-size:18px", text: p.hook.line }), p.hook.visual ? h("div", { class: "small muted", text: "On screen: " + p.hook.visual }) : null),
+    p.beats.length ? h("section", { class: "panel stack" }, h("h2", { class: "h-sec", text: "Beat sheet" }),
+      h("div", { class: "beats" }, p.beats.map(b => h("div", { class: "beat" }, h("div", { class: "tc", text: b.t }),
+        h("div", null, h("div", { class: "lbl", text: b.label }), h("div", { text: b.script }), b.visual ? h("div", { class: "vis", text: "Show: " + b.visual }) : null))))) : null,
+    h("section", { class: "panel stack" }, h("h2", { class: "h-sec", text: "Shot list" }),
+      h("div", { class: "shots" }, p.shots.map((s, i) => h("div", { class: "shot" },
+        h("div", { class: "shot-no" }, "SH " + pad(i + 1), h("span", { class: "size", text: s.size })),
+        h("div", null, h("div", { class: "roll " + (s.type === "B-roll" ? "b" : "a"), text: s.type }), h("div", { text: s.desc }), s.notes ? h("div", { class: "small muted", text: s.notes }) : null))))),
+    h("section", { class: "panel stack" }, h("h2", { class: "h-sec", text: "Gear" }), h("ul", { class: "list" }, p.gear.map(g => h("li", { text: g.item })))),
+    p.location.length ? h("section", { class: "panel stack" }, h("h2", { class: "h-sec", text: "Location & permissions" }), h("ul", { class: "list" }, p.location.map(x => h("li", { text: x })))) : null,
+    p.pitfalls.length ? h("section", { class: "panel stack" }, h("h2", { class: "h-sec", text: "Watch out for" }), h("ul", { class: "list" }, p.pitfalls.map(x => h("li", { text: x })))) : null,
+    h("section", { class: "panel stack" }, h("div", { class: "row between" }, h("h2", { class: "h-sec", text: "Caption" }), h("button", { class: "btn sm", onclick: () => copy(capText, capBox) }, "Copy")),
+      capBox, p.cta ? h("div", { class: "small" }, h("b", null, "CTA: "), p.cta) : null),
+  ];
+}
+
+let wakeLock = null;
+async function toggleWake(btn) {
+  try {
+    if (wakeLock) { await wakeLock.release(); wakeLock = null; }
+    else { wakeLock = await navigator.wakeLock.request("screen"); wakeLock.addEventListener("release", () => { wakeLock = null; render(); }); }
+  } catch { toast("This device won't keep the screen on from here."); }
+  render();
+}
+function viewField() {
+  const p = activePlan();
+  const done = p.shots.filter(s => s.done).length, total = p.shots.length;
+  const nextI = p.shots.findIndex(s => !s.done);
+  return [
+    h("div", { class: "row between" }, h("div", { class: "eyebrow", text: "Field mode · " + p.title }),
+      "wakeLock" in navigator ? h("button", { class: "btn sm ghost", onclick: toggleWake }, wakeLock ? "Screen stays on ✓" : "Keep screen on") : null),
+    p.example ? h("div", { class: "note", text: "Example plan. Checks here aren't saved." }) : null,
+    h("div", { class: "stack" }, h("div", { class: "eyebrow", text: "Open with" }), h("div", { class: "bigline", text: p.hook.line })),
+    h("div", { class: "stack" },
+      h("div", { class: "row between small" }, h("b", null, `${done} of ${total} shots`), h("span", { class: "muted", text: nextI < 0 ? "All shots in the can" : "Next: SH " + pad(nextI + 1) })),
+      h("div", { class: "progress" }, h("i", { style: `width:${total ? (done / total) * 100 : 0}%` }))),
+    h("div", { class: "stack" }, p.shots.map((s, i) => h("label", { class: "check" + (s.done ? " done" : "") + (i === nextI ? " next" : "") },
+      h("input", { type: "checkbox", id: "shot-" + i, checked: s.done || null, onchange: () => toggle(p, "shots", i) }),
+      h("div", null, h("div", { class: "meta" }, h("span", { text: "SH " + pad(i + 1) }), h("span", { text: s.size }), h("span", { text: s.type })),
+        h("div", { class: "desc", text: s.desc }), s.notes ? h("div", { class: "small muted", text: s.notes }) : null)))),
+    h("h2", { class: "h-sec", style: "margin-top:6px", text: "Gear check" }),
+    h("div", { class: "stack" }, p.gear.map((g, i) => h("label", { class: "check" + (g.done ? " done" : "") },
+      h("input", { type: "checkbox", id: "gear-" + i, checked: g.done || null, onchange: () => toggle(p, "gear", i) }), h("div", { class: "desc", text: g.item })))),
+    h("button", { class: "btn ghost", onclick: () => editPlan(p, q => { q.shots.forEach(s => s.done = false); q.gear.forEach(g => g.done = false); }) }, "Reset all checks"),
+  ];
+}
+
+let confirmDel = null;
+function viewLibrary() {
+  const plans = store.all("plan"), ideas = store.all("idea");
+  const delBtn = (id) => h("button", { class: "btn sm ghost", onclick: () => { if (confirmDel === id) { store.del(id); confirmDel = null; if (state.activePlanId === id) setActive(null); } else { confirmDel = id; render(); } } }, confirmDel === id ? "Tap to delete" : "Delete");
+  return [
+    h("div", { class: "stack" }, h("div", { class: "eyebrow", text: "Library" }), h("h1", { class: "h-display", text: "Your content bank" }),
+      h("p", { class: "muted small", style: "margin:0", text: store.mode === "db" ? "Saved to your Claude account, private to you." : "Saved in this browser only." })),
+    h("section", { class: "panel" }, h("h2", { class: "h-sec", style: "margin-bottom:6px", text: `Shoot plans · ${plans.length}` }),
+      plans.length ? plans.map(p => h("div", { class: "lib-item" },
+        h("div", null, h("b", { text: p.title }), h("span", { class: "small muted", text: `${p.shots.filter(s => s.done).length}/${p.shots.length} shots · ${new Date(p.created).toLocaleDateString()}` })),
+        h("div", { class: "row" }, h("button", { class: "btn sm", onclick: () => { setActive(p.id); go("plan"); } }, "Open"), delBtn(p.id))))
+      : h("div", { class: "empty", text: "No plans yet. Tap “Plan this shoot” on any idea and it lands here." })),
+    h("section", { class: "panel" }, h("h2", { class: "h-sec", style: "margin-bottom:6px", text: `Idea bank · ${ideas.length}` }),
+      ideas.length ? ideas.map(i => h("div", { class: "lib-item" },
+        h("div", null, h("b", { text: i.title }), h("span", { class: "small muted", text: i.hook })),
+        h("div", { class: "row" }, h("button", { class: "btn sm go", onclick: () => buildPlan(i) }, "Plan"), delBtn(i.id))))
+      : h("div", { class: "empty", text: "Save ideas you like from the Ideas tab. They stay here until you shoot them." })),
+  ];
+}
+
+const TABS = [["ideas", "Ideas", "Pull"], ["plan", "Plan", "Pre-pro"], ["field", "Field", "Shoot"], ["library", "Library", "Saved"]];
+function render() {
+  const view = $("#view");
+  const active = document.activeElement && document.activeElement.id;
+  const map = { ideas: viewIdeas, plan: viewPlan, field: viewField, library: viewLibrary };
+  view.replaceChildren(...[].concat(map[state.tab] ? map[state.tab]() : viewIdeas()).filter(Boolean));
+  $("#tabs").replaceChildren(...TABS.map(([k, label, sub]) => h("button", { "aria-current": state.tab === k ? "page" : null, onclick: () => { confirmDel = null; go(k); } }, h("span", { class: "k", text: label }), h("span", { text: sub }))));
+  if (active) { const el = document.getElementById(active); if (el && el !== document.activeElement) { el.focus(); if (el.setSelectionRange && el.value != null) try { el.setSelectionRange(el.value.length, el.value.length); } catch {} } }
+}
+
+// Don't re-render while someone is typing in the lane form (db echoes would steal focus).
+store.listeners.push(() => { const a = document.activeElement; if (a && a.matches && a.matches("input.t, select.t")) return; render(); });
+
+const d = new Date();
+$("#slate-date").textContent = `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`;
+render(); setMode();
+
+(async () => {
+  await store.init();
+  try { sample = window.claude && window.claude.use ? await claude.use("sample") : null; } catch { sample = null; }
+  setMode(); render();
+})();
+})();
+</script>
