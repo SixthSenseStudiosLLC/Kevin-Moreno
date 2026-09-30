@@ -138,12 +138,37 @@ ul.list { margin: 0; padding-left: 18px; display: grid; gap: 4px }
 
 /* Tab bar */
 nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); z-index: 5 }
-nav.tabs .in { max-width: 640px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); height: var(--tabbar) }
-nav.tabs button { background: none; border: 0; cursor: pointer; display: grid; place-content: center; gap: 2px; color: var(--muted); font: 600 12px var(--f-body) }
-nav.tabs button .k { font: 700 19px/1 var(--f-display); letter-spacing: .04em; text-transform: uppercase }
+nav.tabs .in { max-width: 640px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); height: var(--tabbar) }
+nav.tabs button { background: none; border: 0; cursor: pointer; display: grid; place-content: center; gap: 2px; color: var(--muted); font: 600 11px var(--f-body); min-width: 0 }
+nav.tabs button .k { font: 700 17px/1 var(--f-display); letter-spacing: .04em; text-transform: uppercase }
 nav.tabs button[aria-current="page"] { color: var(--ink) }
 nav.tabs button[aria-current="page"] .k { color: var(--tally) }
 .toast { position: fixed; left: 50%; bottom: calc(var(--tabbar) + 14px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 8px; font-size: 13px; z-index: 6; max-width: calc(100% - 32px) }
+
+/* Industries */
+.lanebar { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin-inline: -16px; padding-inline: 16px; padding-bottom: 2px }
+.lane-chip { flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 8px 12px; cursor: pointer; text-align: left; display: grid; gap: 1px; max-width: 70vw }
+.lane-chip b { font: 700 16px/1.1 var(--f-display); text-transform: uppercase; letter-spacing: .02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.lane-chip span { font: 500 10px var(--f-mono); color: var(--muted); letter-spacing: .06em; text-transform: uppercase }
+.lane-chip[aria-pressed="true"] { border-color: var(--tally); box-shadow: inset 0 -3px 0 var(--tally) }
+.lane-chip.add { border-style: dashed; color: var(--muted) }
+.inline-add { display: flex; gap: 8px }
+.inline-add input { flex: 1; min-width: 0 }
+.crumbs { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font: 500 12px var(--f-mono); text-transform: uppercase; letter-spacing: .06em }
+.crumbs button { background: none; border: 0; padding: 2px 0; cursor: pointer; color: var(--muted); font: inherit; text-transform: inherit; letter-spacing: inherit; text-decoration: underline; text-underline-offset: 3px }
+.crumbs .cur { color: var(--ink) }
+.subs { display: grid; gap: 10px }
+.sub { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; gap: 6px; min-width: 0 }
+.sub h3 { font: 700 20px/1.05 var(--f-display); text-transform: uppercase; letter-spacing: .01em }
+.tag.hot { background: var(--tally); color: #fff }
+.tag.reg { background: transparent; border: 1px solid var(--tally); color: var(--tally) }
+.tag.lane { background: var(--ink); color: var(--bg) }
+.focus-chip { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 4px 6px 4px 11px; font-size: 13px }
+.focus-chip button { border: 0; background: none; cursor: pointer; color: var(--muted); font-size: 16px; line-height: 1; padding: 0 4px }
+.lane-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line) }
+.lane-row:first-child { border-top: 0 }
+.lane-row > div { min-width: 0 }
+.lane-row b { font: 700 18px/1.1 var(--f-display); text-transform: uppercase; display: block }
 </style>
 
 <div class="wrap">
@@ -175,7 +200,7 @@ function h(tag, attrs, ...kids) {
     else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
     else el.setAttribute(k, v === true ? "" : v);
   }
-  for (const k of kids.flat()) if (k != null && k !== false) el.append(k instanceof Node ? k : document.createTextNode(String(k)));
+  for (const k of kids.flat(Infinity)) if (k != null && k !== false) el.append(k instanceof Node ? k : document.createTextNode(String(k)));
   return el;
 }
 const uid = p => p + "_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -184,7 +209,10 @@ const shuffle = a => a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).
 const str = (v, d = "") => (typeof v === "string" ? v : v == null ? d : String(v)).trim();
 const arr = v => Array.isArray(v) ? v : [];
 const pad = n => String(n).padStart(2, "0");
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "x";
+const same = (a, b) => str(a).toLowerCase() === str(b).toLowerCase();
 const fmtRun = s => { s = Math.max(0, Math.round(+s || 0)); return s >= 60 ? `${Math.floor(s / 60)}:${pad(s % 60)}` : `${s}s`; };
+const clone = o => JSON.parse(JSON.stringify(o));
 let toastT;
 function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 2200); }
 function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } }
@@ -195,44 +223,94 @@ async function copy(text, el) {
 }
 
 // ---------- constants ----------
-const LENSES = ["Surprise me", "Trend format", "Industry news", "Behind the scenes", "Teach one thing", "Myth vs fact", "Client story", "Street / on location"];
+const LENSES = ["Surprise me", "Trend format", "Industry news", "Behind the scenes", "Teach one thing", "Myth vs fact", "Client story", "Street / on location", "Crossover"];
 const PLATFORMS = ["TikTok / Reels / Shorts", "TikTok", "Instagram Reels", "YouTube Shorts", "YouTube long-form"];
 const GOALS = ["Land clients", "Grow my audience", "Build authority", "Sell a product or service", "Get brand deals"];
-const DEFAULT_PROFILE = { niche: "Local small businesses: restaurants, gyms, barbershops", audience: "Owners who need video but don't know where to start", platform: PLATFORMS[0], goal: GOALS[0], city: "" };
+const STARTERS = ["Construction", "Fitness", "Hormones & men's health", "Real estate", "Auto detailing", "Restaurants"];
+const LANE_DEFAULTS = { audience: "", platform: PLATFORMS[0], goal: GOALS[0], city: "", notes: "", subs: [] };
+const COMPLIANCE = "If any part of this touches health, hormones, TRT, peptides, supplements, weight loss, medical treatment, finance or legal topics: make no cure, treatment-outcome or income claims, don't give dosing, frame results as individual, point viewers to a licensed provider, and keep it within TikTok/Meta/YouTube health and ad policies. Mention the compliance risk in the plan's pitfalls.";
 
-// ---------- examples (shown until you pull your own) ----------
+// ---------- examples ----------
 const EXAMPLE_IDEAS = [
-  { id: "ex1", example: true, title: "What $500 of video gets a local gym", hook: "Here's exactly what a gym gets when they hire me for one day.", format: "Behind the scenes + result reveal", angle: "Show the full day compressed: setup, shots, final edit side by side with the raw footage.", why: "Owners see the process and the price together, which answers the two questions that stop them booking.", difficulty: "Medium", runtime_sec: 45 },
-  { id: "ex2", example: true, title: "3 filming mistakes every restaurant makes", hook: "If your food videos look like this, you're losing customers.", format: "Talking head + B-roll fixes", angle: "Film the bad version and the fixed version of each mistake on the same dish.", why: "Teaches something useful and quietly shows you're the fix.", difficulty: "Easy", runtime_sec: 35 },
-  { id: "ex3", example: true, title: "Rating barbershop Instagrams in my city", hook: "I rated every barbershop's Instagram near me. Only one passed.", format: "Ranking / tier list", angle: "Screen-record their feeds, give each a score and one fix, then visit the winner.", why: "Local, a little spicy, and every shop you mention has a reason to share it.", difficulty: "Medium", runtime_sec: 60 },
+  { id: "ex1", example: true, sub: "Epoxy & garage floors", title: "Garage floor: 8 hours in 45 seconds", hook: "This garage floor was cracked, stained and ugly this morning.", format: "Before / after timelapse", angle: "Grind, patch, base coat, flake broadcast, top coat, reveal with the owner's car rolling in.", why: "Satisfying process footage that the contractor can run as an ad the same week.", difficulty: "Medium", runtime_sec: 45 },
+  { id: "ex2", example: true, sub: "Painting", title: "Why cheap paint jobs peel in a year", hook: "If your painter skipped this step, you'll be repainting next summer.", format: "Talking head + B-roll", angle: "Painter shows scraping, priming and caulking on a real job and explains what gets skipped.", why: "Positions your client as the expert and gives homeowners a reason to pay more.", difficulty: "Easy", runtime_sec: 35 },
+  { id: "ex3", example: true, sub: "Demolition", title: "What a demo crew finds inside old walls", hook: "Every old house hides something. Here's what we found today.", format: "POV discovery", angle: "Follow the crew opening walls; stop on each find with a quick caption.", why: "Curiosity keeps people watching and it's cheap to shoot on any job.", difficulty: "Easy", runtime_sec: 40 },
 ];
 const EXAMPLE_PLAN = {
-  id: "explan", kind: "plan", example: true, title: "What $500 of video gets a local gym", platform: "TikTok / Reels / Shorts", runtime_sec: 45, goal: "Land clients",
-  hook: { line: "Here's exactly what a gym gets when they hire me for one day.", visual: "Walk in the gym door, camera on gimbal, owner waves" },
+  id: "explan", kind: "plan", example: true, laneName: "Construction", title: "Garage floor: 8 hours in 45 seconds", platform: "TikTok / Reels / Shorts", runtime_sec: 45, goal: "Land clients",
+  hook: { line: "This garage floor was cracked, stained and ugly this morning.", visual: "Slow push across the worst crack, low angle" },
   beats: [
-    { t: "0:00–0:03", label: "Hook", script: "Here's exactly what a gym gets when they hire me for one day.", visual: "Walk-in POV through front door" },
-    { t: "0:03–0:10", label: "The ask", script: "They wanted 4 Reels for the month. Here's the plan.", visual: "Shot list on phone screen, owner nodding" },
-    { t: "0:10–0:30", label: "The day", script: "Coach intro, member testimonial, two workout clips. Four hours total.", visual: "Fast montage of setups, 1–2s each" },
-    { t: "0:30–0:40", label: "Raw vs final", script: "This is the raw clip. This is what they posted.", visual: "Split screen raw vs graded edit" },
-    { t: "0:40–0:45", label: "CTA", script: "Want this for your gym? Comment GYM and I'll send the details.", visual: "Talking head, gym floor behind" },
+    { t: "0:00–0:03", label: "Hook", script: "This garage floor was cracked, stained and ugly this morning.", visual: "Low push over cracks" },
+    { t: "0:03–0:12", label: "Prep", script: "First we grind the whole thing so the coating actually bites.", visual: "Grinder close-up, dust, crew in masks" },
+    { t: "0:12–0:28", label: "The coats", script: "Patch, base coat, flake, top coat.", visual: "Timelapse from a ladder corner, 1 clip per step" },
+    { t: "0:28–0:40", label: "Reveal", script: "Same garage, eight hours later.", visual: "Match cut from the opening shot, owner's car rolls in" },
+    { t: "0:40–0:45", label: "CTA", script: "Want your garage done? Link's in the bio.", visual: "Owner of the company to camera" },
   ],
   shots: [
-    { size: "WS", type: "A-roll", desc: "Walk-in POV through the front door", notes: "Gimbal, 0.5x lens", done: false },
-    { size: "MS", type: "A-roll", desc: "Owner explaining what they want", notes: "Lav mic on owner", done: false },
-    { size: "CU", type: "B-roll", desc: "Hands setting up light and tripod", notes: "Shoot 60fps for slow-mo", done: false },
-    { size: "MS", type: "B-roll", desc: "Coach demoing a lift", notes: "Low angle", done: false },
-    { size: "CU", type: "B-roll", desc: "Chalk on hands, barbell grip", notes: "", done: false },
-    { size: "MCU", type: "A-roll", desc: "Member testimonial, one sentence", notes: "Ask: what changed since you joined?", done: false },
-    { size: "OTS", type: "B-roll", desc: "Over-shoulder of you editing on laptop", notes: "Film at home after", done: false },
-    { size: "MCU", type: "A-roll", desc: "Your CTA to camera on the gym floor", notes: "3 takes, different energy", done: false },
+    { size: "CU", type: "A-roll", desc: "Low push over the worst crack (before)", notes: "Mark your tripod spot for the match cut", done: false },
+    { size: "WS", type: "B-roll", desc: "Whole garage from ladder corner", notes: "Lock off for timelapse, 1 shot / 2s", done: false },
+    { size: "CU", type: "B-roll", desc: "Diamond grinder on concrete", notes: "60fps for slow-mo", done: false },
+    { size: "MS", type: "B-roll", desc: "Crew rolling the base coat", notes: "", done: false },
+    { size: "CU", type: "B-roll", desc: "Hand broadcasting flakes", notes: "Backlight it if you can", done: false },
+    { size: "CU", type: "A-roll", desc: "Low push over finished floor (after)", notes: "Same spot as shot 1", done: false },
+    { size: "WS", type: "B-roll", desc: "Owner's car rolling in", notes: "Get owner's permission", done: false },
+    { size: "MCU", type: "A-roll", desc: "Company owner CTA to camera", notes: "3 takes", done: false },
   ],
-  gear: [{ item: "Phone + gimbal", done: false }, { item: "2 wireless lav mics", done: false }, { item: "1 LED panel + stand", done: false }, { item: "Charged batteries + power bank", done: false }, { item: "Signed release forms", done: false }],
-  location: ["Confirm filming window when the floor is quiet (10am–12pm)", "Get verbal + written OK from every member on camera", "Check mirrors for your own reflection in wide shots"],
-  caption: "One day. Four Reels. Here's what a local gym gets when they hire me.", hashtags: ["gymmarketing", "smallbusiness", "contentcreator", "behindthescenes"],
-  cta: "Comment GYM and I'll send the details.", pitfalls: ["Don't show pricing you haven't confirmed with the client", "Mirror reflections ruin wide shots"],
+  gear: [{ item: "Phone + small tripod", done: false }, { item: "Ladder for timelapse angle", done: false }, { item: "Wireless mic", done: false }, { item: "Dust mask + eye protection", done: false }, { item: "Power bank", done: false }],
+  location: ["Confirm cure times so you know when to come back for the reveal", "Wear PPE on site and follow the crew's safety rules", "Get the homeowner's OK to show the house and car"],
+  caption: "Cracked and stained this morning. Epoxy flake floor by tonight.", hashtags: ["epoxyfloor", "garagemakeover", "construction", "satisfying"],
+  cta: "Link's in the bio.", pitfalls: ["Fumes and dust: keep the phone bagged near grinding", "Plan the match cut before you shoot the before"],
 };
 
-// ---------- offline idea deck (used when Claude isn't available) ----------
+// ---------- built-in industry maps (used when Claude isn't available) ----------
+// [name, what it is, sample hook, surprising?, regulated?]
+const OFFLINE_MAPS = [
+  [/construct|contract|build|trade|remodel/i, "Construction", [
+    ["Painting", "Interior, exterior and commercial painters", "Here's why your paint peeled after one year.", 0, 0],
+    ["Roofing", "Replacements, repairs, storm work", "This is what a 20-year-old roof looks like up close.", 0, 0],
+    ["Concrete & flatwork", "Driveways, patios, foundations", "Watch 12 yards of concrete become a driveway.", 0, 0],
+    ["HVAC", "Heating, cooling, ductwork", "This is what's inside your air ducts.", 0, 0],
+    ["Kitchen & bath remodel", "Full gut-and-rebuild interiors", "Same kitchen, 6 weeks apart.", 0, 0],
+    ["Landscaping & hardscape", "Pavers, retaining walls, sod", "We turned a mud pit into a backyard.", 0, 0],
+    ["Epoxy & garage floors", "Coatings for garages and shops", "Cracked this morning. Showroom floor tonight.", 1, 0],
+    ["Demolition", "Tear-outs and interior demo", "Every old house hides something.", 1, 0],
+    ["Excavation & heavy equipment", "Site prep, trenching, grading", "I let a 20-ton excavator operator show me his job.", 1, 0],
+    ["Pressure washing", "Driveways, siding, roofs", "The most satisfying 10 seconds of my week.", 1, 0],
+    ["Crane & rigging", "Lifts, steel, set pieces", "How do you lift a hot tub onto a roof?", 1, 0],
+    ["Pool construction", "Gunite and fiberglass pools", "Day 1 to first swim.", 1, 0],
+  ]],
+  [/fit|gym|train|sport|athlet/i, "Fitness", [
+    ["Personal training", "1:1 and small-group coaches", "What a $100 training session actually looks like.", 0, 0],
+    ["Strength & powerlifting gyms", "Barbell-focused gyms", "This 60-year-old deadlifts more than you.", 0, 0],
+    ["Pilates & barre studios", "Reformer and mat studios", "Why reformer Pilates is harder than it looks.", 0, 0],
+    ["Boxing & martial arts", "Boxing, BJJ, Muay Thai gyms", "I took one BJJ class. Here's what happened.", 0, 0],
+    ["Nutrition coaching", "Meal plans and macro coaching", "What my client eats in a day, honestly.", 0, 1],
+    ["Youth sports performance", "Speed and agility for kids", "This is how 12-year-olds train for D1 now.", 1, 0],
+    ["Senior fitness", "Balance and strength for 60+", "She started lifting at 72.", 1, 0],
+    ["Job-site & corporate wellness", "Programs for crews and offices", "A 5-minute warm-up for construction crews.", 1, 0],
+    ["Run clubs", "Social running groups", "Why 200 strangers run together every Saturday.", 1, 0],
+    ["Physical therapy & mobility", "Rehab and movement clinics", "The stretch that fixed my back (ask your PT first).", 0, 1],
+  ]],
+  [/hormon|health|trt|medic|wellness|clinic|spa|peptide/i, "Health & hormones", [
+    ["Men's health / TRT clinics", "Testosterone therapy practices", "What actually happens at your first TRT visit.", 0, 1],
+    ["Menopause & women's hormone care", "Perimenopause and HRT clinics", "Symptoms women are told to ignore.", 0, 1],
+    ["Med spas", "Injectables, facials, body treatments", "What a med spa consult is actually like.", 0, 1],
+    ["IV hydration", "Drip bars and mobile IV", "Inside a mobile IV van.", 0, 1],
+    ["Functional medicine", "Root-cause focused practices", "Why my provider ordered 40 lab markers.", 0, 1],
+    ["Chiropractic", "Adjustments and posture care", "What a chiropractor looks for in the first 5 minutes.", 0, 1],
+    ["Lab testing & bloodwork", "Direct-to-consumer labs", "What's on a full hormone panel, explained.", 1, 1],
+    ["Sleep clinics", "Sleep studies and apnea care", "What a sleep study night looks like.", 1, 1],
+    ["Compounding pharmacies", "Custom-made medications", "Where custom prescriptions get made.", 1, 1],
+    ["Recovery studios", "Cold plunge, sauna, compression", "I tried every recovery tool in one hour.", 1, 0],
+  ]],
+];
+function offlineMap(name) {
+  const m = OFFLINE_MAPS.find(([re]) => re.test(name));
+  if (!m) return null;
+  return m[2].map(([n, what, hook, s, r]) => ({ name: n, what, audience: "Owners and their customers", potential: "", hook, surprise: !!s, regulated: !!r }));
+}
+
+// ---------- offline idea deck ----------
 const HOOKS = [
   n => [`Nobody in ${n} talks about this.`, "Myth vs fact"],
   n => [`I spent a day inside a ${n} business. Here's what surprised me.`, "Behind the scenes"],
@@ -248,21 +326,22 @@ const HOOKS = [
   n => [`I asked strangers what they think of ${n}.`, "Street / on location"],
 ];
 const FORMATS = ["Talking head + B-roll", "POV walkthrough", "Before / after", "Street interview", "Day in the life", "Ranking / tier list", "Green screen reaction", "Step-by-step tutorial", "Mini documentary"];
-function offlineIdeas(profile, lens) {
-  const n = (profile.niche || "your industry").split(/[:,(]/)[0].trim().toLowerCase();
-  let pool = HOOKS.map(f => f(n));
-  if (lens && lens !== "Surprise me") pool = [...pool.filter(p => p[1] === lens), ...shuffle(pool.filter(p => p[1] !== lens))];
-  else pool = shuffle(pool);
-  return pool.slice(0, 6).map(([hook, cat]) => ({
-    id: uid("idea"), title: hook.replace(/[.?!]$/, "").slice(0, 60), hook, format: pick(FORMATS), angle: `${cat} angle for ${profile.audience || "your audience"}.`,
-    why: `Built around your goal: ${(profile.goal || "growth").toLowerCase()}.`, difficulty: pick(["Easy", "Medium"]), runtime_sec: pick([30, 45, 60]), offline: true,
-  }));
+function offlineIdeas(p, lens, focus) {
+  const targets = focus ? [focus] : p.subs.length ? p.subs : [p.laneName];
+  let pool = shuffle(HOOKS);
+  if (lens && lens !== "Surprise me") pool = [...pool.filter(f => f("x")[1] === lens), ...pool.filter(f => f("x")[1] !== lens)];
+  return pool.slice(0, 6).map((f, i) => {
+    const sub = targets[i % targets.length];
+    const [hook, cat] = f(sub.toLowerCase());
+    return { id: uid("idea"), sub, title: hook.replace(/[.?!]$/, ""), hook, format: pick(FORMATS), angle: `${cat} angle for ${p.audience || "your audience"}.`,
+      why: `Built around your goal: ${(p.goal || "growth").toLowerCase()}.`, difficulty: pick(["Easy", "Medium"]), runtime_sec: pick([30, 45, 60]), offline: true };
+  });
 }
-function offlinePlan(idea, profile) {
+function offlinePlan(idea, p) {
   const r = +idea.runtime_sec || 45, c = s => Math.round(r * s);
   const tc = (a, b) => `${Math.floor(a / 60)}:${pad(a % 60)}–${Math.floor(b / 60)}:${pad(b % 60)}`;
   return normalizePlan({
-    title: idea.title, platform: profile.platform, runtime_sec: r, goal: profile.goal,
+    title: idea.title, platform: p.platform, runtime_sec: r, goal: p.goal,
     hook: { line: idea.hook, visual: "Open mid-action, face or subject in frame in the first second" },
     beats: [
       { t: tc(0, 3), label: "Hook", script: idea.hook, visual: "Tight shot, movement in frame" },
@@ -280,22 +359,26 @@ function offlinePlan(idea, profile) {
     gear: ["Phone + stabilizer", "Wireless mic", "Charged batteries", "Release forms if people are on camera"],
     location: ["Scout light direction before you roll", "Get permission to film on site"],
     caption: idea.title, hashtags: [], cta: "Follow for the next one.", pitfalls: ["Built-in template: connect Claude for a plan written for this exact idea"],
-  }, idea);
+  }, idea, p);
 }
 
 // ---------- normalize model output ----------
 function normalizeIdea(x) {
-  return { id: uid("idea"), title: str(x.title, "Untitled idea").slice(0, 80), hook: str(x.hook), format: str(x.format), angle: str(x.angle), why: str(x.why),
+  return { id: uid("idea"), sub: str(x.sub), title: str(x.title, "Untitled idea").slice(0, 80), hook: str(x.hook), format: str(x.format), angle: str(x.angle), why: str(x.why),
     difficulty: ["Easy", "Medium", "Heavy"].includes(x.difficulty) ? x.difficulty : "Medium", runtime_sec: Math.min(900, Math.max(5, +x.runtime_sec || 45)) };
 }
-function normalizePlan(p, idea) {
+function normalizeSub(x) {
+  return { name: str(x.name).slice(0, 60), what: str(x.what), audience: str(x.audience), potential: str(x.potential), hook: str(x.hook), surprise: !!x.surprise, regulated: !!x.regulated };
+}
+function normalizePlan(p, idea, prof) {
   return {
-    kind: "plan", id: uid("plan"), created: Date.now(), ideaTitle: idea ? idea.title : "",
+    kind: "plan", id: uid("plan"), created: Date.now(), ideaTitle: idea ? idea.title : "", sub: idea ? str(idea.sub) : "",
+    laneId: prof ? prof.laneId : null, laneName: prof ? prof.laneName : "",
     title: str(p.title, idea ? idea.title : "Shoot plan"), platform: str(p.platform), runtime_sec: +p.runtime_sec || 45, goal: str(p.goal),
     hook: { line: str(p.hook && p.hook.line), visual: str(p.hook && p.hook.visual) },
     beats: arr(p.beats).map(b => ({ t: str(b.t), label: str(b.label), script: str(b.script), visual: str(b.visual) })),
     shots: arr(p.shots).map(s => ({ size: str(s.size, "MS").toUpperCase().slice(0, 4), type: /b/i.test(str(s.type)) ? "B-roll" : "A-roll", desc: str(s.desc), notes: str(s.notes), done: false })),
-    gear: arr(p.gear).map(g => ({ item: str(typeof g === "string" ? g : g.item), done: false })),
+    gear: arr(p.gear).map(g => ({ item: str(typeof g === "string" ? g : g && g.item), done: false })),
     location: arr(p.location).map(x => str(x)), caption: str(p.caption), hashtags: arr(p.hashtags).map(x => str(x).replace(/^#/, "")).filter(Boolean),
     cta: str(p.cta), pitfalls: arr(p.pitfalls).map(x => str(x)),
   };
@@ -304,7 +387,7 @@ function normalizePlan(p, idea) {
 // ---------- storage: private db per person, else this browser ----------
 const LOCAL_KEY = "shotcaller.v1";
 const store = {
-  mode: "local", docs: lsGet(LOCAL_KEY, {}), col: null, listeners: [],
+  mode: "local", docs: lsGet(LOCAL_KEY, {}), col: null, listeners: [], ready: false,
   async init() {
     try {
       if (!window.claude || !window.claude.use) return;
@@ -315,19 +398,21 @@ const store = {
       this.col = db.collection("data/users/" + id);
       this.mode = "db";
       this.docs = {};
-      this.col.onSnapshot(snap => {
-        const next = {};
-        for (const d of snap.docs) next[d.id] = { ...d.data(), id: d.id };
-        this.docs = next; this.emit();
-      }, () => { setMode(); });
+      await new Promise(res => {
+        this.col.onSnapshot(snap => {
+          const next = {};
+          for (const d of snap.docs) next[d.id] = { ...d.data(), id: d.id };
+          this.docs = next; res(); this.emit();
+        }, () => { res(); setMode(); });
+      });
     } catch { this.mode = "local"; }
   },
   all(kind) { return Object.values(this.docs).filter(d => d.kind === kind).sort((a, b) => (b.created || 0) - (a.created || 0)); },
   get(id) { return this.docs[id]; },
   async put(doc) {
-    const clean = JSON.parse(JSON.stringify(doc)); delete clean.id;
-    this.docs[doc.id] = { ...clean, id: doc.id };
-    if (this.mode === "db") { try { await this.col.doc(doc.id).set(clean); } catch (e) { toast("Couldn't save. Check your connection and try again."); } }
+    const c = clone(doc); delete c.id;
+    this.docs[doc.id] = { ...c, id: doc.id };
+    if (this.mode === "db") { try { await this.col.doc(doc.id).set(c); } catch { toast("Couldn't save. Check your connection and try again."); } }
     else lsSet(LOCAL_KEY, this.docs);
     this.emit();
   },
@@ -343,123 +428,198 @@ const store = {
 // ---------- Claude ----------
 let sample = null, sampleBlocked = false;
 const ERR = {
-  not_granted: "Claude access is off for this page, so you're getting the built-in idea deck.",
+  not_granted: "Claude access is off for this page, so you're getting the built-in versions.",
   rate_limited: "Too many requests right now. Wait a minute, then try again.",
   invalid_json: "Claude's answer came back in the wrong shape. Tap the button again.",
-  prompt_too_large: "Your saved list is too long to send. Remove a few saved ideas and try again.",
-  refused: "Claude declined that request. Adjust your niche wording and try again.",
+  prompt_too_large: "Too much saved to send at once. Remove a few saved ideas and try again.",
+  refused: "Claude declined that request. Reword the industry and try again.",
 };
 const errMsg = e => ERR[e && e.code] || "Couldn't reach Claude. Check your connection and try again.";
+const blocked = e => e && ["not_granted", "sampling_disabled", "capability_disabled", "capability_removed"].includes(e.code);
+const live = () => !!sample && !sampleBlocked;
 
-function profileBlock(p) {
-  return `Creator profile:
-- Niche / industry: ${p.niche || "not set"}
+function laneBlock(p, label = "Industry") {
+  return `${label}: ${p.laneName}
+- Focus areas inside it: ${p.subs.length ? p.subs.join(", ") : "any"}
 - Audience: ${p.audience || "not set"}
 - Platform: ${p.platform}
 - Business goal: ${p.goal}
-- Based in: ${p.city || "not set"}`;
+- Based in: ${p.city || "not set"}
+- Creator's notes: ${p.notes || "none"}`;
 }
-function ideasPrompt(p, lens, avoid) {
+function mapPrompt(path) {
+  const inside = path.length > 1 ? ` (this is a branch of ${path.slice(0, -1).join(" > ")})` : "";
+  return `You are helping a video content creator who films on location for local businesses and brands. They want to see every corner of an industry they could create content for or sign as a client.
+
+Industry to break down: ${path[path.length - 1]}${inside}
+
+List 12 sub-niches inside it. Cover the obvious big ones, and make at least 4 of them ones most people would never think of (specialty trades, suppliers, adjacent services, B2B players, the people behind the scenes). Favor sub-niches with visual, filmable work: process, transformations, people with strong personalities, before/after.
+
+Reply with ONLY a JSON array of 12 objects:
+"name" (string, max 40 chars), "what" (1 short sentence), "audience" (who watches or buys, short), "potential" (1 sentence: why video works here), "hook" (a sample first line for a video, max 14 words), "surprise" (true if most people wouldn't think of it), "regulated" (true if health, medical, supplement, finance or legal claims rules apply).`;
+}
+function ideasPrompt(p, lens, focus, cross, avoid) {
+  const crossBlock = cross ? `\n\nCROSSOVER: every idea must combine the industry above with this second one, in a way both audiences would stop for.\n${laneBlock(cross, "Second industry")}` : "";
   return `You are a short-form content strategist for a solo creator who films on location with a phone and one mic. They are building a real business, so every idea must serve their goal, not just views.
 
-${profileBlock(p)}
+${laneBlock(p)}${crossBlock}
 
-Lens for this batch: ${lens}.
-Ideas they already saved (do not repeat these): ${avoid.length ? avoid.join(" | ") : "none"}.
+${focus ? `Aim every idea at this focus area: ${focus}.` : p.subs.length ? "Spread the ideas across the focus areas." : ""}
+Lens for this batch: ${cross ? "Crossover" : lens}.
+Ideas already saved (do not repeat): ${avoid.length ? avoid.join(" | ") : "none"}.
 Variety seed: ${Math.random().toString(36).slice(2, 8)}
 
-Give 6 distinct video ideas they could shoot this week. Use proven short-form formats and real conversations happening in this industry that you know about. Do not invent statistics, and do not claim something is trending with specific numbers. Make hooks sound like a person talking, not an ad.
+Give 6 distinct video ideas they could shoot this week. Use proven short-form formats and real conversations in this industry that you know about. Do not invent statistics or claim something is trending with specific numbers. Make hooks sound like a person talking, not an ad.
+${COMPLIANCE}
 
-Reply with ONLY a JSON array of 6 objects with these keys:
-"title" (string, max 60 chars), "hook" (the first spoken line, max 15 words), "format" (short name of the format), "angle" (1 sentence: what the video actually shows), "why" (1 sentence: why it serves the business goal), "difficulty" ("Easy" | "Medium" | "Heavy"), "runtime_sec" (number).`;
+Reply with ONLY a JSON array of 6 objects:
+"sub" (which focus area or sub-niche it targets), "title" (max 60 chars), "hook" (first spoken line, max 15 words), "format" (short format name), "angle" (1 sentence: what the video shows), "why" (1 sentence: why it serves the business goal), "difficulty" ("Easy" | "Medium" | "Heavy"), "runtime_sec" (number).`;
 }
 function planPrompt(p, idea) {
   return `You are a producer writing a pre-production plan for a solo creator. They will open this on their phone on location and follow it shot by shot, so be concrete and practical.
 
-${profileBlock(p)}
+${laneBlock(p)}
 
 The video:
+- Sub-niche: ${idea.sub || p.laneName}
 - Title: ${idea.title}
 - Hook: ${idea.hook}
 - Format: ${idea.format}
 - Angle: ${idea.angle}
 - Target runtime: ${idea.runtime_sec || 45} seconds
 
-Reply with ONLY a JSON object with these keys:
+${COMPLIANCE}
+For job sites, include PPE and site-safety notes in location.
+
+Reply with ONLY a JSON object:
 "title" (string), "platform" (string), "runtime_sec" (number), "goal" (string),
 "hook": {"line": exact first spoken line, "visual": what is on screen in the first second},
 "beats": array of 4-7 {"t": timecode range like "0:00–0:03", "label": short name, "script": what to say, "visual": what to show},
-"shots": array of 6-12 {"size": one of "ECU","CU","MCU","MS","WS","EWS","OTS","POV","TOP", "type": "A-roll" or "B-roll", "desc": the shot in under 12 words, "notes": angle, lens, frame rate or direction to talent, may be ""},
+"shots": array of 6-12 {"size": one of "ECU","CU","MCU","MS","WS","EWS","OTS","POV","TOP", "type": "A-roll" or "B-roll", "desc": under 12 words, "notes": angle, lens, frame rate or direction to talent, may be ""},
 "gear": array of short strings,
-"location": array of short strings (scouting, permissions, light, sound),
+"location": array of short strings (scouting, permissions, safety, light, sound),
 "caption": string (ready to post, under 220 chars),
 "hashtags": array of 3-6 strings without #,
 "cta": string,
-"pitfalls": array of 2-4 short strings (what tends to go wrong on this kind of shoot).`;
+"pitfalls": array of 2-4 short strings.`;
 }
 
 // ---------- state ----------
 const state = {
   tab: lsGet("shotcaller.tab", "ideas"),
-  lens: "Surprise me",
+  lens: "Surprise me", focus: null, crossId: null,
   batch: EXAMPLE_IDEAS.slice(),
   activePlanId: lsGet("shotcaller.active", null),
-  draftPlan: null,
-  busy: null,
-  ctl: null,
-  note: "",
+  laneId: lsGet("shotcaller.lane", null),
+  mapPath: lsGet("shotcaller.mappath", null),
+  libLane: "all", editLane: false,
+  busy: null, ctl: null, note: "", mapNote: "",
 };
-function profile() { return { ...DEFAULT_PROFILE, ...(store.get("profile") || {}) }; }
-function activePlan() {
-  if (state.draftPlan && state.draftPlan.id === state.activePlanId) return state.draftPlan;
-  return (state.activePlanId && store.get(state.activePlanId)) || store.all("plan")[0] || EXAMPLE_PLAN;
+const lanes = () => store.all("lane").sort((a, b) => (a.created || 0) - (b.created || 0));
+function activeLane() { const L = lanes(); return L.find(l => l.id === state.laneId) || L[0] || null; }
+function profileOf(l) {
+  if (!l) return { ...LANE_DEFAULTS, laneId: null, laneName: "Construction", subs: ["Painting", "Epoxy & garage floors", "Demolition"], audience: "Homeowners and contractors", example: true };
+  return { ...LANE_DEFAULTS, ...l, subs: arr(l.subs), laneId: l.id, laneName: l.name };
 }
+const profile = () => profileOf(activeLane());
+function activePlan() { return (state.activePlanId && store.get(state.activePlanId)) || store.all("plan")[0] || EXAMPLE_PLAN; }
 function setActive(id) { state.activePlanId = id; lsSet("shotcaller.active", id); }
+function setLane(id) { state.laneId = id; state.focus = null; lsSet("shotcaller.lane", id); }
 function go(tab) { state.tab = tab; lsSet("shotcaller.tab", tab); render(); scrollTo({ top: 0 }); }
 
 function setMode() {
-  const m = $("#mode"), live = !!sample && !sampleBlocked;
-  m.className = "mode" + (live ? "" : " off");
-  m.lastChild.textContent = (live ? "Claude connected" : "Built-in idea deck") + " · " + (store.mode === "db" ? "saved to your account" : "saved on this device");
+  const m = $("#mode");
+  m.className = "mode" + (live() ? "" : " off");
+  m.lastChild.textContent = (live() ? "Claude connected" : "Built-in mode") + " · " + (store.mode === "db" ? "saved to your account" : "saved on this device");
 }
 
-// ---------- actions ----------
+// ---------- industries ----------
+async function addLane(name, subs = [], activate = true) {
+  name = str(name);
+  if (!name) return null;
+  const existing = lanes().find(l => same(l.name, name));
+  if (existing) { if (activate) setLane(existing.id); render(); toast(`${existing.name} is already in your industries`); return existing; }
+  const lane = { kind: "lane", id: uid("lane"), created: Date.now(), name, ...LANE_DEFAULTS, subs };
+  if (activate) setLane(lane.id);
+  await store.put(lane);
+  toast(`Added ${name}`);
+  return lane;
+}
+function editLane(lane, fn) { const next = clone(lane); fn(next); store.put(next); }
+function toggleFocus(lane, sub) {
+  editLane(lane, l => { l.subs = arr(l.subs); const i = l.subs.findIndex(s => same(s, sub)); if (i >= 0) l.subs.splice(i, 1); else l.subs.push(sub); });
+}
+const mapId = path => "map_" + slug(path.join(" > "));
+async function mapIndustry(path, force) {
+  path = path.map(str).filter(Boolean);
+  if (!path.length) return;
+  state.mapPath = path; lsSet("shotcaller.mappath", path); state.mapNote = "";
+  if (state.tab !== "map") go("map");
+  const id = mapId(path);
+  if (store.get(id) && !force) { render(); return; }
+  if (!live()) {
+    const subs = path.length === 1 ? offlineMap(path[0]) : null;
+    if (subs) await store.put({ kind: "map", id, path, subs, created: Date.now(), offline: true });
+    else state.mapNote = sampleBlocked ? ERR.not_granted + " The built-in maps cover construction, fitness and health & hormones." : "Mapping a new industry needs Claude. Open this page in Claude to use it.";
+    render(); return;
+  }
+  state.busy = "map"; state.ctl = new AbortController(); render();
+  try {
+    const out = await sample.json(mapPrompt(path), { signal: state.ctl.signal, cache: false });
+    const subs = arr(Array.isArray(out) ? out : out && (out.subs || out.subniches)).map(normalizeSub).filter(s => s.name);
+    if (!subs.length) throw { code: "invalid_json" };
+    await store.put({ kind: "map", id, path, subs, created: Date.now() });
+  } catch (e) {
+    if (e && e.code === "cancelled") state.mapNote = "Stopped.";
+    else {
+      if (blocked(e)) { sampleBlocked = true; setMode(); const subs = path.length === 1 ? offlineMap(path[0]) : null; if (subs) await store.put({ kind: "map", id, path, subs, created: Date.now(), offline: true }); }
+      state.mapNote = errMsg(e);
+    }
+  } finally { state.busy = null; state.ctl = null; render(); }
+}
+
+// ---------- ideas & plans ----------
 async function pullIdeas() {
-  const p = profile();
-  if (!sample || sampleBlocked) { state.batch = offlineIdeas(p, state.lens); state.note = sampleBlocked ? ERR.not_granted : ""; render(); return; }
+  const lane = activeLane();
+  if (!lane) { toast("Add an industry first"); const el = $("#new-lane"); if (el) el.focus(); return; }
+  const p = profileOf(lane);
+  const cross = state.lens === "Crossover" ? lanes().find(l => l.id === state.crossId && l.id !== lane.id) : null;
+  if (state.lens === "Crossover" && !cross) { toast("Pick a second industry to cross with"); return; }
+  const tagIdeas = list => list.map(i => ({ ...i, laneId: lane.id, laneName: cross ? `${lane.name} × ${cross.name}` : lane.name }));
+  if (!live()) { state.batch = tagIdeas(offlineIdeas(p, state.lens, state.focus)); state.note = sampleBlocked ? ERR.not_granted : ""; render(); return; }
   state.busy = "ideas"; state.note = ""; state.ctl = new AbortController(); render();
   try {
-    const avoid = store.all("idea").map(i => i.title).slice(0, 40);
-    const out = await sample.json(ideasPrompt(p, state.lens, avoid), { signal: state.ctl.signal, cache: false });
+    const avoid = store.all("idea").filter(i => i.laneId === lane.id).map(i => i.title).slice(0, 40);
+    const out = await sample.json(ideasPrompt(p, state.lens, state.focus, cross ? profileOf(cross) : null, avoid), { signal: state.ctl.signal, cache: false });
     const list = arr(Array.isArray(out) ? out : out && out.ideas).map(normalizeIdea).filter(i => i.hook);
     if (!list.length) throw { code: "invalid_json" };
-    state.batch = list;
+    state.batch = tagIdeas(list);
   } catch (e) {
     if (e && e.code === "cancelled") state.note = "Stopped.";
     else {
-      if (e && (e.code === "not_granted" || e.code === "sampling_disabled" || e.code === "capability_disabled")) { sampleBlocked = true; setMode(); state.batch = offlineIdeas(p, state.lens); }
+      if (blocked(e)) { sampleBlocked = true; setMode(); state.batch = tagIdeas(offlineIdeas(p, state.lens, state.focus)); }
       state.note = errMsg(e);
     }
   } finally { state.busy = null; state.ctl = null; render(); }
 }
 
 async function buildPlan(idea) {
-  const p = profile();
+  const lane = (idea.laneId && store.get(idea.laneId)) || activeLane();
+  const p = profileOf(lane);
+  if (idea.laneName) p.laneName = idea.laneName;
   go("plan");
-  if (!sample || sampleBlocked) { const plan = offlinePlan(idea, p); await store.put(plan); setActive(plan.id); render(); return; }
+  if (!live()) { const plan = offlinePlan(idea, p); await store.put(plan); setActive(plan.id); render(); return; }
   state.busy = "plan"; state.note = ""; state.ctl = new AbortController(); state.busyTitle = idea.title; render();
   try {
     const out = await sample.json(planPrompt(p, idea), { signal: state.ctl.signal, cache: false });
-    const plan = normalizePlan(out || {}, idea);
+    const plan = normalizePlan(out || {}, idea, p);
     if (!plan.shots.length) throw { code: "invalid_json" };
     await store.put(plan); setActive(plan.id);
     toast("Plan saved to your library");
   } catch (e) {
     if (e && e.code === "cancelled") state.note = "Stopped. Your last plan is still here.";
     else {
-      if (e && (e.code === "not_granted" || e.code === "sampling_disabled" || e.code === "capability_disabled")) {
-        sampleBlocked = true; setMode(); const plan = offlinePlan(idea, p); await store.put(plan); setActive(plan.id);
-      }
+      if (blocked(e)) { sampleBlocked = true; setMode(); const plan = offlinePlan(idea, p); await store.put(plan); setActive(plan.id); }
       state.note = errMsg(e);
     }
   } finally { state.busy = null; state.ctl = null; render(); }
@@ -470,43 +630,59 @@ function saveIdea(idea) {
   delete doc.example; delete doc.offline;
   store.put(doc); toast("Saved to your idea bank");
 }
-function isSaved(idea) { return store.all("idea").some(i => i.title === idea.title); }
+const isSaved = idea => store.all("idea").some(i => i.title === idea.title);
 
 // Stored docs are frozen snapshots, so edit a copy and write it back.
 function editPlan(plan, fn) {
   if (plan.example) { fn(plan); render(); return; }
-  const next = JSON.parse(JSON.stringify(plan)); fn(next); store.put(next);
+  const next = clone(plan); fn(next); store.put(next);
 }
 function toggle(plan, listKey, i) { editPlan(plan, p => { p[listKey][i].done = !p[listKey][i].done; }); }
 
+// ---------- shared UI pieces ----------
+function addIndustryForm(id, label) {
+  const submit = e => { e.preventDefault(); const inp = document.getElementById(id); const v = inp.value; inp.value = ""; addLane(v); };
+  return h("form", { class: "inline-add", onsubmit: submit },
+    h("input", { class: "t", id, placeholder: label, "aria-label": label, autocomplete: "off" }),
+    h("button", { class: "btn", type: "submit" }, "Add"));
+}
+function laneBar() {
+  const L = lanes(), cur = activeLane();
+  return h("div", { class: "lanebar", role: "group", "aria-label": "Your industries" },
+    L.map(l => h("button", { class: "lane-chip", "aria-pressed": String(cur && cur.id === l.id), onclick: () => { setLane(l.id); render(); } },
+      h("b", { text: l.name }), h("span", { text: arr(l.subs).length ? `${l.subs.length} focus areas` : "Whole industry" }))),
+    h("button", { class: "lane-chip add", onclick: () => go("map") }, h("b", { text: "+ Industry" }), h("span", { text: "Type or map one" })));
+}
+
 // ---------- views ----------
-let saveT;
 function viewIdeas() {
-  const p = profile();
-  const save = () => () => { clearTimeout(saveT); saveT = setTimeout(() => {
-    const v = id => { const el = document.getElementById(id); return el ? el.value : ""; };
-    store.put({ kind: "profile", id: "profile", niche: v("p-niche"), audience: v("p-aud"), platform: v("p-plat"), goal: v("p-goal"), city: v("p-city") });
-  }, 500); };
-  const sel = (id, k, opts) => h("select", { class: "t", id, onchange: save(k) }, opts.map(o => h("option", { value: o, selected: p[k] === o }, o)));
-  const hasProfile = !!store.get("profile");
+  const L = lanes(), lane = activeLane(), p = profileOf(lane);
   const busy = state.busy === "ideas";
+  const lensList = L.length > 1 ? LENSES : LENSES.filter(l => l !== "Crossover");
+  const others = L.filter(l => lane && l.id !== lane.id);
+  if (state.lens === "Crossover" && !others.some(o => o.id === state.crossId)) state.crossId = others[0] ? others[0].id : null;
 
   return [
     h("div", { class: "stack" },
       h("div", { class: "eyebrow", text: "Idea engine" }),
-      h("h1", { class: "h-display", text: "Never walk on set empty-handed" }),
-      h("p", { class: "muted small", style: "margin:0", text: "Set your lane once. Pull a fresh batch whenever you need one, then turn the best idea into a shoot plan." })),
-    h("details", { class: "panel lane", open: !hasProfile || null },
-      h("summary", null, h("div", null, h("div", { class: "eyebrow", text: "Your lane" }), h("div", { style: "font-weight:600", text: p.niche })), h("span", { class: "caret", text: "Edit" })),
-      h("div", { class: "fields" },
-        h("label", { class: "f full" }, "Niche or industry", h("input", { class: "t", id: "p-niche", value: p.niche, placeholder: "e.g. Real estate in Miami", oninput: save("niche") })),
-        h("label", { class: "f full" }, "Who's watching", h("input", { class: "t", id: "p-aud", value: p.audience, placeholder: "e.g. First-time home buyers", oninput: save("audience") })),
-        h("label", { class: "f" }, "Platform", sel("p-plat", "platform", PLATFORMS)),
-        h("label", { class: "f" }, "Business goal", sel("p-goal", "goal", GOALS)),
-        h("label", { class: "f full" }, "City (for local ideas)", h("input", { class: "t", id: "p-city", value: p.city, placeholder: "Optional", oninput: save("city") })))),
-    h("div", { class: "chips", role: "group", "aria-label": "Lens" }, LENSES.map(l => h("button", { class: "chip", "aria-pressed": String(state.lens === l), onclick: () => { state.lens = l; render(); } }, l))),
+      h("h1", { class: "h-display", text: "Never walk on set empty-handed" })),
+    L.length ? laneBar() : h("section", { class: "panel stack" },
+      h("h2", { class: "h-sec", text: "Type in your first industry" }),
+      h("p", { class: "small muted", style: "margin:0", text: "Any industry works: construction, painting, fitness, hormones, med spas. Add as many as you work in and switch between them." }),
+      addIndustryForm("new-lane", "e.g. Construction"),
+      h("div", { class: "row" }, STARTERS.map(s => h("button", { class: "chip", onclick: () => addLane(s) }, "+ " + s)))),
+    lane ? h("div", { class: "stack" },
+      h("div", { class: "row between" }, h("div", { class: "eyebrow", text: `Focus inside ${lane.name}` }),
+        h("button", { class: "btn sm ghost", onclick: () => { state.editLane = true; go("map"); } }, "Edit industry")),
+      p.subs.length ? h("div", { class: "chips", role: "group", "aria-label": "Focus" },
+        [null, ...p.subs].map(s => h("button", { class: "chip", "aria-pressed": String(state.focus === s), onclick: () => { state.focus = s; render(); } }, s || "All focus areas")))
+      : h("div", { class: "row" }, h("span", { class: "small muted", text: "No focus areas yet." }), h("button", { class: "btn sm", onclick: () => mapIndustry([lane.name]) }, `Map ${lane.name} into sub-niches`))) : null,
+    h("div", { class: "stack" }, h("div", { class: "eyebrow", text: "Lens" }),
+      h("div", { class: "chips", role: "group", "aria-label": "Lens" }, lensList.map(l => h("button", { class: "chip", "aria-pressed": String(state.lens === l), onclick: () => { state.lens = l; render(); } }, l)))),
+    state.lens === "Crossover" && others.length ? h("label", { class: "f" }, `Cross ${lane.name} with`,
+      h("select", { class: "t", id: "cross", onchange: e => { state.crossId = e.target.value; } }, others.map(o => h("option", { value: o.id, selected: o.id === state.crossId || null }, o.name)))) : null,
     h("div", { class: "row" },
-      h("button", { class: "btn primary", style: "flex:1", disabled: busy || null, onclick: pullIdeas }, busy ? "Pulling ideas…" : "Pull 6 fresh ideas"),
+      h("button", { class: "btn primary", style: "flex:1", disabled: busy || null, onclick: pullIdeas }, busy ? "Pulling ideas…" : !lane ? "Pull 6 fresh ideas" : state.lens === "Crossover" ? "Pull 6 crossover ideas" : `Pull 6 ${state.focus || lane.name} ideas`),
       busy ? h("button", { class: "btn", onclick: () => state.ctl && state.ctl.abort() }, "Stop") : null),
     busy ? h("div", { class: "status" }, h("span", { class: "rec" }), "Claude is thinking. This takes 10–40 seconds.") : null,
     state.note ? h("div", { class: "note", text: state.note }) : null,
@@ -516,7 +692,8 @@ function viewIdeas() {
 function ideaCard(idea) {
   const saved = isSaved(idea);
   return h("article", { class: "idea" },
-    h("div", { class: "meta" }, idea.example ? h("span", { class: "tag ex", text: "Example" }) : null, h("span", { text: idea.format }), h("span", { text: idea.difficulty }), h("span", { text: "~" + fmtRun(idea.runtime_sec) })),
+    h("div", { class: "meta" }, idea.example ? h("span", { class: "tag ex", text: "Example" }) : null, idea.sub ? h("span", { class: "tag lane", text: idea.sub }) : null,
+      h("span", { text: idea.format }), h("span", { text: idea.difficulty }), h("span", { text: "~" + fmtRun(idea.runtime_sec) })),
     h("h3", { text: idea.title }),
     h("div", { class: "hook", text: idea.hook }),
     idea.angle ? h("div", { class: "small", text: idea.angle }) : null,
@@ -524,6 +701,97 @@ function ideaCard(idea) {
     h("div", { class: "row", style: "margin-top:4px" },
       h("button", { class: "btn go sm", onclick: () => buildPlan(idea) }, "Plan this shoot"),
       h("button", { class: "btn sm", disabled: saved || null, onclick: () => saveIdea(idea) }, saved ? "Saved" : "Save idea")));
+}
+
+let laneSaveT, confirmLaneDel = false;
+function laneEditor(lane) {
+  const save = () => { clearTimeout(laneSaveT); laneSaveT = setTimeout(() => {
+    const v = id => { const el = document.getElementById(id); return el ? el.value : ""; };
+    const cur = store.get(lane.id); if (!cur) return;
+    editLane(cur, l => { l.name = v("l-name").trim() || l.name; l.audience = v("l-aud"); l.platform = v("l-plat"); l.goal = v("l-goal"); l.city = v("l-city"); l.notes = v("l-notes"); });
+  }, 500); };
+  const p = profileOf(lane);
+  const sel = (id, k, opts) => h("select", { class: "t", id, onchange: save }, opts.map(o => h("option", { value: o, selected: p[k] === o || null }, o)));
+  const addSub = e => { e.preventDefault(); const el = $("#l-addsub"); const v = el.value.trim(); el.value = ""; if (v && !p.subs.some(s => same(s, v))) toggleFocus(lane, v); };
+  return h("section", { class: "panel stack" },
+    h("div", { class: "row between" }, h("h2", { class: "h-sec", text: `Edit ${lane.name}` }), h("button", { class: "btn sm ghost", onclick: () => { state.editLane = false; confirmLaneDel = false; render(); } }, "Done")),
+    h("div", { class: "fields" },
+      h("label", { class: "f full" }, "Industry name", h("input", { class: "t", id: "l-name", value: lane.name, oninput: save })),
+      h("div", { class: "f full" }, "Focus areas (ideas target these)",
+        h("div", { class: "row" }, p.subs.length ? p.subs.map(s => h("span", { class: "focus-chip" }, s, h("button", { "aria-label": "Remove " + s, onclick: () => toggleFocus(lane, s) }, "×"))) : h("span", { class: "small", text: "None yet. Add below or map the industry." })),
+        h("form", { class: "inline-add", onsubmit: addSub }, h("input", { class: "t", id: "l-addsub", placeholder: "Add a focus area, e.g. Roofing" }), h("button", { class: "btn", type: "submit" }, "Add"))),
+      h("label", { class: "f full" }, "Who's watching", h("input", { class: "t", id: "l-aud", value: p.audience, placeholder: "e.g. Homeowners 35–60", oninput: save })),
+      h("label", { class: "f" }, "Platform", sel("l-plat", "platform", PLATFORMS)),
+      h("label", { class: "f" }, "Business goal", sel("l-goal", "goal", GOALS)),
+      h("label", { class: "f full" }, "City (for local ideas)", h("input", { class: "t", id: "l-city", value: p.city, placeholder: "Optional", oninput: save })),
+      h("label", { class: "f full" }, "Notes for Claude", h("textarea", { class: "t", id: "l-notes", rows: "3", placeholder: "Your offer, prices, tone, clients you have, things to avoid", oninput: save }, p.notes))),
+    h("button", { class: "btn ghost sm", onclick: () => {
+      if (!confirmLaneDel) { confirmLaneDel = true; render(); return; }
+      confirmLaneDel = false; state.editLane = false; store.del(lane.id); setLane(null);
+    } }, confirmLaneDel ? `Tap again to remove ${lane.name}` : `Remove ${lane.name}`));
+}
+
+function viewMap() {
+  const L = lanes(), lane = activeLane();
+  const busy = state.busy === "map";
+  const path = state.mapPath;
+  const map = path ? store.get(mapId(path)) : null;
+  const target = path ? [...path].reverse().map(seg => L.find(l => same(l.name, seg))).find(Boolean) : null;
+  const inFocus = name => target && arr(target.subs).some(s => same(s, name));
+  const isLane = name => L.some(l => same(l.name, name));
+  const recent = store.all("map").slice(0, 12);
+  const submit = e => { e.preventDefault(); const v = $("#map-input").value.trim(); if (v) { $("#map-input").value = ""; mapIndustry([v]); } };
+
+  return [
+    h("div", { class: "stack" },
+      h("div", { class: "eyebrow", text: "Industries" }),
+      h("h1", { class: "h-display", text: "Map any industry" }),
+      h("p", { class: "muted small", style: "margin:0", text: "Type an industry and Claude breaks it into the niches inside it, including the ones nobody thinks of. Keep going deeper on any branch." })),
+    h("form", { class: "inline-add", onsubmit: submit },
+      h("input", { class: "t", id: "map-input", placeholder: "Type any industry: construction, hormones…", autocomplete: "off", "aria-label": "Industry to map" }),
+      h("button", { class: "btn primary", type: "submit", disabled: busy || null }, "Map it")),
+    !path ? h("div", { class: "row" }, STARTERS.map(s => h("button", { class: "chip", onclick: () => mapIndustry([s]) }, s))) : null,
+    state.editLane && lane ? laneEditor(lane) : null,
+
+    path ? h("section", { class: "stack" },
+      h("nav", { class: "crumbs", "aria-label": "Map path" }, path.map((seg, i) => i === path.length - 1
+        ? h("span", { class: "cur", text: seg })
+        : [h("button", { onclick: () => mapIndustry(path.slice(0, i + 1)) }, seg), h("span", { text: "›" })])),
+      busy ? h("div", { class: "row" }, h("div", { class: "status", style: "flex:1" }, h("span", { class: "rec" }), `Mapping ${path[path.length - 1]}. About 15–40 seconds.`), h("button", { class: "btn sm", onclick: () => state.ctl && state.ctl.abort() }, "Stop")) : null,
+      state.mapNote ? h("div", { class: "note", text: state.mapNote }) : null,
+      map ? [
+        h("div", { class: "row between" },
+          h("div", { class: "small muted", text: `${map.subs.length} niches · ${map.subs.filter(s => s.surprise).length} you might not expect` }),
+          h("div", { class: "row" },
+            !isLane(path[path.length - 1]) ? h("button", { class: "btn sm", onclick: () => addLane(path[path.length - 1]) }, `+ Add ${path[path.length - 1]}`) : null,
+            live() ? h("button", { class: "btn sm ghost", disabled: busy || null, onclick: () => mapIndustry(path, true) }, "Remap") : null)),
+        map.offline ? h("div", { class: "note", text: "Built-in map. Open in Claude for a fresh, deeper map of any industry." }) : null,
+        h("div", { class: "subs" }, map.subs.map(s => h("article", { class: "sub" },
+          h("div", { class: "meta" }, s.surprise ? h("span", { class: "tag hot", text: "Unexpected" }) : null, s.regulated ? h("span", { class: "tag reg", text: "Claims rules apply" }) : null, s.audience ? h("span", { text: s.audience }) : null),
+          h("h3", { text: s.name }),
+          s.what ? h("div", { class: "small", text: s.what }) : null,
+          s.potential ? h("div", { class: "small muted", text: s.potential }) : null,
+          s.hook ? h("div", { class: "hook small", text: s.hook }) : null,
+          h("div", { class: "row", style: "margin-top:4px" },
+            target ? h("button", { class: "btn sm " + (inFocus(s.name) ? "" : "go"), onclick: () => toggleFocus(store.get(target.id), s.name) }, inFocus(s.name) ? `✓ In ${target.name}` : `+ Focus in ${target.name}`)
+              : h("button", { class: "btn sm go", onclick: () => addLane(path[0], [s.name]) }, `+ Add to ${path[0]}`),
+            isLane(s.name) ? h("button", { class: "btn sm", disabled: true }, "Own industry ✓") : h("button", { class: "btn sm", onclick: () => addLane(s.name, [], false) }, "Own industry"),
+            h("button", { class: "btn sm ghost", disabled: busy || null, onclick: () => mapIndustry([...path, s.name]) }, "Go deeper ›"))))),
+      ] : null) : null,
+
+    h("section", { class: "panel" },
+      h("h2", { class: "h-sec", style: "margin-bottom:6px", text: `Your industries · ${L.length}` }),
+      L.length ? L.map(l => h("div", { class: "lane-row" },
+        h("div", null, h("b", { text: l.name }), h("span", { class: "small muted", text: arr(l.subs).length ? l.subs.join(" · ") : "No focus areas yet" })),
+        h("div", { class: "row" },
+          lane && lane.id === l.id ? h("span", { class: "tag lane", text: "Active" }) : h("button", { class: "btn sm", onclick: () => { setLane(l.id); render(); } }, "Use"),
+          h("button", { class: "btn sm ghost", onclick: () => { setLane(l.id); state.editLane = true; confirmLaneDel = false; render(); scrollTo({ top: 0 }); } }, "Edit"))))
+      : h("div", { class: "empty", text: "No industries yet. Map one above, or add it directly." }),
+      h("div", { style: "margin-top:10px" }, addIndustryForm("add-lane", "Add an industry without mapping"))),
+
+    recent.length ? h("div", { class: "stack" }, h("div", { class: "eyebrow", text: "Maps you've made" }),
+      h("div", { class: "row" }, recent.map(m => h("button", { class: "chip", onclick: () => mapIndustry(m.path) }, m.path.join(" › "))))) : null,
+  ];
 }
 
 function viewPlan() {
@@ -542,7 +810,7 @@ function viewPlan() {
     p.example ? h("div", { class: "note", text: "This is an example plan. Tap “Plan this shoot” on any idea to build your own." }) : null,
     h("section", { class: "plan-head" },
       h("div", { class: "sticks" }),
-      h("div", { class: "in" }, h("div", { class: "eyebrow", style: "color:inherit;opacity:.7", text: "Production slate" }), h("h2", { text: p.title })),
+      h("div", { class: "in" }, h("div", { class: "eyebrow", style: "color:inherit;opacity:.7", text: [p.laneName, p.sub].filter(Boolean).join(" › ") || "Production slate" }), h("h2", { text: p.title })),
       h("div", { class: "slate-grid" },
         h("div", null, h("div", { class: "k", text: "Runtime" }), h("div", { class: "v", text: fmtRun(p.runtime_sec) })),
         h("div", null, h("div", { class: "k", text: "Shots" }), h("div", { class: "v", text: p.shots.length })),
@@ -558,7 +826,7 @@ function viewPlan() {
         h("div", { class: "shot-no" }, "SH " + pad(i + 1), h("span", { class: "size", text: s.size })),
         h("div", null, h("div", { class: "roll " + (s.type === "B-roll" ? "b" : "a"), text: s.type }), h("div", { text: s.desc }), s.notes ? h("div", { class: "small muted", text: s.notes }) : null))))),
     h("section", { class: "panel stack" }, h("h2", { class: "h-sec", text: "Gear" }), h("ul", { class: "list" }, p.gear.map(g => h("li", { text: g.item })))),
-    p.location.length ? h("section", { class: "panel stack" }, h("h2", { class: "h-sec", text: "Location & permissions" }), h("ul", { class: "list" }, p.location.map(x => h("li", { text: x })))) : null,
+    p.location.length ? h("section", { class: "panel stack" }, h("h2", { class: "h-sec", text: "Location, safety & permissions" }), h("ul", { class: "list" }, p.location.map(x => h("li", { text: x })))) : null,
     p.pitfalls.length ? h("section", { class: "panel stack" }, h("h2", { class: "h-sec", text: "Watch out for" }), h("ul", { class: "list" }, p.pitfalls.map(x => h("li", { text: x })))) : null,
     h("section", { class: "panel stack" }, h("div", { class: "row between" }, h("h2", { class: "h-sec", text: "Caption" }), h("button", { class: "btn sm", onclick: () => copy(capText, capBox) }, "Copy")),
       capBox, p.cta ? h("div", { class: "small" }, h("b", null, "CTA: "), p.cta) : null),
@@ -566,7 +834,7 @@ function viewPlan() {
 }
 
 let wakeLock = null;
-async function toggleWake(btn) {
+async function toggleWake() {
   try {
     if (wakeLock) { await wakeLock.release(); wakeLock = null; }
     else { wakeLock = await navigator.wakeLock.request("screen"); wakeLock.addEventListener("release", () => { wakeLock = null; render(); }); }
@@ -598,36 +866,55 @@ function viewField() {
 
 let confirmDel = null;
 function viewLibrary() {
-  const plans = store.all("plan"), ideas = store.all("idea");
-  const delBtn = (id) => h("button", { class: "btn sm ghost", onclick: () => { if (confirmDel === id) { store.del(id); confirmDel = null; if (state.activePlanId === id) setActive(null); } else { confirmDel = id; render(); } } }, confirmDel === id ? "Tap to delete" : "Delete");
+  const L = lanes(), f = state.libLane;
+  const match = d => f === "all" || d.laneId === f;
+  const plans = store.all("plan").filter(match), ideas = store.all("idea").filter(match);
+  const delBtn = id => h("button", { class: "btn sm ghost", onclick: () => { if (confirmDel === id) { store.del(id); confirmDel = null; if (state.activePlanId === id) setActive(null); } else { confirmDel = id; render(); } } }, confirmDel === id ? "Tap to delete" : "Delete");
+  const laneTag = d => d.laneName ? h("span", { class: "tag lane", text: d.laneName }) : null;
   return [
     h("div", { class: "stack" }, h("div", { class: "eyebrow", text: "Library" }), h("h1", { class: "h-display", text: "Your content bank" }),
       h("p", { class: "muted small", style: "margin:0", text: store.mode === "db" ? "Saved to your Claude account, private to you." : "Saved in this browser only." })),
+    L.length > 1 ? h("div", { class: "chips", role: "group", "aria-label": "Filter by industry" },
+      [{ id: "all", name: "All industries" }, ...L].map(l => h("button", { class: "chip", "aria-pressed": String(f === l.id), onclick: () => { state.libLane = l.id; render(); } }, l.name))) : null,
     h("section", { class: "panel" }, h("h2", { class: "h-sec", style: "margin-bottom:6px", text: `Shoot plans · ${plans.length}` }),
       plans.length ? plans.map(p => h("div", { class: "lib-item" },
-        h("div", null, h("b", { text: p.title }), h("span", { class: "small muted", text: `${p.shots.filter(s => s.done).length}/${p.shots.length} shots · ${new Date(p.created).toLocaleDateString()}` })),
+        h("div", { class: "stack", style: "gap:4px" }, h("b", { text: p.title }), h("div", { class: "row", style: "gap:6px" }, laneTag(p),
+          h("span", { class: "small muted", text: `${p.shots.filter(s => s.done).length}/${p.shots.length} shots · ${new Date(p.created).toLocaleDateString()}` }))),
         h("div", { class: "row" }, h("button", { class: "btn sm", onclick: () => { setActive(p.id); go("plan"); } }, "Open"), delBtn(p.id))))
-      : h("div", { class: "empty", text: "No plans yet. Tap “Plan this shoot” on any idea and it lands here." })),
+      : h("div", { class: "empty", text: "No plans here yet. Tap “Plan this shoot” on any idea and it lands here." })),
     h("section", { class: "panel" }, h("h2", { class: "h-sec", style: "margin-bottom:6px", text: `Idea bank · ${ideas.length}` }),
       ideas.length ? ideas.map(i => h("div", { class: "lib-item" },
-        h("div", null, h("b", { text: i.title }), h("span", { class: "small muted", text: i.hook })),
+        h("div", { class: "stack", style: "gap:4px" }, h("b", { text: i.title }), h("div", { class: "row", style: "gap:6px" }, laneTag(i), i.sub ? h("span", { class: "tag", text: i.sub }) : null), h("span", { class: "small muted", text: i.hook })),
         h("div", { class: "row" }, h("button", { class: "btn sm go", onclick: () => buildPlan(i) }, "Plan"), delBtn(i.id))))
       : h("div", { class: "empty", text: "Save ideas you like from the Ideas tab. They stay here until you shoot them." })),
   ];
 }
 
-const TABS = [["ideas", "Ideas", "Pull"], ["plan", "Plan", "Pre-pro"], ["field", "Field", "Shoot"], ["library", "Library", "Saved"]];
+const TABS = [["ideas", "Ideas", "Pull"], ["map", "Niches", "Map"], ["plan", "Plan", "Pre-pro"], ["field", "Field", "Shoot"], ["library", "Library", "Saved"]];
 function render() {
   const view = $("#view");
   const active = document.activeElement && document.activeElement.id;
-  const map = { ideas: viewIdeas, plan: viewPlan, field: viewField, library: viewLibrary };
-  view.replaceChildren(...[].concat(map[state.tab] ? map[state.tab]() : viewIdeas()).filter(Boolean));
+  const map = { ideas: viewIdeas, map: viewMap, plan: viewPlan, field: viewField, library: viewLibrary };
+  view.replaceChildren(...[].concat(map[state.tab] ? map[state.tab]() : viewIdeas()).flat().filter(Boolean));
   $("#tabs").replaceChildren(...TABS.map(([k, label, sub]) => h("button", { "aria-current": state.tab === k ? "page" : null, onclick: () => { confirmDel = null; go(k); } }, h("span", { class: "k", text: label }), h("span", { text: sub }))));
   if (active) { const el = document.getElementById(active); if (el && el !== document.activeElement) { el.focus(); if (el.setSelectionRange && el.value != null) try { el.setSelectionRange(el.value.length, el.value.length); } catch {} } }
 }
 
-// Don't re-render while someone is typing in the lane form (db echoes would steal focus).
-store.listeners.push(() => { const a = document.activeElement; if (a && a.matches && a.matches("input.t, select.t")) return; render(); });
+// Carry the first version's single "profile" over as an industry.
+let migrated = false;
+async function migrate() {
+  if (migrated) return; migrated = true;
+  const old = store.get("profile");
+  if (!old) return;
+  if (!lanes().length) {
+    const name = str(old.niche).split(/[:(]/)[0].trim() || "My industry";
+    await store.put({ kind: "lane", id: uid("lane"), created: Date.now(), name, subs: [], audience: str(old.audience), platform: old.platform || PLATFORMS[0], goal: old.goal || GOALS[0], city: str(old.city), notes: str(old.niche) });
+  }
+  store.del("profile");
+}
+
+// Don't re-render while someone is typing (db echoes would steal focus).
+store.listeners.push(() => { const a = document.activeElement; if (a && a.matches && a.matches("input.t, select.t, textarea.t")) return; render(); });
 
 const d = new Date();
 $("#slate-date").textContent = `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`;
@@ -635,6 +922,7 @@ render(); setMode();
 
 (async () => {
   await store.init();
+  await migrate();
   try { sample = window.claude && window.claude.use ? await claude.use("sample") : null; } catch { sample = null; }
   setMode(); render();
 })();
