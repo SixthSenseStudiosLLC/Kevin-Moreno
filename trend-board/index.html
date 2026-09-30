@@ -3,20 +3,20 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: one-column phone app. Trends feed → pick clients → ideas → client clip banks. Bottom tabs. */
+/* Layout: an idea feed fed by trends. Phone: bottom tabs, one column. Desktop: sidebar, trends rail + idea grid. */
 :root {
   --bg: #F2F3F5; --surface: #FFFFFF; --ink: #15171C; --muted: #5E6470; --line: #DADDE3; --chip: #E8EAEE;
-  --hot: #C8175D; --hot-soft: #FBE4EE; --keep: #1F7A5C; --keep-soft: #DFF1EA;
+  --hot: #C8175D; --hot-soft: #FBE4EE; --star: #B7791F;
   --f-display: "Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
   --f-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
   --tabbar: 62px;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #111317; --surface: #1A1D23; --ink: #ECEEF2; --muted: #9AA1AE; --line: #2C3038; --chip: #252932;
-  --hot: #F2558F; --hot-soft: #3A1827; --keep: #4FC49A; --keep-soft: #16302A; color-scheme: dark } }
+  --hot: #F2558F; --hot-soft: #3A1827; --star: #E8B04B; color-scheme: dark } }
 :root[data-theme="dark"] {
   --bg: #111317; --surface: #1A1D23; --ink: #ECEEF2; --muted: #9AA1AE; --line: #2C3038; --chip: #252932;
-  --hot: #F2558F; --hot-soft: #3A1827; --keep: #4FC49A; --keep-soft: #16302A; color-scheme: dark }
+  --hot: #F2558F; --hot-soft: #3A1827; --star: #E8B04B; color-scheme: dark }
 
 * { box-sizing: border-box }
 body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--f-body) }
@@ -31,7 +31,6 @@ button, input, select, textarea { font: inherit; color: inherit }
 .mode { font-size: 12px; color: var(--muted); text-align: right }
 .view { display: grid; gap: 16px }
 .h1 { font-size: 28px; line-height: 1.05; letter-spacing: -.02em; font-weight: 800 }
-.h2 { font-size: 19px; line-height: 1.15; font-weight: 700; letter-spacing: -.01em }
 .label { font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted) }
 .muted { color: var(--muted) } .small { font-size: 13px }
 .stack { display: grid; gap: 10px }
@@ -44,21 +43,21 @@ button, input, select, textarea { font: inherit; color: inherit }
 label.f { display: grid; gap: 4px; font-size: 12.5px; color: var(--muted); font-weight: 500; min-width: 0 }
 .t { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 10px 12px; font-size: 15px; color: var(--ink) }
 textarea.t { resize: vertical }
+.inline { display: flex; gap: 8px } .inline .t { flex: 1; min-width: 0 }
 
 .btn { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 10px 14px; font-weight: 600; font-size: 14px; cursor: pointer; min-height: 44px }
 .btn.hot { background: var(--hot); border-color: var(--hot); color: #fff }
-.btn.keep { background: var(--keep); border-color: var(--keep); color: #fff }
 .btn.ghost { background: transparent; border-color: transparent; color: var(--muted) }
 .btn.sm { min-height: 36px; padding: 6px 11px; font-size: 13px }
 .btn.block { width: 100% }
+.btn.big { min-height: 52px; font-size: 16px }
 .btn:disabled { opacity: .5; cursor: default }
 
 .chips { display: flex; flex-wrap: wrap; gap: 6px }
-.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 12px; font-size: 13.5px; font-weight: 500; cursor: pointer }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 12px; font-size: 13.5px; font-weight: 500; cursor: pointer; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 .chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg) }
-.tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .04em; padding: 2px 8px; border-radius: 999px; background: var(--chip); color: var(--muted) }
+.tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .03em; padding: 2px 8px; border-radius: 999px; background: var(--chip); color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 .tag.hot { background: var(--hot-soft); color: var(--hot) }
-.tag.keep { background: var(--keep-soft); color: var(--keep) }
 .tag.ex { background: transparent; border: 1px dashed var(--muted) }
 
 .status { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted) }
@@ -68,92 +67,52 @@ textarea.t { resize: vertical }
 .note { border-left: 3px solid var(--hot); background: var(--surface); border-radius: 0 10px 10px 0; padding: 9px 12px; font-size: 13px }
 .empty { text-align: center; padding: 20px 10px; color: var(--muted); font-size: 14px }
 
-/* Trend cards */
-.trend { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 10px; min-width: 0 }
-.trend h3 { font-size: 21px; line-height: 1.1; font-weight: 800; letter-spacing: -.015em }
-.trend .for { display: grid; gap: 6px; padding-top: 10px; border-top: 1px solid var(--line) }
-.group { display: grid; gap: 8px; padding-top: 8px }
-.group-head { display: flex; justify-content: space-between; align-items: center; gap: 8px }
-.group-head b { font-family: var(--f-display); font-size: 16px }
-
-/* Idea */
-.idea { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: grid; gap: 6px; background: var(--bg); min-width: 0 }
-.idea.saved { border-color: var(--keep); background: var(--keep-soft) }
-.idea.done { opacity: .6 }
-.idea .title { font-weight: 700; font-size: 15.5px; line-height: 1.25 }
-.hook { font-size: 15px; font-weight: 500 }
+/* Idea cards */
+.feed { display: grid; gap: 10px }
+.idea { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: grid; gap: 7px; min-width: 0; align-content: start }
+.idea.starred { border-color: var(--star); box-shadow: inset 0 3px 0 var(--star) }
+.idea .title { font: 700 18px/1.2 var(--f-display); letter-spacing: -.01em }
+.hook { font-size: 15.5px; font-weight: 500 }
 .hook::before { content: "“" } .hook::after { content: "”" }
 .idea ul { margin: 0; padding-left: 18px; font-size: 13.5px; display: grid; gap: 2px }
-.cap { font-size: 13px; color: var(--muted); white-space: pre-wrap; overflow-wrap: anywhere }
+.cap { font-size: 13px; color: var(--muted); overflow-wrap: anywhere }
+.star { color: var(--star) }
+.batch-sep { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; min-width: 0 }
+.batch-sep::before, .batch-sep::after { content: ""; flex: 1; height: 1px; background: var(--line); min-width: 16px }
 
-/* Clients */
-.client { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line) }
-.client:first-child { border-top: 0; padding-top: 0 }
-.client > div { min-width: 0 }
-.client b { font-family: var(--f-display); font-size: 18px; display: block }
-.meter { height: 6px; background: var(--chip); border-radius: 99px; overflow: hidden; margin-top: 6px }
-.meter > i { display: block; height: 100%; background: var(--keep) }
-.back { background: none; border: 0; padding: 4px 0; cursor: pointer; color: var(--muted); font-weight: 600; font-size: 14px; justify-self: start }
-.pillar { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line) }
-.pillar:first-of-type { border-top: 0; padding-top: 0 }
-.pillar-head { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: baseline }
-.pillar-head b { font-family: var(--f-display); font-size: 18px; line-height: 1.15 }
-.count { font: 800 22px/1 var(--f-display); color: var(--hot); font-variant-numeric: tabular-nums }
-.mix { display: flex; height: 12px; border-radius: 99px; overflow: hidden; gap: 2px }
-.mix i { display: block; height: 100% }
-.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--muted) }
-.legend span { display: inline-flex; align-items: center; gap: 6px }
-.legend i { width: 9px; height: 9px; border-radius: 2px; display: inline-block }
-ol.qs, ul.plain { margin: 0; padding-left: 20px; display: grid; gap: 5px; font-size: 14px }
-.svc { display: grid; gap: 2px; padding: 10px 0; border-top: 1px solid var(--line) }
-.svc:first-of-type { border-top: 0; padding-top: 0 }
+/* Trends */
+.trend { display: grid; gap: 6px; padding: 12px 0; border-top: 1px solid var(--line); min-width: 0 }
+.trend:first-child { border-top: 0; padding-top: 0 }
+.trend b { font-family: var(--f-display); font-size: 17px; line-height: 1.2 }
 
 nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); z-index: 5 }
 nav.tabs .in { max-width: 620px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); height: var(--tabbar) }
 nav.tabs button { background: none; border: 0; cursor: pointer; font: 700 15px var(--f-display); color: var(--muted); display: grid; place-content: center; gap: 1px }
 nav.tabs button span { font: 500 11px var(--f-body) }
 nav.tabs button[aria-current="page"] { color: var(--hot) }
-.toast { position: fixed; left: 50%; bottom: calc(var(--tabbar) + 14px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 10px; font-size: 13px; z-index: 6; max-width: calc(100% - 32px) }
-
-/* Grids that open up on wide screens */
-.idea-grid { display: grid; gap: 8px }
-.client-grid { display: grid }
-.client-item { padding: 12px 0; border-top: 1px solid var(--line) }
-.client-grid > .client-item:first-child { border-top: 0; padding-top: 0 }
-.client-grid > form { grid-column: 1 / -1 }
 .side-brand { display: none }
-/* Breakdown: one column on phones in reading order, two columns on desktop */
-.bd-grid { display: flex; flex-direction: column; gap: 16px }
-.bd-side, .bd-main { display: contents }
-.o1 { order: 1 } .o2 { order: 2 } .o3 { order: 3 } .o4 { order: 4 } .o5 { order: 5 } .o6 { order: 6 } .o7 { order: 7 }
+.toast { position: fixed; left: 50%; bottom: calc(var(--tabbar) + 14px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 10px; font-size: 13px; z-index: 6; max-width: calc(100% - 32px) }
+.ideas-layout { display: grid; gap: 16px }
 
 @media (min-width: 1000px) {
-  :root { --tabbar: 0px; --side: 232px }
-  body { font-size: 15.5px }
-  .wrap { max-width: none; margin: 0 0 0 var(--side); padding-inline: 44px; padding-block: 32px 56px }
-  .wrap > * { max-width: 1240px }
+  :root { --tabbar: 0px; --side: 220px }
+  .wrap { max-width: none; margin: 0 0 0 var(--side); padding-inline: 40px; padding-block: 28px 56px }
+  .wrap > * { max-width: 1320px }
   .top .brand { display: none }
   .top { justify-content: flex-end; margin-bottom: 4px }
-  .h1 { font-size: 38px }
+  .h1 { font-size: 36px }
   nav.tabs { top: 0; right: auto; width: var(--side); border-top: 0; border-right: 1px solid var(--line); padding: 0; display: flex; flex-direction: column }
-  .side-brand { display: block; font: 800 26px/1 var(--f-display); letter-spacing: -.02em; padding: 30px 28px 26px }
+  .side-brand { display: block; font: 800 26px/1 var(--f-display); letter-spacing: -.02em; padding: 30px 26px 26px }
   .side-brand i { font-style: normal; color: var(--hot) }
-  nav.tabs .in { grid-template-columns: 1fr; grid-auto-rows: 60px; height: auto; max-width: none; margin: 0; align-content: start; padding-inline: 12px; gap: 4px }
+  nav.tabs .in { grid-template-columns: 1fr; grid-auto-rows: 58px; height: auto; max-width: none; margin: 0; align-content: start; padding-inline: 12px; gap: 4px }
   nav.tabs button { place-content: center start; padding-left: 16px; text-align: left; font-size: 18px; border-radius: 10px }
   nav.tabs button:hover { background: var(--bg) }
   nav.tabs button[aria-current="page"] { background: var(--hot-soft) }
   .toast { bottom: 28px; left: calc(50% + var(--side) / 2) }
-  .idea-grid { grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; align-items: start }
-  .trend { padding: 20px 22px }
-  .trend h3 { font-size: 24px }
-  .client-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 36px }
-  .client-grid > .client-item:nth-child(2) { border-top: 0; padding-top: 0 }
-  .bd-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 8fr); gap: 20px; align-items: start }
-  .bd-side { display: grid; gap: 16px; position: sticky; top: 20px; max-height: calc(100vh - 40px); overflow-y: auto; padding-right: 2px }
-  .bd-main { display: grid; gap: 16px }
-  .bd-main .idea-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) }
-  .trend .for .btn.hot { flex: 0 0 auto !important; min-width: 220px }
-  .trend > .small { max-width: 75ch }
+  .ideas-layout { grid-template-columns: 300px minmax(0, 1fr); gap: 24px; align-items: start }
+  .rail { position: sticky; top: 20px; max-height: calc(100vh - 40px); overflow-y: auto }
+  .feed { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; align-items: start }
+  .feed > .batch-sep, .feed > .span { grid-column: 1 / -1 }
 }
 </style>
 
@@ -193,7 +152,7 @@ const same = (a, b) => str(a).toLowerCase() === str(b).toLowerCase();
 const clone = o => JSON.parse(JSON.stringify(o));
 const val = id => { const el = document.getElementById(id); return el ? el.value.trim() : ""; };
 const thisMonth = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}`; };
-const monthName = (m = thisMonth()) => new Date(+m.slice(0, 4), +m.slice(5, 7) - 1, 1).toLocaleDateString(undefined, { month: "long" });
+const monthName = () => new Date().toLocaleDateString(undefined, { month: "long" });
 const daysAgo = ts => Math.max(0, Math.floor((Date.now() - (ts || 0)) / 864e5));
 let toastT;
 function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 2200); }
@@ -206,17 +165,16 @@ async function copy(text) {
 
 // ---------- constants ----------
 const PLATFORMS = ["TikTok", "Instagram", "Facebook", "YouTube", "Other"];
-const COMPLIANCE = "If a client is in health, hormones, med spa, supplements, fitness results, finance or legal: no cure, outcome, dosing or income claims, and point viewers to a licensed provider where it matters.";
-const EXAMPLE_TREND = {
-  id: "ex_trend", example: true, kind: "trend", platform: "TikTok", name: "“Things in my job that just make sense”",
-  what: "Quick cuts of small, satisfying details from someone's work with on-screen text, set to a calm trending sound.",
-  ideas: [
-    { clientName: "Summit Roofing (example)", title: "Roofing details that just make sense", hook: "Things on a roof that just make sense.", film: ["Close-up: nail gun sinking a perfect row", "Drip edge sliding into place", "Drone or ladder shot of clean shingle lines", "Crew tossing old shingles into the dumpster"], caption: "Tiny details, big difference. Which one got you?", why: "Satisfying B-roll you can grab on any job in 10 minutes." },
-    { clientName: "Iron Temple Gym (example)", title: "Gym things that just make sense", hook: "Things in this gym that just make sense.", film: ["Plates racked by weight, slow pan", "Chalk bowl refill close-up", "Coach fixing a squat with one cue", "Towel folded on every bench"], caption: "The small stuff is why members stay.", why: "Shows the gym's standards without a sales pitch." },
-  ],
-};
+const STARTER_INDUSTRIES = ["Construction", "Landscaping", "Roofing", "Fitness", "Med spa", "Restaurants"];
+const COMPLIANCE = "For health, hormones, med spa, supplements, fitness results, finance or legal: no cure, outcome, dosing or income claims.";
+const FEED_MAX = 90;
+const EXAMPLES = [
+  { id: "ex1", example: true, trend: "Things in my job that just make sense", industry: "Roofing", title: "Roofing details that just make sense", hook: "Things on a roof that just make sense.", film: ["Nail gun sinking a perfect row, close-up", "Drip edge sliding into place", "Wide shot of clean shingle lines", "Old shingles going into the dumpster"], caption: "Tiny details, big difference. Which one got you?" },
+  { id: "ex2", example: true, trend: "POV: you hired the right crew", industry: "Landscaping", title: "POV: the yard you came home to", hook: "POV: you hired the right landscaping crew.", film: ["Homeowner pulling into the driveway", "Slow reveal of the finished patio", "Crew packing up, clean site", "Homeowner's reaction"], caption: "Left for work with a mud pit. Came home to this." },
+  { id: "ex3", example: true, trend: "Rating things out of 10", industry: "Fitness", title: "Coach rates gym habits out of 10", hook: "Rating your gym habits out of 10. Be honest.", film: ["Coach to camera with a scorecard", "Member skipping warm-up: 2/10", "Re-racking weights: 10/10", "Coach's final verdict"], caption: "Where do you land? Be honest in the comments." },
+];
 
-// ---------- storage: private db per person, else this browser ----------
+// ---------- storage: private to your Claude account, else this browser ----------
 const LOCAL_KEY = "trendboard.v1";
 const store = {
   mode: "local", docs: lsGet(LOCAL_KEY, {}), col: null, listeners: [],
@@ -255,242 +213,188 @@ const store = {
   },
   emit() { this.listeners.forEach(f => f()); },
 };
-const edit = (doc, fn) => { const next = clone(doc); fn(next); return store.put(next); };
-const clients = () => store.all("client").sort((a, b) => str(a.name).localeCompare(str(b.name)));
 const trends = () => store.all("trend");
-const saved = () => store.all("idea");
-const savedThisMonth = cid => saved().filter(i => i.clientId === cid && i.month === thisMonth());
+const saved = () => store.all("star");
+const feed = () => arr((store.get("feed") || {}).ideas);
+const prefs = () => ({ industries: [], ...(store.get("prefs") || {}) });
+const isStarred = i => saved().some(s => s.srcId === i.id || s.id === i.id);
 
 // ---------- Claude ----------
 let sample = null, blocked = false;
 const live = () => !!sample && !blocked;
 const ERR = {
-  not_granted: "Claude access is off for this page. Allow it when asked to generate ideas.",
+  not_granted: "Claude access is off for this page. Allow it when asked to make ideas.",
   rate_limited: "Too many requests right now. Wait a minute, then try again.",
   invalid_json: "The answer came back in the wrong shape. Tap the button again.",
-  refused: "Claude declined that one. Reword the trend and try again.",
+  refused: "Claude declined that one. Try a different trend or industry.",
 };
 const errMsg = e => ERR[e && e.code] || "Couldn't reach Claude. Check your connection and try again.";
-const state = { tab: lsGet("trendboard.tab", "trends"), pick: {}, busy: null, ctl: null, note: "", noteFor: null, bankClient: "all", editClient: null, showAdd: false, clientView: null };
+const state = { tab: lsGet("trendboard.tab2", "ideas"), industry: lsGet("trendboard.ind", ""), trendId: "all", busy: null, ctl: null, note: "", showAdd: false, confirm: null };
 
 async function ask(key, prompt) {
-  if (!live()) { state.note = blocked ? ERR.not_granted : "Generating ideas needs Claude. Open this page in the Claude app."; state.noteFor = key; render(); return null; }
-  state.busy = key; state.note = ""; state.noteFor = null; state.ctl = new AbortController(); render();
+  if (!live()) { state.note = blocked ? ERR.not_granted : "Making ideas needs Claude. Open this page in the Claude app."; render(); return null; }
+  state.busy = key; state.note = ""; state.ctl = new AbortController(); render();
   try { return await sample.json(prompt, { signal: state.ctl.signal, cache: false }); }
   catch (e) {
     if (e && ["not_granted", "sampling_disabled", "capability_disabled", "capability_removed"].includes(e.code)) { blocked = true; setMode(); }
-    state.note = e && e.code === "cancelled" ? "Stopped." : errMsg(e); state.noteFor = key; return null;
+    state.note = e && e.code === "cancelled" ? "Stopped." : errMsg(e); return null;
   } finally { state.busy = null; state.ctl = null; render(); }
 }
 const listOf = out => Array.isArray(out) ? out : out && (out.ideas || out.trends || out.items) || [];
-const productList = c => str(c.products).split(/\n+/).map(str).filter(Boolean);
-const clientBlock = c => `- ${c.name}: ${c.industry || "industry not set"}. Sells: ${c.sells || "not set"}. Audience: ${c.audience || "not set"}. Notes: ${c.notes || "none"}.${
-  productList(c).length ? ` Products: ${productList(c).slice(0, 15).join(", ")}.` : ""}${
-  c.goals ? ` Content the creator wants to make for them: ${c.goals}.` : ""}${
-  c.breakdown ? ` Content pillars: ${arr(c.breakdown.pillars).map(p => p.name).join(", ")}.` : ""}`;
-const IDEA_SHAPE = `"clientName" (exactly as written above), "title" (max 60 chars), "hook" (first line spoken or on screen, max 14 words), "film" (3-4 short shot lines: what to film on-site), "caption" (ready to post, under 180 chars), "why" (1 short sentence: why it works for this client)`;
-function normIdea(x, cs) {
-  const c = cs.find(c => same(c.name, x.clientName)) || (cs.length === 1 ? cs[0] : null);
-  if (!c || !str(x.hook)) return null;
-  return { clientId: c.id, clientName: c.name, title: str(x.title, "Clip idea").slice(0, 80), hook: str(x.hook), film: arr(x.film).map(str).filter(Boolean).slice(0, 5), caption: str(x.caption), why: str(x.why) };
+const IDEA_SHAPE = `"trend" (the trend it uses), "industry" (the industry it's for), "title" (max 60 chars), "hook" (first line spoken or on screen, max 14 words), "film" (3-4 short shot lines), "caption" (ready to post, under 160 chars)`;
+const normIdea = x => str(x && x.hook) ? { id: uid("gen"), trend: str(x.trend), industry: str(x.industry), title: str(x.title, "Clip idea").slice(0, 80), hook: str(x.hook), film: arr(x.film).map(str).filter(Boolean).slice(0, 5), caption: str(x.caption) } : null;
+const avoid = () => [...feed(), ...saved()].slice(0, 40).map(i => i.title);
+const industryLine = () => state.industry ? `Make every idea for this industry: ${state.industry}.` : `Spread ideas across local businesses the creator might film: ${[...new Set([...prefs().industries, ...STARTER_INDUSTRIES])].slice(0, 6).join(", ")}.`;
+
+async function pushFeed(ideas, label) {
+  const batch = ideas.map(i => ({ ...i, batch: label }));
+  await store.put({ kind: "feed", id: "feed", ideas: [...batch, ...feed()].slice(0, FEED_MAX) });
 }
-const avoidFor = cs => saved().filter(i => cs.some(c => c.id === i.clientId)).slice(0, 40).map(i => i.title);
 
-async function ideasForTrend(t, cs, per = 3) {
-  const out = await ask(t.id, `You are a short-form strategist for a videographer who films monthly retainer content for local businesses (about 12 clips per client per month, filmed on-site in batches).
+async function moreIdeas() {
+  const ts = state.trendId === "all" ? trends().slice(0, 12) : trends().filter(t => t.id === state.trendId);
+  const out = await ask("more", `You are a short-form strategist feeding a videographer a constant stream of clip ideas. They film on location for local businesses with a phone and one mic, so every clip must be shootable on-site in about 15 minutes.
 
-Trend${t.platform ? ` spotted on ${t.platform}` : ""}: ${t.name}
-What happens in it: ${t.what}
+${industryLine()}
 
-Turn this trend into ${per} clip ideas for EACH client below. Keep what makes the trend recognizable (structure, phrasing, sound style, on-screen text) and make it about the client's real business. Every clip must be filmable at the client's location in about 15 minutes. If the trend truly doesn't fit a client, give fewer for them rather than forcing it.
+${ts.length ? `Trends to build from${ts.length > 1 ? " (use a mix, and name the one each idea uses)" : ""}:\n${ts.map((t, i) => `${i + 1}. ${t.name}: ${t.what}`).join("\n")}` : "No trends logged, so use short-form formats you know are reliably working on TikTok, Instagram Reels and Facebook Reels, and name the format as the trend."}
 
-Clients:
-${cs.map(clientBlock).join("\n")}
-
-Don't repeat these saved ideas: ${avoidFor(cs).join(" | ") || "none"}
+Give 6 fresh ideas. Keep what makes each trend recognizable (structure, phrasing, on-screen text) and make it about the real work in the industry. Vary the formats and angles. Hooks should sound like a person, not an ad.
+Don't repeat any of these: ${avoid().join(" | ") || "none"}
 ${COMPLIANCE}
 
-Reply with ONLY a JSON array of objects: ${IDEA_SHAPE}.`);
+Reply with ONLY a JSON array of 6 objects: ${IDEA_SHAPE}.`);
   if (!out) return;
-  const ideas = listOf(out).map(x => normIdea(x, cs)).filter(Boolean);
-  if (!ideas.length) { state.note = ERR.invalid_json; state.noteFor = t.id; render(); return; }
-  const keep = arr(t.ideas).filter(i => !cs.some(c => c.id === i.clientId));
-  await edit(t, d => { d.ideas = [...keep, ...ideas.map(i => ({ ...i, id: uid("gen") }))]; });
+  const ideas = listOf(out).map(normIdea).filter(Boolean);
+  if (!ideas.length) { state.note = ERR.invalid_json; render(); return; }
+  await pushFeed(ideas, [state.industry || "Mixed industries", state.trendId === "all" ? (ts.length ? "all trends" : "working formats") : ts[0].name].join(" · "));
+}
+
+async function likeThis(i) {
+  const out = await ask("like_" + i.id, `You are a short-form strategist. The creator liked this clip idea and wants 3 more in the same spirit, each a clear variation (different angle, setting, or twist), still built on the same trend and industry.
+
+Trend: ${i.trend || "none named"}
+Industry: ${i.industry || state.industry || "local business"}
+Idea: ${i.title}. Hook: ${i.hook}. Shots: ${arr(i.film).join("; ")}
+
+Don't repeat: ${avoid().join(" | ")}
+${COMPLIANCE}
+
+Reply with ONLY a JSON array of 3 objects: ${IDEA_SHAPE}.`);
+  if (!out) return;
+  const ideas = listOf(out).map(normIdea).filter(Boolean);
+  if (!ideas.length) { state.note = ERR.invalid_json; render(); return; }
+  await pushFeed(ideas, `More like “${i.title}”`);
+  if (state.tab !== "ideas") go("ideas"); else scrollTo({ top: 0, behavior: "smooth" });
 }
 
 async function findTrends() {
-  const cs = clients();
-  const out = await ask("find", `You help a videographer who makes monthly retainer content for local businesses find trends to build clips on for ${monthName()} ${new Date().getFullYear()}.
+  const out = await ask("find", `You help a videographer who films short-form content for local businesses find trends to build clips on in ${monthName()} ${new Date().getFullYear()}.
+Industries they film: ${[state.industry, ...prefs().industries].filter(Boolean).join(", ") || "local service businesses (construction, trades, fitness, health, restaurants)"}.
 
-Their clients:
-${cs.length ? cs.map(clientBlock).join("\n") : "- No clients added yet; think local service businesses in general."}
-
-List 8 trends to work from this month:
-- 4 short-form formats that are reliably working on TikTok, Instagram Reels and Facebook Reels right now as far as you know (recognizable structures, text-on-screen formats, POV styles, challenge formats).
-- 4 moments specific to ${monthName()}: holidays, awareness months, seasonal demand or customer worries that fit these clients' industries.
+List 8 trends:
+- 5 short-form formats that are reliably working on TikTok, Instagram Reels and Facebook Reels as far as you know (recognizable structures, text-on-screen formats, POV styles, challenges).
+- 3 moments specific to ${monthName()}: holidays, awareness months, or seasonal customer demand.
 You can't see live platform data, so don't name a specific sound or claim numbers. Describe each so a creator could recreate it.
 
 Reply with ONLY a JSON array of 8 objects: "name" (what people would call it, max 50 chars), "what" (1-2 sentences: what happens in it), "kind" ("Format" or "${monthName()}").`);
   if (!out) return;
   const list = listOf(out).filter(x => x && str(x.name) && str(x.what));
-  if (!list.length) { state.note = ERR.invalid_json; state.noteFor = "find"; render(); return; }
-  const base = Date.now(); let n = 0;
-  for (const x of list) await store.put({ kind: "trend", id: uid("trend"), created: base - n++, name: str(x.name).slice(0, 70), what: str(x.what), platform: "", found: str(x.kind) || "Format", month: thisMonth(), ideas: [] });
+  if (!list.length) { state.note = ERR.invalid_json; render(); return; }
+  const base = Date.now();
+  for (const [n, x] of list.entries()) await store.put({ kind: "trend", id: uid("trend"), created: base - n, name: str(x.name).slice(0, 70), what: str(x.what), found: str(x.kind) || "Format", month: thisMonth() });
   toast(`${list.length} trends added`);
 }
 
-async function fillMonth(c) {
-  const need = Math.max(1, (+c.clips || 12) - savedThisMonth(c.id).length);
-  const ts = trends().filter(t => daysAgo(t.created) <= 35).slice(0, 12);
-  const mix = c.breakdown ? arr(c.breakdown.pillars) : [];
-  if (!ts.length && !mix.length) { toast("Add trends or break down this client first"); go("trends"); return; }
-  const out = await ask("fill_" + c.id, `You are a short-form strategist for a videographer. ${c.name} is a monthly retainer client and still needs ${need} clip ideas for ${monthName()}.
-
-Client:
-${clientBlock(c)}
-
-${mix.length ? `Follow their monthly content mix (scale to ${need} clips): ${mix.map(p => `${p.name} ${p.per_month}`).join(", ")}. Product education clips should each teach one clear thing about one product.\n` : ""}${ts.length ? `Trends to build from (use them where they fit; name the one each idea uses, or "" if none):
-${ts.map((t, i) => `${i + 1}. ${t.name}: ${t.what}`).join("\n")}
-` : ""}
-Every clip must be filmable at ${c.name}'s location, and the whole set should be shootable in 1-2 visits. Mix formats so the month doesn't feel repetitive.
-Don't repeat: ${avoidFor([c]).join(" | ") || "none"}
-${COMPLIANCE}
-
-Reply with ONLY a JSON array of ${need} objects: ${IDEA_SHAPE}, "trend" (the trend name it uses, or the content pillar if no trend).`);
-  if (!out) return;
-  const ideas = listOf(out).map(x => { const i = normIdea({ ...x, clientName: c.name }, [c]); return i && { ...i, trend: str(x.trend) }; }).filter(Boolean);
-  if (!ideas.length) { state.note = ERR.invalid_json; state.noteFor = "fill_" + c.id; render(); return; }
-  for (const i of ideas) await saveIdea(i, true);
-  toast(`${ideas.length} ideas added to ${c.name}`);
-  state.bankClient = c.id; go("bank");
+function setIndustry(v) {
+  state.industry = str(v); lsSet("trendboard.ind", state.industry);
+  if (state.industry && !prefs().industries.some(x => same(x, state.industry)))
+    store.put({ kind: "prefs", id: "prefs", ...prefs(), industries: [state.industry, ...prefs().industries].slice(0, 12) });
+  render();
 }
-
-async function breakDown(c) {
-  const clips = +c.clips || 12;
-  const out = await ask("bd_" + c.id, `You are a content strategist for a videographer who sells monthly video retainers (${clips} short-form clips a month, filmed on-site) to local businesses. They also offer business-owner podcasts. Break down how they can help this client grow with video, so they can plan the work and pitch it.
-
-Client: ${c.name}
-Industry: ${c.industry || "not set"}
-What they sell: ${c.sells || "not set"}
-Customers: ${c.audience || "not set"}
-Notes: ${c.notes || "none"}
-Products / services (one per line):
-${productList(c).join("\n") || "none listed"}
-
-What the creator wants to do for them: ${c.goals || "not said"}
-
-Everything else the creator gathered (website copy, call notes, reviews):
-${str(c.info).slice(0, 7000) || "nothing yet"}
-
-Use only what's above for facts about the company. Don't invent products, prices, awards or history; if something is unknown, say so in "gaps" or ask it in "questions".
-${COMPLIANCE}
-
-An IDEA is {"title" (max 60 chars), "hook" (max 14 words), "film" (3-4 short shot lines), "caption" (under 180 chars), "why" (1 sentence)}.
-
-Reply with ONLY a JSON object:
-"snapshot": {"what" (1-2 sentences), "customers" (1 sentence), "edge" (what sets them apart, 1 sentence), "gaps" (2-3 things their video/social is probably missing)},
-"pillars": 3-5 content pillars that make up the monthly mix, each {"name", "why" (1 sentence), "per_month" (number of clips; all pillars add up to exactly ${clips}), "ideas" (2 IDEAs)},
-"product_series": 4-8 educational reels, one product each, each {"product", "angle" (e.g. how to choose, common mistake, how it's installed, vs the alternative, how to care for it), "idea" (1 IDEA)},
-"services": 3-5 other ways the creator can help beyond the monthly clips, each {"name", "why" (1 sentence), "pitch" (1 sentence the creator could say to the owner)},
-"questions": 5-8 questions to ask the client at the next meeting to make the content better.`);
-  if (!out || typeof out !== "object") return;
-  const idea = x => x && str(x.hook) ? { id: uid("gen"), clientId: c.id, clientName: c.name, title: str(x.title, "Clip idea").slice(0, 80), hook: str(x.hook), film: arr(x.film).map(str).filter(Boolean).slice(0, 5), caption: str(x.caption), why: str(x.why) } : null;
-  const sn = out.snapshot || {};
-  const bd = {
-    created: Date.now(),
-    snapshot: { what: str(sn.what), customers: str(sn.customers), edge: str(sn.edge), gaps: arr(sn.gaps).map(str).filter(Boolean) },
-    pillars: arr(out.pillars).map(p => ({ name: str(p.name), why: str(p.why), per_month: Math.max(0, Math.round(+p.per_month || 0)), ideas: arr(p.ideas).map(x => { const i = idea(x); return i && { ...i, trend: str(p.name) }; }).filter(Boolean) })).filter(p => p.name),
-    product_series: arr(out.product_series).map(p => ({ product: str(p.product), angle: str(p.angle), idea: (i => i && { ...i, trend: "Product education" })(idea(p.idea)) })).filter(p => p.product && p.idea),
-    services: arr(out.services).map(x => ({ name: str(x.name), why: str(x.why), pitch: str(x.pitch) })).filter(x => x.name),
-    questions: arr(out.questions).map(str).filter(Boolean),
-  };
-  if (!bd.pillars.length) { state.note = ERR.invalid_json; state.noteFor = "bd_" + c.id; render(); return; }
-  await edit(store.get(c.id), d => { d.breakdown = bd; });
-  toast(`${c.name} broken down`);
+async function star(i) {
+  const hit = saved().find(s => s.srcId === i.id || s.id === i.id);
+  if (hit) { await store.del(hit.id); toast("Removed from saved"); return; }
+  const doc = { ...i, kind: "star", id: uid("star"), srcId: i.id, created: Date.now() }; delete doc.example; delete doc.batch;
+  await store.put(doc); toast("Saved");
 }
-function breakdownText(c) {
-  const b = c.breakdown; if (!b) return "";
-  return [`${c.name}: how video can help`, "", b.snapshot.what, `Customers: ${b.snapshot.customers}`, `What sets them apart: ${b.snapshot.edge}`, "",
-    `Monthly mix (${c.clips || 12} clips):`, ...b.pillars.map(p => `• ${p.name}: ${p.per_month} (${p.why})`), "",
-    "Product education series:", ...b.product_series.map(p => `• ${p.product}: ${p.idea.hook}`), "",
-    "Beyond the monthly clips:", ...b.services.map(x => `• ${x.name}: ${x.pitch}`)].join("\n");
-}
-
-async function saveIdea(i, quiet) {
-  await store.put({ kind: "idea", id: uid("idea"), created: Date.now(), month: thisMonth(), clientId: i.clientId, clientName: i.clientName, trend: i.trend || "", title: i.title, hook: i.hook, film: i.film, caption: i.caption, why: i.why, done: false, genId: i.id || null });
-  if (!quiet) toast(`Saved to ${i.clientName}`);
-}
-const isSaved = g => saved().some(s => s.genId && s.genId === g.id);
+const ideaText = i => [i.title, `Hook: ${i.hook}`, ...arr(i.film).map(f => "• " + f), i.caption ? `Caption: ${i.caption}` : ""].filter(Boolean).join("\n");
 
 // ---------- views ----------
-function go(tab) { if (tab !== "clients") state.clientView = null; state.tab = tab; lsSet("trendboard.tab", tab); state.note = ""; render(); scrollTo({ top: 0 }); }
-const busyRow = text => h("div", { class: "row between" }, h("div", { class: "status" }, h("span", { class: "pulse" }), text), h("button", { class: "btn sm", onclick: () => state.ctl && state.ctl.abort() }, "Stop"));
-const noteFor = key => state.note && state.noteFor === key ? h("div", { class: "note", text: state.note }) : null;
+function go(tab) { state.tab = tab; lsSet("trendboard.tab2", tab); state.note = ""; render(); scrollTo({ top: 0 }); }
+const busyRow = text => h("div", { class: "row between span" }, h("div", { class: "status" }, h("span", { class: "pulse" }), text), h("button", { class: "btn sm", onclick: () => state.ctl && state.ctl.abort() }, "Stop"));
+const noteEl = () => state.note ? h("div", { class: "note span", text: state.note }) : null;
 
-function ideaCard(i, { onSave, savedFlag, bank } = {}) {
-  const text = [i.hook, "", ...arr(i.film).map(f => "• " + f), "", i.caption].join("\n");
-  return h("div", { class: "idea" + (savedFlag ? " saved" : "") + (i.done ? " done" : "") },
-    h("div", { class: "row between" }, h("div", { class: "title", text: i.title }), bank && i.trend ? h("span", { class: "tag hot", text: i.trend }) : null),
+function ideaCard(i) {
+  const st = !i.example && isStarred(i), busy = state.busy === "like_" + i.id;
+  return h("article", { class: "idea" + (st ? " starred" : "") },
+    h("div", { class: "row", style: "gap:6px" }, i.example ? h("span", { class: "tag ex", text: "Example" }) : null, i.trend ? h("span", { class: "tag hot", text: i.trend }) : null, i.industry ? h("span", { class: "tag", text: i.industry }) : null),
+    h("div", { class: "title", text: i.title }),
     h("div", { class: "hook", text: i.hook }),
     arr(i.film).length ? h("ul", null, i.film.map(f => h("li", { text: f }))) : null,
     i.caption ? h("div", { class: "cap", text: i.caption }) : null,
-    i.why ? h("div", { class: "small muted", text: i.why }) : null,
-    h("div", { class: "row" },
-      onSave ? h("button", { class: "btn sm " + (savedFlag ? "" : "keep"), disabled: savedFlag || null, onclick: onSave }, savedFlag ? "Saved ✓" : "Save to client") : null,
-      bank ? h("button", { class: "btn sm " + (i.done ? "" : "keep"), onclick: () => edit(i, d => { d.done = !d.done; }) }, i.done ? "Filmed ✓" : "Mark filmed") : null,
-      h("button", { class: "btn sm ghost", onclick: () => copy(text) }, "Copy"),
-      bank ? h("button", { class: "btn sm ghost", onclick: () => store.del(i.id) }, "Delete") : null));
+    busy ? busyRow("Writing 3 more like this…") : h("div", { class: "row", style: "gap:4px" },
+      i.example ? null : h("button", { class: "btn sm", "aria-pressed": String(st), onclick: () => star(i) }, st ? h("span", { class: "star", text: "★ Saved" }) : "☆ Save"),
+      i.example ? null : h("button", { class: "btn sm ghost", disabled: state.busy || null, onclick: () => likeThis(i) }, "More like this"),
+      h("button", { class: "btn sm ghost", onclick: () => copy(ideaText(i)) }, "Copy")));
 }
 
-function trendCard(t) {
-  const cs = clients();
-  const pick = state.pick[t.id] || (state.pick[t.id] = new Set(cs.map(c => c.id)));
-  const chosen = cs.filter(c => pick.has(c.id));
-  const busy = state.busy === t.id;
-  const groups = cs.map(c => [c, arr(t.ideas).filter(i => i.clientId === c.id)]).filter(g => g[1].length);
-  const exampleGroups = t.example ? [[null, t.ideas]] : [];
-  return h("article", { class: "trend" },
-    h("div", { class: "row" },
-      t.example ? h("span", { class: "tag ex", text: "Example" }) : null,
-      t.found ? h("span", { class: "tag hot", text: t.found }) : t.platform ? h("span", { class: "tag hot", text: t.platform }) : null,
-      !t.example ? h("span", { class: "tag", text: daysAgo(t.created) === 0 ? "Today" : `${daysAgo(t.created)}d ago` }) : null),
-    h("h3", { text: t.name }),
-    h("div", { class: "small", text: t.what }),
-    t.link && /^https?:\/\//.test(t.link) ? h("a", { href: t.link, target: "_blank", rel: "noopener", class: "small", style: "color:var(--hot);overflow-wrap:anywhere", text: t.link }) : null,
-    t.example ? null : h("div", { class: "for" },
-      cs.length ? [
-        h("div", { class: "label", text: "Ideas for" }),
-        h("div", { class: "chips" }, cs.map(c => h("button", { class: "chip", "aria-pressed": String(pick.has(c.id)), onclick: () => { pick.has(c.id) ? pick.delete(c.id) : pick.add(c.id); render(); } }, c.name))),
-        busy ? busyRow(`Writing ideas for ${chosen.length} client${chosen.length === 1 ? "" : "s"}…`) :
-          h("div", { class: "row" },
-            h("button", { class: "btn hot", style: "flex:1", disabled: !chosen.length || state.busy || null, onclick: () => ideasForTrend(t, chosen) }, groups.length ? "Get new ideas" : "Get ideas"),
-            h("button", { class: "btn ghost sm", onclick: () => { if (state.confirm === t.id) { store.del(t.id); state.confirm = null; } else { state.confirm = t.id; render(); } } }, state.confirm === t.id ? "Tap to remove" : "Remove")),
-      ] : h("div", { class: "row between" }, h("span", { class: "small muted", text: "Add your retainer clients to get ideas." }), h("button", { class: "btn sm", onclick: () => { state.editClient = "new"; go("clients"); } }, "Add client"))),
-    noteFor(t.id),
-    [...groups, ...exampleGroups].map(([c, ideas]) => h("div", { class: "group" },
-      c ? h("div", { class: "group-head" }, h("b", { text: c.name }),
-        ideas.every(isSaved) ? h("span", { class: "tag keep", text: "All saved" }) : h("button", { class: "btn sm ghost", onclick: async () => { for (const i of ideas) if (!isSaved(i)) await saveIdea(i, true); toast(`Saved to ${c.name}`); } }, "Save all")) : null,
-      h("div", { class: "idea-grid" }, ideas.map(i => c ? ideaCard(i, { savedFlag: isSaved(i), onSave: () => saveIdea(i) }) : ideaCard(i, {}))))));
+function controls() {
+  const ts = trends();
+  const inds = [...prefs().industries, ...STARTER_INDUSTRIES].filter((x, i, a) => a.findIndex(y => same(x, y)) === i).slice(0, 10);
+  const submitInd = e => { e.preventDefault(); setIndustry(val("ind")); };
+  return h("div", { class: "stack" },
+    h("div", { class: "label", text: "Ideas for" }),
+    h("form", { class: "inline", onsubmit: submitInd },
+      h("input", { class: "t", id: "ind", value: state.industry, placeholder: "Any industry, e.g. hardscaping", autocomplete: "off", "aria-label": "Industry" }),
+      h("button", { class: "btn", type: "submit" }, "Set")),
+    h("div", { class: "chips" },
+      h("button", { class: "chip", "aria-pressed": String(!state.industry), onclick: () => setIndustry("") }, "Mixed"),
+      inds.map(x => h("button", { class: "chip", "aria-pressed": String(same(x, state.industry)), onclick: () => setIndustry(x) }, x))),
+    h("div", { class: "label", style: "margin-top:6px", text: "From" }),
+    h("div", { class: "chips" },
+      h("button", { class: "chip", "aria-pressed": String(state.trendId === "all"), onclick: () => { state.trendId = "all"; render(); } }, ts.length ? `All trends (${ts.length})` : "Working formats"),
+      ts.slice(0, 14).map(t => h("button", { class: "chip", title: t.what, "aria-pressed": String(state.trendId === t.id), onclick: () => { state.trendId = t.id; render(); } }, t.name))),
+    h("button", { class: "btn sm ghost", style: "justify-self:start;padding-left:0", onclick: () => go("trends") }, ts.length ? "Manage trends ›" : "+ Add trends ›"));
+}
+
+function viewIdeas() {
+  const f = feed(), busy = state.busy === "more";
+  const cards = []; let last = null;
+  for (const i of f) { if (i.batch !== last) { cards.push(h("div", { class: "batch-sep", text: i.batch || "Ideas" })); last = i.batch; } cards.push(ideaCard(i)); }
+  const moreBtn = busy ? busyRow("Writing 6 ideas… about 20 seconds") :
+    h("button", { class: "btn hot big block span", disabled: state.busy || null, onclick: moreIdeas }, f.length ? "More ideas" : "Start the ideas");
+  return [
+    h("div", { class: "stack" }, h("h1", { class: "h1", text: "Ideas, on tap" }),
+      h("p", { class: "muted small", style: "margin:0", text: "Pick an industry and a trend, or leave both open. Every tap gives you 6 new clip ideas. Star the keepers." })),
+    h("div", { class: "ideas-layout" },
+      h("aside", { class: "rail panel" }, controls()),
+      h("section", { class: "feed" },
+        moreBtn, noteEl(),
+        f.length ? cards : [h("div", { class: "batch-sep", text: "Examples" }), EXAMPLES.map(ideaCard)],
+        f.length > 6 && !busy ? h("button", { class: "btn block span", disabled: state.busy || null, onclick: () => { scrollTo({ top: 0, behavior: "smooth" }); moreIdeas(); } }, "More ideas") : null,
+        f.length ? h("button", { class: "btn sm ghost span", style: "justify-self:center", onclick: () => { if (state.confirm === "feed") { state.confirm = null; store.put({ kind: "feed", id: "feed", ideas: [] }); } else { state.confirm = "feed"; render(); } } }, state.confirm === "feed" ? "Tap again to clear the feed (saved ideas stay)" : "Clear feed") : null)),
+  ];
 }
 
 function viewTrends() {
-  const ts = trends();
+  const ts = trends(), busy = state.busy === "find";
   const submit = e => {
     e.preventDefault();
     const name = val("t-name"), what = val("t-what");
     if (!name || !what) { toast("Add the trend's name and what happens in it"); return; }
     state.showAdd = false;
-    store.put({ kind: "trend", id: uid("trend"), created: Date.now(), name, what, platform: val("t-plat"), link: val("t-link"), ideas: [] });
+    store.put({ kind: "trend", id: uid("trend"), created: Date.now(), name, what, platform: val("t-plat"), link: val("t-link") });
     toast("Trend added");
   };
   return [
-    h("div", { class: "stack" }, h("h1", { class: "h1", text: "Trends → clips for your clients" }),
-      h("p", { class: "muted small", style: "margin:0", text: "Add a trend you saw or let Claude find this month's. Pick your clients and get clip ideas you can film on their next shoot." })),
+    h("div", { class: "stack" }, h("h1", { class: "h1", text: "Trends" }),
+      h("p", { class: "muted small", style: "margin:0", text: "Everything here feeds your ideas. Add what you see in your feed, or let Claude suggest formats and this month's moments." })),
     h("div", { class: "row" },
       h("button", { class: "btn hot", style: "flex:1", onclick: () => { state.showAdd = !state.showAdd; render(); } }, state.showAdd ? "Close" : "+ Add a trend I saw"),
-      state.busy === "find" ? null : h("button", { class: "btn", style: "flex:1", disabled: state.busy || null, onclick: findTrends }, `Find ${monthName()} trends`)),
-    state.busy === "find" ? busyRow(`Finding ${monthName()} trends… about 30 seconds`) : null,
-    noteFor("find"),
+      busy ? null : h("button", { class: "btn", style: "flex:1", disabled: state.busy || null, onclick: findTrends }, `Find ${monthName()} trends`)),
+    busy ? busyRow(`Finding ${monthName()} trends… about 30 seconds`) : null,
+    noteEl(),
     state.showAdd ? h("form", { class: "panel stack", onsubmit: submit },
       h("div", { class: "fields" },
         h("label", { class: "f full" }, "What people call it", h("input", { class: "t", id: "t-name", placeholder: "e.g. “Things in my job that just make sense”", autocomplete: "off" })),
@@ -498,133 +402,34 @@ function viewTrends() {
         h("label", { class: "f" }, "Where you saw it", h("select", { class: "t", id: "t-plat" }, PLATFORMS.map(p => h("option", { value: p }, p)))),
         h("label", { class: "f" }, "Link (optional)", h("input", { class: "t", id: "t-link", type: "url", placeholder: "https://" }))),
       h("button", { class: "btn hot", type: "submit" }, "Add trend")) : null,
-    ts.length ? ts.map(trendCard) : [trendCard(EXAMPLE_TREND), h("div", { class: "empty", text: "That's an example. Add a trend you saw, or tap “Find trends”, and your own will show up here." })],
-    ts.length ? h("p", { class: "small muted", style: "margin:0", text: "Found trends come from what Claude knows about formats and the season, not live feeds. The ones you spot yourself will always be the freshest." }) : null,
+    ts.length ? h("section", { class: "panel" }, ts.map(t => h("div", { class: "trend" },
+      h("div", { class: "row between" }, h("b", { text: t.name }),
+        h("div", { class: "row", style: "gap:4px" }, h("span", { class: "tag hot", text: t.found || t.platform || "Trend" }), h("span", { class: "tag", text: daysAgo(t.created) === 0 ? "Today" : `${daysAgo(t.created)}d ago` }))),
+      h("div", { class: "small", text: t.what }),
+      t.link && /^https?:\/\//.test(t.link) ? h("a", { href: t.link, target: "_blank", rel: "noopener", class: "small", style: "color:var(--hot);overflow-wrap:anywhere", text: t.link }) : null,
+      h("div", { class: "row", style: "gap:4px" },
+        h("button", { class: "btn sm hot", disabled: state.busy || null, onclick: () => { state.trendId = t.id; go("ideas"); moreIdeas(); } }, "Ideas from this"),
+        h("button", { class: "btn sm ghost", onclick: () => { if (state.confirm === t.id) { state.confirm = null; if (state.trendId === t.id) state.trendId = "all"; store.del(t.id); } else { state.confirm = t.id; render(); } } }, state.confirm === t.id ? "Tap to remove" : "Remove")))))
+      : h("div", { class: "empty", text: "No trends yet. Without any, ideas come from formats Claude knows are working. Add the ones you spot to make them fresher." }),
+    ts.length ? h("p", { class: "small muted", style: "margin:0", text: "Found trends come from what Claude knows, not live feeds. The ones you spot yourself are always the freshest." }) : null,
   ];
 }
 
-function clientForm(c) {
-  const isNew = !c; c = c || { clips: 12 };
-  const submit = e => {
-    e.preventDefault();
-    const name = val("c-name"); if (!name) { toast("Add the business name"); return; }
-    state.editClient = null;
-    store.put({ ...(isNew ? {} : clone(c)), kind: "client", id: isNew ? uid("client") : c.id, created: c.created || Date.now(), name, industry: val("c-ind"), sells: val("c-sells"), audience: val("c-aud"), notes: val("c-notes"), clips: +val("c-clips") || 12, products: val("c-products"), goals: val("c-goals"), info: val("c-info") });
-    toast(`Saved ${name}`);
-  };
-  return h("form", { class: "panel stack", onsubmit: submit },
-    h("h2", { class: "h2", text: isNew ? "New retainer client" : `Edit ${c.name}` }),
-    h("div", { class: "fields" },
-      h("label", { class: "f full" }, "Business name", h("input", { class: "t", id: "c-name", value: c.name || "", placeholder: "e.g. Summit Roofing" })),
-      h("label", { class: "f" }, "Industry", h("input", { class: "t", id: "c-ind", value: c.industry || "", placeholder: "e.g. Roofing" })),
-      h("label", { class: "f" }, "Clips per month", h("input", { class: "t", id: "c-clips", type: "number", inputmode: "numeric", min: "1", value: c.clips || 12 })),
-      h("label", { class: "f full" }, "What they sell", h("input", { class: "t", id: "c-sells", value: c.sells || "", placeholder: "e.g. Roof replacements, storm repairs" })),
-      h("label", { class: "f full" }, "Who their customers are", h("input", { class: "t", id: "c-aud", value: c.audience || "", placeholder: "e.g. Homeowners 35–65" })),
-      h("label", { class: "f full" }, "Notes", h("textarea", { class: "t", id: "c-notes", rows: "2", placeholder: "Tone, who's comfortable on camera, things to avoid" }, c.notes || "")),
-      h("label", { class: "f full" }, "Products or services, one per line", h("textarea", { class: "t", id: "c-products", rows: "4", placeholder: "e.g.\nPavers\nRetaining wall block\nMulch & stone" }, c.products || "")),
-      h("label", { class: "f full" }, "What you want to do for them", h("textarea", { class: "t", id: "c-goals", rows: "2", placeholder: "e.g. Film job sites and make educational reels about their products" }, c.goals || "")),
-      h("label", { class: "f full" }, "Everything else (paste anything)", h("textarea", { class: "t", id: "c-info", rows: "6", placeholder: "Paste their website's About and product pages, notes from your call, Google reviews, what the owner told you" }, c.info || ""))),
-    h("div", { class: "row" }, h("button", { class: "btn hot", type: "submit" }, "Save client"),
-      h("button", { class: "btn ghost", type: "button", onclick: () => { state.editClient = null; render(); } }, "Cancel"),
-      isNew ? null : h("button", { class: "btn ghost", type: "button", onclick: () => { if (state.confirm === c.id) { store.del(c.id); state.editClient = null; } else { state.confirm = c.id; render(); } } }, state.confirm === c.id ? "Tap again to delete" : "Delete")));
-}
-function viewClients() {
-  const cs = clients();
-  const open = state.clientView && store.get(state.clientView);
-  if (open) return viewBreakdown(open);
+function viewSaved() {
+  const list = saved();
   return [
-    h("div", { class: "row between" }, h("h1", { class: "h1", text: "Retainer clients" }),
-      state.editClient === "new" ? null : h("button", { class: "btn sm", onclick: () => { state.editClient = "new"; render(); } }, "+ Add client")),
-    state.editClient === "new" ? clientForm(null) : null,
-    cs.length ? h("section", { class: "panel client-grid" }, cs.map(c => {
-      if (state.editClient === c.id) return clientForm(c);
-      const n = savedThisMonth(c.id).length, goal = +c.clips || 12, busy = state.busy === "fill_" + c.id;
-      return h("div", { class: "stack client-item" },
-        h("div", { class: "client", style: "border:0;padding:0" },
-          h("div", null, h("b", { text: c.name }), h("span", { class: "small muted", text: [c.industry, `${n} of ${goal} clips saved for ${monthName()}`, c.breakdown ? "Broken down ✓" : ""].filter(Boolean).join(" · ") }),
-            h("div", { class: "meter" }, h("i", { style: `width:${Math.min(100, n / goal * 100)}%` }))),
-          h("button", { class: "btn sm ghost", onclick: () => { state.editClient = c.id; render(); } }, "Edit")),
-        busy ? busyRow(`Filling ${c.name}'s month from your trends…`) : h("div", { class: "row" },
-          h("button", { class: "btn sm " + (c.breakdown ? "" : "hot"), onclick: () => { state.clientView = c.id; render(); scrollTo({ top: 0 }); } }, c.breakdown ? "Breakdown" : "Break it down"),
-          h("button", { class: "btn sm " + (c.breakdown ? "hot" : ""), disabled: state.busy || n >= goal || null, onclick: () => fillMonth(c) }, n >= goal ? "Month is full ✓" : `Fill ${monthName()} (${goal - n})`),
-          h("button", { class: "btn sm", onclick: () => { state.bankClient = c.id; go("bank"); } }, "See clips")),
-        noteFor("fill_" + c.id));
-    })) : state.editClient === "new" ? null : h("div", { class: "panel stack" },
-      h("div", { class: "h2", text: "Add your first client" }),
-      h("p", { class: "small muted", style: "margin:0", text: "Each client gets ideas written for their business, and a clip bank that counts toward their monthly package (12 clips by default)." }),
-      h("button", { class: "btn hot", onclick: () => { state.editClient = "new"; render(); } }, "+ Add client")),
+    h("div", { class: "row between" }, h("h1", { class: "h1", text: "Saved" }),
+      list.length ? h("button", { class: "btn sm", onclick: () => copy(list.map((i, n) => `${n + 1}. ${ideaText(i)}`).join("\n\n")) }, "Copy all") : null),
+    list.length ? h("section", { class: "feed" }, list.map(ideaCard)) : h("div", { class: "empty", text: "Star ideas in your feed and they'll collect here." }),
   ];
 }
 
-const PILLAR_COLORS = ["var(--hot)", "var(--keep)", "var(--ink)", "var(--muted)", "#C88A12"];
-function viewBreakdown(c) {
-  const b = c.breakdown, busy = state.busy === "bd_" + c.id;
-  const hasInfo = str(c.info) || productList(c).length || str(c.goals) || str(c.sells);
-  const ideaOpts = i => ({ savedFlag: isSaved(i), onSave: () => saveIdea(i) });
-  const total = b ? b.pillars.reduce((s, p) => s + p.per_month, 0) || 1 : 1;
-  const fed = state.editClient === c.id ? h("div", { class: "o1" }, clientForm(c)) : h("section", { class: "panel stack o1" },
-    h("div", { class: "row between" }, h("div", { class: "h2", text: "What you've fed in" }), h("button", { class: "btn sm", onclick: () => { state.editClient = c.id; render(); } }, hasInfo ? "Edit info" : "Add info")),
-    hasInfo ? h("div", { class: "small muted", text: `${str(c.info).length ? Math.round(str(c.info).length / 5) + " words of notes" : "No pasted notes yet"} · ${productList(c).length} products listed${c.goals ? " · goal set" : ""}` })
-      : h("p", { class: "small", style: "margin:0", text: "Paste their website's About and product pages, your call notes and their product list. The more you give, the more specific the breakdown." }),
-    busy ? busyRow(`Breaking down ${c.name}… about 30–60 seconds`) :
-      h("button", { class: "btn hot", disabled: state.busy || !hasInfo || null, onclick: () => breakDown(c) }, b ? "Break it down again" : `Break down ${c.name}`),
-    noteFor("bd_" + c.id));
-  const head = [
-    h("button", { class: "back", onclick: () => { state.clientView = null; render(); } }, "‹ All clients"),
-    h("div", { class: "stack" }, h("div", { class: "label", text: "Client breakdown" }), h("h1", { class: "h1", text: c.name }),
-      h("div", { class: "small muted", text: [c.industry, productList(c).length ? `${productList(c).length} products` : "", c.goals].filter(Boolean).join(" · ") })),
-  ];
-  if (!b) return [...head, h("div", { class: "bd-grid" }, h("div", { class: "bd-side" }, fed), h("div", { class: "bd-main" },
-    h("div", { class: "panel empty o2", text: "Your breakdown shows up here: a snapshot of the business, a monthly content mix, one educational reel per product, more services to pitch and questions for your next meeting." })))];
-  const snapshot = h("section", { class: "panel stack o2" }, h("div", { class: "row between" }, h("div", { class: "h2", text: "Snapshot" }), h("button", { class: "btn sm ghost", onclick: () => copy(breakdownText(c)) }, "Copy as pitch")),
-    h("div", { text: b.snapshot.what }),
-    b.snapshot.customers ? h("div", { class: "small" }, h("b", null, "Customers: "), b.snapshot.customers) : null,
-    b.snapshot.edge ? h("div", { class: "small" }, h("b", null, "What sets them apart: "), b.snapshot.edge) : null,
-    b.snapshot.gaps.length ? [h("div", { class: "label", text: "What their video is missing" }), h("ul", { class: "plain" }, b.snapshot.gaps.map(g => h("li", { text: g })))] : null);
-  const mix = h("section", { class: "panel stack o3" },
-    h("div", { class: "h2", text: `Monthly mix · ${c.clips || 12} clips` }),
-    h("div", { class: "mix", role: "img", "aria-label": b.pillars.map(p => `${p.name} ${p.per_month}`).join(", ") }, b.pillars.map((p, i) => h("i", { style: `width:${p.per_month / total * 100}%;background:${PILLAR_COLORS[i % PILLAR_COLORS.length]}` }))),
-    h("div", { class: "legend" }, b.pillars.map((p, i) => h("span", null, h("i", { style: `background:${PILLAR_COLORS[i % PILLAR_COLORS.length]}` }), `${p.name} · ${p.per_month}`))),
-    b.pillars.map(p => h("div", { class: "pillar" },
-      h("div", { class: "pillar-head" }, h("b", { text: p.name }), h("span", { class: "count", text: p.per_month })),
-      h("div", { class: "small muted", text: p.why }),
-      h("div", { class: "idea-grid" }, p.ideas.map(i => ideaCard(i, ideaOpts(i)))))));
-  const products = b.product_series.length ? h("section", { class: "panel stack o4" },
-    h("div", { class: "h2", text: "Product education series" }),
-    h("p", { class: "small muted", style: "margin:0", text: "One reel per product, each teaching one thing. Film them with the product in hand, on a job site or wherever it lives." }),
-    h("div", { class: "idea-grid" }, b.product_series.map(p => h("div", { class: "stack", style: "gap:6px;align-content:start" }, h("div", { class: "row" }, h("span", { class: "tag hot", text: p.product }), h("span", { class: "small muted", text: p.angle })), ideaCard(p.idea, ideaOpts(p.idea)))))) : null;
-  const services = b.services.length ? h("section", { class: "panel stack o5" }, h("div", { class: "h2", text: "More ways to help them" }),
-    b.services.map(x => h("div", { class: "svc" }, h("b", { text: x.name }), h("div", { class: "small muted", text: x.why }), x.pitch ? h("div", { class: "small" }, h("b", null, "Say: "), `“${x.pitch}”`) : null))) : null;
-  const questions = b.questions.length ? h("section", { class: "panel stack o6" }, h("div", { class: "row between" }, h("div", { class: "h2", text: "Ask at your next meeting" }), h("button", { class: "btn sm ghost", onclick: () => copy(b.questions.map((q, i) => `${i + 1}. ${q}`).join("\n")) }, "Copy")),
-    h("ol", { class: "qs" }, b.questions.map(q => h("li", { text: q })))) : null;
-  const fill = h("button", { class: "btn hot block o7", disabled: state.busy || null, onclick: () => fillMonth(c) }, `Fill ${monthName()} with this mix`);
-  return [...head, h("div", { class: "bd-grid" },
-    h("div", { class: "bd-side" }, fed, snapshot, services, questions),
-    h("div", { class: "bd-main" }, mix, products, fill))];
-}
-
-function viewBank() {
-  const cs = clients(), f = state.bankClient;
-  const list = saved().filter(i => f === "all" || i.clientId === f);
-  const client = f !== "all" && store.get(f);
-  const exportText = () => list.filter(i => !i.done).map((i, n) => `${n + 1}. ${i.title}\nHook: ${i.hook}\n${arr(i.film).map(x => "• " + x).join("\n")}\nCaption: ${i.caption}`).join("\n\n");
-  return [
-    h("h1", { class: "h1", text: "Clip bank" }),
-    cs.length ? h("div", { class: "chips" }, [{ id: "all", name: "All clients" }, ...cs].map(c => h("button", { class: "chip", "aria-pressed": String(f === c.id), onclick: () => { state.bankClient = c.id; render(); } }, c.name))) : null,
-    client ? h("div", { class: "row between" },
-      h("span", { class: "small muted", text: `${savedThisMonth(client.id).length} of ${client.clips || 12} for ${monthName()} · ${list.filter(i => i.done).length} filmed` }),
-      list.length ? h("button", { class: "btn sm", onclick: () => copy(`${client.name}: ${monthName()} shot list\n\n` + exportText()) }, "Copy shot list") : null) : null,
-    list.length ? h("div", { class: "idea-grid" }, list.map(i => h("div", { class: "stack", style: "gap:4px;align-content:start" }, f === "all" ? h("div", { class: "label", text: i.clientName }) : null, ideaCard(i, { bank: true }))))
-      : h("div", { class: "empty", text: "No saved clips yet. Get ideas from a trend and tap “Save to client”." }),
-  ];
-}
-
-const TABS = [["trends", "Trends", "Ideas"], ["clients", "Clients", "Retainers"], ["bank", "Clip bank", "Saved"]];
+const TABS = [["ideas", "Ideas", "Feed"], ["trends", "Trends", "Sources"], ["saved", "Saved", "Starred"]];
 function render() {
   const active = document.activeElement && document.activeElement.id;
-  const views = { trends: viewTrends, clients: viewClients, bank: viewBank };
-  $("#view").replaceChildren(...[].concat((views[state.tab] || viewTrends)()).flat(Infinity).filter(Boolean));
-  $("#tabs").replaceChildren(...TABS.map(([k, label, sub]) => h("button", { "aria-current": state.tab === k ? "page" : null, onclick: () => go(k) }, label, h("span", { text: sub }))));
+  const views = { ideas: viewIdeas, trends: viewTrends, saved: viewSaved };
+  $("#view").replaceChildren(...[].concat((views[state.tab] || viewIdeas)()).flat(Infinity).filter(Boolean));
+  $("#tabs").replaceChildren(...TABS.map(([k, label, sub]) => h("button", { "aria-current": state.tab === k ? "page" : null, onclick: () => go(k) }, k === "saved" && saved().length ? `${label} · ${saved().length}` : label, h("span", { text: sub }))));
   if (active) { const el = document.getElementById(active); if (el && el !== document.activeElement) el.focus(); }
 }
 function setMode() { $("#mode").textContent = (live() ? "Claude on" : "Claude off") + " · " + (store.mode === "db" ? "saved to your account" : "saved on this device"); }
