@@ -14,5 +14,5 @@ The earlier, bigger planning app is still in `shot-caller/`.
 
 `intake/index.html` is a client-facing landing page for Reliable Kev. It asks business owners 5 short steps of questions (business type, goals, kinds of video, platforms, one-time vs monthly, timeline, budget, contact info) and shows a thank-you recap.
 
-- **Logo**: put your logo in `intake/` as `logo.png`. Until then the page shows a "Reliable Kev" wordmark.
+- **Logo**: `intake/logo.png` is the white RK monogram. The page shows it dark on the light theme and white on the dark theme, next to the "Reliable Kev" name. `favicon.png` is the monogram on a dark tile for browser tabs and phone home screens.
 - **Getting submissions**: at the top of the `<script>`, set `CONFIG.formEndpoint` to a form service URL (e.g. a free Formspree form) to get each submission by email, or set `CONFIG.email` so submitting opens the visitor's email app with their answers addressed to you.

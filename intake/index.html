@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Reliable Kev · Video Intake</title>
 <meta name="description" content="Tell Reliable Kev what you want video to do for your business. Takes about two minutes.">
-<link rel="icon" href="logo.png">
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
@@ -36,13 +37,17 @@ button, input, select, textarea { font: inherit; color: inherit }
 
 /* Header */
 header.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 28px }
-.logo { display: flex; align-items: center; gap: 10px; min-width: 0 }
-.logo img { height: 48px; width: auto; max-width: 200px; object-fit: contain; display: block }
+.logo { display: flex; align-items: center; gap: 8px; min-width: 0 }
+/* logo.png is a white monogram: shown dark on the light theme, white on the dark theme */
+.logo img { height: 44px; width: auto; max-width: 120px; object-fit: contain; display: block; filter: brightness(0) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .logo img { filter: none } }
+:root[data-theme="dark"] .logo img { filter: none }
 .wordmark { font: 800 22px/1 var(--f-display); letter-spacing: -.02em; white-space: nowrap }
 .wordmark i { font-style: normal; color: var(--rec) }
-.rec { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted) }
+.rec { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; flex: none; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted) }
 .rec::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--rec); animation: blink 1.6s steps(2, start) infinite }
 @keyframes blink { to { visibility: hidden } }
+@media (max-width: 419px) { .rec { display: none } }
 @media (prefers-reduced-motion: reduce) { .rec::before { animation: none } }
 
 /* Hero */
@@ -119,8 +124,7 @@ footer { margin-top: 28px; text-align: center; font-size: 13px; color: var(--mut
 
   <header class="top">
     <div class="logo">
-      <!-- Drop your logo file next to this page as logo.png. Until then the wordmark shows. -->
-      <img id="logoImg" src="logo.png" alt="Reliable Kev" hidden>
+      <img id="logoImg" src="logo.png" alt="" hidden>
       <span class="wordmark" id="wordmark">Reliable <i>Kev</i></span>
     </div>
     <span class="rec">Now booking</span>
@@ -317,9 +321,9 @@ const total = steps.length;
 const $ = id => document.getElementById(id);
 let cur = 0;
 
-// Logo: show logo.png if it exists, otherwise keep the text wordmark
+// Logo: show the monogram next to the wordmark once logo.png loads
 const logo = $("logoImg");
-logo.onload = () => { logo.hidden = false; $("wordmark").hidden = true };
+logo.onload = () => { logo.hidden = false };
 if (logo.complete && logo.naturalWidth) logo.onload();
 $("yr").textContent = new Date().getFullYear();
 
