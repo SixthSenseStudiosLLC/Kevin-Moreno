@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reliable Kev · Video Intake</title>
+<meta name="description" content="Tell Reliable Kev what you want video to do for your business. Takes about two minutes.">
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  --bg: #F4F2EE; --surface: #FFFFFF; --ink: #16171A; --muted: #62646B; --line: #DDD9D2; --chip: #ECE9E3;
+  --rec: #D6312B; --rec-soft: #FBE5E3; --ok: #1F7A4D;
+  --f-display: "Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+  --f-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111214; --surface: #1A1B1F; --ink: #EEEDEA; --muted: #A0A1A8; --line: #2D2E33; --chip: #24252A;
+  --rec: #F0544D; --rec-soft: #3A1917; --ok: #4FBF86; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111214; --surface: #1A1B1F; --ink: #EEEDEA; --muted: #A0A1A8; --line: #2D2E33; --chip: #24252A;
+  --rec: #F0544D; --rec-soft: #3A1917; --ok: #4FBF86; color-scheme: dark }
+
+* { box-sizing: border-box }
+html { -webkit-text-size-adjust: 100% }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 var(--f-body); -webkit-font-smoothing: antialiased }
+h1, h2, h3 { margin: 0; font-family: var(--f-display); text-wrap: balance; letter-spacing: -.02em }
+p { margin: 0 }
+button, input, select, textarea { font: inherit; color: inherit }
+:focus-visible { outline: 2px solid var(--rec); outline-offset: 2px }
+[hidden] { display: none !important }
+
+.wrap { max-width: 680px; margin: 0 auto; padding: 20px 16px calc(40px + env(safe-area-inset-bottom, 0px)) }
+
+/* Header */
+header.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 28px }
+.logo { display: flex; align-items: center; gap: 10px; min-width: 0 }
+.logo img { height: 48px; width: auto; max-width: 200px; object-fit: contain; display: block }
+.wordmark { font: 800 22px/1 var(--f-display); letter-spacing: -.02em; white-space: nowrap }
+.wordmark i { font-style: normal; color: var(--rec) }
+.rec { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted) }
+.rec::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--rec); animation: blink 1.6s steps(2, start) infinite }
+@keyframes blink { to { visibility: hidden } }
+@media (prefers-reduced-motion: reduce) { .rec::before { animation: none } }
+
+/* Hero */
+.hero { display: grid; gap: 14px; margin-bottom: 26px }
+.hero h1 { font-size: clamp(34px, 8vw, 52px); line-height: 1; font-weight: 800 }
+.hero h1 em { font-style: normal; color: var(--rec) }
+.hero .lede { font-size: 18px; color: var(--muted); max-width: 52ch }
+.perks { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: 0; margin: 4px 0 0; list-style: none; font-size: 14px; font-weight: 600 }
+.perks li::before { content: "✓"; color: var(--ok); margin-right: 6px }
+
+/* Card */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px 18px }
+@media (min-width: 560px) { .card { padding: 28px } }
+.progress { display: flex; align-items: center; gap: 12px; margin-bottom: 20px }
+.bar { flex: 1; height: 6px; background: var(--chip); border-radius: 99px; overflow: hidden }
+.bar span { display: block; height: 100%; width: 0; background: var(--rec); border-radius: inherit; transition: width .25s ease }
+.stepnum { font-size: 13px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap }
+
+.step { display: grid; gap: 22px }
+.q { display: grid; gap: 10px; border: 0; padding: 0; margin: 0; min-width: 0 }
+.q legend, .q > .qlabel { font: 700 20px/1.15 var(--f-display); letter-spacing: -.01em; padding: 0; margin-bottom: 2px }
+.hint { font-size: 14px; color: var(--muted); margin-top: -4px }
+
+/* Choice tiles */
+.opts { display: grid; grid-template-columns: 1fr; gap: 8px }
+@media (min-width: 480px) { .opts.two { grid-template-columns: 1fr 1fr } }
+.opt { position: relative; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); cursor: pointer; font-weight: 600; font-size: 15px; line-height: 1.3; transition: border-color .12s, background .12s }
+.opt:hover { border-color: color-mix(in srgb, var(--rec) 45%, var(--line)) }
+.opt input { position: absolute; opacity: 0; pointer-events: none }
+.opt .box { flex: none; width: 20px; height: 20px; border: 2px solid var(--line); border-radius: 6px; display: grid; place-items: center; transition: all .12s }
+.opt input[type="radio"] + .box { border-radius: 50% }
+.opt input:checked + .box { background: var(--rec); border-color: var(--rec) }
+.opt input:checked + .box::after { content: ""; width: 6px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0; transform: translateY(-1px) rotate(45deg) }
+.opt input[type="radio"]:checked + .box::after { width: 8px; height: 8px; border: 0; border-radius: 50%; background: #fff; transform: none }
+.opt:has(input:checked) { border-color: var(--rec); background: var(--rec-soft) }
+.opt:has(input:focus-visible) { outline: 2px solid var(--rec); outline-offset: 2px }
+.opt small { display: block; font-weight: 500; font-size: 13px; color: var(--muted) }
+
+/* Text fields */
+.fields { display: grid; gap: 12px }
+@media (min-width: 480px) { .fields.two { grid-template-columns: 1fr 1fr } }
+label.f { display: grid; gap: 6px; font-size: 14px; font-weight: 600; min-width: 0 }
+label.f .opt-tag { font-weight: 500; color: var(--muted) }
+.t { width: 100%; min-height: 48px; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--bg); font-size: 16px }
+.t:focus { border-color: var(--rec); outline: none }
+textarea.t { min-height: 110px; resize: vertical; line-height: 1.45 }
+.other-in { margin-top: 2px }
+
+.err { color: var(--rec); font-size: 14px; font-weight: 600; min-height: 1em }
+
+/* Nav */
+.nav { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 26px }
+.btn { min-height: 50px; padding: 12px 22px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); font-weight: 700; font-size: 16px; cursor: pointer }
+.btn.primary { background: var(--rec); border-color: var(--rec); color: #fff; margin-left: auto }
+.btn.primary:hover { filter: brightness(1.06) }
+.btn.ghost { border-color: transparent; background: none; color: var(--muted); padding-inline: 8px }
+.btn:disabled { opacity: .6; cursor: default }
+
+/* Done */
+.done { display: grid; gap: 14px; text-align: center; justify-items: center; padding: 10px 0 }
+.done .check { width: 64px; height: 64px; border-radius: 50%; background: var(--rec-soft); color: var(--rec); display: grid; place-items: center; font-size: 30px; font-weight: 800 }
+.done h2 { font-size: 30px; line-height: 1.05 }
+.done p { color: var(--muted); max-width: 44ch }
+.recap { width: 100%; text-align: left; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; font-size: 14px; display: grid; gap: 8px }
+.recap div { display: grid; grid-template-columns: 120px 1fr; gap: 10px }
+.recap b { color: var(--muted); font-weight: 600 }
+@media (max-width: 420px) { .recap div { grid-template-columns: 1fr; gap: 0 } }
+
+footer { margin-top: 28px; text-align: center; font-size: 13px; color: var(--muted) }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="logo">
+      <!-- Drop your logo file next to this page as logo.png. Until then the wordmark shows. -->
+      <img id="logoImg" src="logo.png" alt="Reliable Kev" hidden>
+      <span class="wordmark" id="wordmark">Reliable <i>Kev</i></span>
+    </div>
+    <span class="rec">Now booking</span>
+  </header>
+
+  <section class="hero" id="hero">
+    <h1>Let’s make video that <em>works</em> for your business.</h1>
+    <p class="lede">Answer a few quick questions about what you want from video. I’ll review it and come back with ideas and a plan that fits your goals and budget.</p>
+    <ul class="perks">
+      <li>About 2 minutes</li>
+      <li>No commitment</li>
+      <li>Personal reply</li>
+    </ul>
+  </section>
+
+  <main class="card" id="card">
+    <form id="form" novalidate>
+      <div class="progress" aria-hidden="true">
+        <div class="bar"><span id="bar"></span></div>
+        <span class="stepnum" id="stepnum">1 of 5</span>
+      </div>
+
+      <!-- Step 1: business -->
+      <div class="step" data-step="1">
+        <fieldset class="q" data-required="industry">
+          <legend>What kind of business do you run?</legend>
+          <div class="opts two">
+            <label class="opt"><input type="radio" name="industry" value="Restaurant / food & drink"><span class="box"></span>Restaurant / food &amp; drink</label>
+            <label class="opt"><input type="radio" name="industry" value="Retail / shop"><span class="box"></span>Retail / shop</label>
+            <label class="opt"><input type="radio" name="industry" value="Salon / beauty / barber"><span class="box"></span>Salon / beauty / barber</label>
+            <label class="opt"><input type="radio" name="industry" value="Fitness / wellness"><span class="box"></span>Fitness / wellness</label>
+            <label class="opt"><input type="radio" name="industry" value="Home services / trades"><span class="box"></span>Home services / trades</label>
+            <label class="opt"><input type="radio" name="industry" value="Real estate"><span class="box"></span>Real estate</label>
+            <label class="opt"><input type="radio" name="industry" value="Medical / dental / clinic"><span class="box"></span>Medical / dental / clinic</label>
+            <label class="opt"><input type="radio" name="industry" value="Other"><span class="box"></span>Something else</label>
+          </div>
+          <input class="t other-in" name="industry_other" placeholder="Tell me what you do" hidden aria-label="Describe your business">
+        </fieldset>
+
+        <fieldset class="q">
+          <legend>Where are you with video right now?</legend>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="current" value="Not doing video yet"><span class="box"></span>Not doing any video yet</label>
+            <label class="opt"><input type="radio" name="current" value="Posting our own phone videos"><span class="box"></span>Posting our own phone videos</label>
+            <label class="opt"><input type="radio" name="current" value="Worked with a videographer before"><span class="box"></span>Worked with a videographer before</label>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- Step 2: goals -->
+      <div class="step" data-step="2" hidden>
+        <fieldset class="q" data-required="goals">
+          <legend>What do you want video to do for you?</legend>
+          <p class="hint">Pick all that apply.</p>
+          <div class="opts">
+            <label class="opt"><input type="checkbox" name="goals" value="Bring in more customers"><span class="box"></span><span>Bring in more customers<small>Calls, bookings, foot traffic</small></span></label>
+            <label class="opt"><input type="checkbox" name="goals" value="Grow social media"><span class="box"></span><span>Grow my social media<small>More followers, views and engagement</small></span></label>
+            <label class="opt"><input type="checkbox" name="goals" value="Show off products or services"><span class="box"></span><span>Show off my products or services</span></label>
+            <label class="opt"><input type="checkbox" name="goals" value="Build trust / tell our story"><span class="box"></span><span>Build trust and tell our story<small>Who we are, behind the scenes, the team</small></span></label>
+            <label class="opt"><input type="checkbox" name="goals" value="Promote a launch, sale or event"><span class="box"></span><span>Promote a launch, sale or event</span></label>
+            <label class="opt"><input type="checkbox" name="goals" value="Recruit / hiring"><span class="box"></span><span>Help with hiring</span></label>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- Step 3: content -->
+      <div class="step" data-step="3" hidden>
+        <fieldset class="q" data-required="types">
+          <legend>What kind of videos are you picturing?</legend>
+          <p class="hint">Pick all that apply, or “not sure” and we’ll figure it out together.</p>
+          <div class="opts two">
+            <label class="opt"><input type="checkbox" name="types" value="Short clips (Reels / TikTok / Shorts)"><span class="box"></span>Short social clips</label>
+            <label class="opt"><input type="checkbox" name="types" value="Brand story / about us"><span class="box"></span>Brand story / about us</label>
+            <label class="opt"><input type="checkbox" name="types" value="Product or service showcase"><span class="box"></span>Product or service showcase</label>
+            <label class="opt"><input type="checkbox" name="types" value="Customer testimonials"><span class="box"></span>Customer testimonials</label>
+            <label class="opt"><input type="checkbox" name="types" value="Event coverage"><span class="box"></span>Event coverage</label>
+            <label class="opt"><input type="checkbox" name="types" value="Paid ads"><span class="box"></span>Paid ads</label>
+            <label class="opt"><input type="checkbox" name="types" value="Website video"><span class="box"></span>Website video</label>
+            <label class="opt"><input type="checkbox" name="types" value="Not sure yet"><span class="box"></span>Not sure yet</label>
+          </div>
+        </fieldset>
+
+        <fieldset class="q">
+          <legend>Where will people see it?</legend>
+          <div class="opts two">
+            <label class="opt"><input type="checkbox" name="platforms" value="Instagram"><span class="box"></span>Instagram</label>
+            <label class="opt"><input type="checkbox" name="platforms" value="TikTok"><span class="box"></span>TikTok</label>
+            <label class="opt"><input type="checkbox" name="platforms" value="Facebook"><span class="box"></span>Facebook</label>
+            <label class="opt"><input type="checkbox" name="platforms" value="YouTube"><span class="box"></span>YouTube</label>
+            <label class="opt"><input type="checkbox" name="platforms" value="Website"><span class="box"></span>My website</label>
+            <label class="opt"><input type="checkbox" name="platforms" value="Google Business profile"><span class="box"></span>Google Business profile</label>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- Step 4: scope -->
+      <div class="step" data-step="4" hidden>
+        <fieldset class="q" data-required="frequency">
+          <legend>Is this a one-time thing or ongoing?</legend>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="frequency" value="One-time project"><span class="box"></span><span>One-time project<small>A single video or a set for one purpose</small></span></label>
+            <label class="opt"><input type="radio" name="frequency" value="Ongoing monthly content"><span class="box"></span><span>Ongoing monthly content<small>Fresh videos every month</small></span></label>
+            <label class="opt"><input type="radio" name="frequency" value="Not sure"><span class="box"></span>Not sure yet</label>
+          </div>
+        </fieldset>
+
+        <fieldset class="q">
+          <legend>When do you want to get started?</legend>
+          <div class="opts two">
+            <label class="opt"><input type="radio" name="timeline" value="ASAP"><span class="box"></span>As soon as possible</label>
+            <label class="opt"><input type="radio" name="timeline" value="Within a month"><span class="box"></span>Within a month</label>
+            <label class="opt"><input type="radio" name="timeline" value="1–3 months"><span class="box"></span>In 1–3 months</label>
+            <label class="opt"><input type="radio" name="timeline" value="Just exploring"><span class="box"></span>Just exploring</label>
+          </div>
+        </fieldset>
+
+        <fieldset class="q">
+          <legend>Rough budget?</legend>
+          <p class="hint">Helps me suggest the right plan. Monthly if ongoing.</p>
+          <div class="opts two">
+            <label class="opt"><input type="radio" name="budget" value="Under $500"><span class="box"></span>Under $500</label>
+            <label class="opt"><input type="radio" name="budget" value="$500–$1,500"><span class="box"></span>$500–$1,500</label>
+            <label class="opt"><input type="radio" name="budget" value="$1,500–$3,000"><span class="box"></span>$1,500–$3,000</label>
+            <label class="opt"><input type="radio" name="budget" value="$3,000+"><span class="box"></span>$3,000+</label>
+            <label class="opt"><input type="radio" name="budget" value="Not sure"><span class="box"></span>Not sure yet</label>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- Step 5: contact -->
+      <div class="step" data-step="5" hidden>
+        <div class="q">
+          <span class="qlabel">Anything else I should know?</span>
+          <label class="f">
+            <span class="opt-tag">Ideas, videos you love, what hasn’t worked. Optional.</span>
+            <textarea class="t" name="notes" placeholder="e.g. We just opened a second location and want people to know about it."></textarea>
+          </label>
+        </div>
+
+        <div class="q">
+          <span class="qlabel">How can I reach you?</span>
+          <div class="fields two">
+            <label class="f">Your name<input class="t" name="name" autocomplete="name" required></label>
+            <label class="f">Business name<input class="t" name="business" autocomplete="organization" required></label>
+            <label class="f">Email<input class="t" type="email" name="email" autocomplete="email" required></label>
+            <label class="f">Phone <span class="opt-tag">optional</span><input class="t" type="tel" name="phone" autocomplete="tel"></label>
+          </div>
+          <label class="f">Website or Instagram <span class="opt-tag">optional</span><input class="t" name="link" placeholder="@yourbusiness or yoursite.com"></label>
+        </div>
+
+        <fieldset class="q">
+          <legend>Best way to follow up?</legend>
+          <div class="opts two">
+            <label class="opt"><input type="radio" name="contact_pref" value="Email" checked><span class="box"></span>Email</label>
+            <label class="opt"><input type="radio" name="contact_pref" value="Text"><span class="box"></span>Text</label>
+            <label class="opt"><input type="radio" name="contact_pref" value="Phone call"><span class="box"></span>Phone call</label>
+            <label class="opt"><input type="radio" name="contact_pref" value="Instagram DM"><span class="box"></span>Instagram DM</label>
+          </div>
+        </fieldset>
+      </div>
+
+      <p class="err" id="err" role="alert"></p>
+
+      <div class="nav">
+        <button type="button" class="btn ghost" id="back" hidden>← Back</button>
+        <button type="submit" class="btn primary" id="next">Next →</button>
+      </div>
+    </form>
+
+    <div class="done" id="done" hidden>
+      <div class="check" aria-hidden="true">✓</div>
+      <h2>Got it, thank you!</h2>
+      <p id="doneMsg">I’ll look this over and reach out within 1–2 business days with ideas for your business.</p>
+      <div class="recap" id="recap"></div>
+    </div>
+  </main>
+
+  <footer>© <span id="yr"></span> Reliable Kev · Video content for local businesses</footer>
+</div>
+
+<script>
+/* ---- Settings: fill these in before sharing the page ----
+   formEndpoint: a form service URL (e.g. https://formspree.io/f/xxxxxx) that emails you each submission.
+   email: used as a fallback. If there's no formEndpoint, submitting opens the visitor's email app
+          with their answers addressed to this email. */
+const CONFIG = {
+  formEndpoint: "",
+  email: ""
+};
+
+const form = document.getElementById("form");
+const steps = [...form.querySelectorAll(".step")];
+const total = steps.length;
+const $ = id => document.getElementById(id);
+let cur = 0;
+
+// Logo: show logo.png if it exists, otherwise keep the text wordmark
+const logo = $("logoImg");
+logo.onload = () => { logo.hidden = false; $("wordmark").hidden = true };
+if (logo.complete && logo.naturalWidth) logo.onload();
+$("yr").textContent = new Date().getFullYear();
+
+// "Something else" reveals a text box
+form.addEventListener("change", e => {
+  if (e.target.name === "industry") {
+    const other = form.elements.industry_other;
+    other.hidden = e.target.value !== "Other";
+    if (!other.hidden) other.focus();
+  }
+  $("err").textContent = "";
+});
+
+function show(i) {
+  steps.forEach((s, n) => s.hidden = n !== i);
+  cur = i;
+  $("bar").style.width = ((i + 1) / total * 100) + "%";
+  $("stepnum").textContent = (i + 1) + " of " + total;
+  $("back").hidden = i === 0;
+  $("next").textContent = i === total - 1 ? "Send it" : "Next →";
+  $("err").textContent = "";
+}
+
+function values(name) {
+  return [...form.querySelectorAll(`[name="${name}"]:checked`)].map(i => i.value);
+}
+
+function validate(step) {
+  for (const q of step.querySelectorAll("[data-required]")) {
+    if (!values(q.dataset.required).length) return "Pick at least one option to keep going.";
+  }
+  for (const input of step.querySelectorAll("input[required]")) {
+    if (!input.value.trim()) { input.focus(); return "Please add your " + input.closest("label").firstChild.textContent.replace(/^your /i, "").trim().toLowerCase() + "."; }
+    if (input.type === "email" && !input.checkValidity()) { input.focus(); return "That email doesn’t look quite right."; }
+  }
+  return "";
+}
+
+function collect() {
+  const f = form.elements;
+  const industry = values("industry")[0] === "Other" && f.industry_other.value.trim()
+    ? "Other: " + f.industry_other.value.trim() : values("industry")[0] || "";
+  return {
+    name: f.name.value.trim(),
+    business: f.business.value.trim(),
+    email: f.email.value.trim(),
+    phone: f.phone.value.trim(),
+    link: f.link.value.trim(),
+    contact_pref: values("contact_pref")[0] || "",
+    industry,
+    current: values("current")[0] || "",
+    goals: values("goals").join(", "),
+    video_types: values("types").join(", "),
+    platforms: values("platforms").join(", "),
+    frequency: values("frequency")[0] || "",
+    timeline: values("timeline")[0] || "",
+    budget: values("budget")[0] || "",
+    notes: f.notes.value.trim()
+  };
+}
+
+const LABELS = {
+  business: "Business", industry: "Type", current: "Video today", goals: "Goals", video_types: "Videos",
+  platforms: "Platforms", frequency: "Scope", timeline: "Timeline", budget: "Budget", notes: "Notes",
+  name: "Name", email: "Email", phone: "Phone", link: "Web / IG", contact_pref: "Follow up by"
+};
+
+function asText(d) {
+  return Object.keys(LABELS).filter(k => d[k]).map(k => LABELS[k] + ": " + d[k]).join("\n");
+}
+
+function finish(d, msg) {
+  form.hidden = true;
+  $("hero").hidden = true;
+  $("done").hidden = false;
+  if (msg) $("doneMsg").textContent = msg;
+  const recap = $("recap");
+  recap.replaceChildren(...["business", "goals", "video_types", "frequency", "timeline", "budget"].filter(k => d[k]).map(k => {
+    const row = document.createElement("div");
+    const b = document.createElement("b"); b.textContent = LABELS[k];
+    const s = document.createElement("span"); s.textContent = d[k];
+    row.append(b, s);
+    return row;
+  }));
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+async function submit() {
+  const d = collect();
+  const btn = $("next");
+  if (CONFIG.formEndpoint) {
+    btn.disabled = true; btn.textContent = "Sending…";
+    try {
+      const res = await fetch(CONFIG.formEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ ...d, _subject: "New video inquiry: " + d.business, _replyto: d.email })
+      });
+      if (!res.ok) throw new Error(res.status);
+      finish(d);
+    } catch (e) {
+      btn.disabled = false; btn.textContent = "Send it";
+      $("err").textContent = "Something went wrong sending that. Please try again" + (CONFIG.email ? " or email " + CONFIG.email + "." : ".");
+    }
+    return;
+  }
+  if (CONFIG.email) {
+    const url = "mailto:" + CONFIG.email
+      + "?subject=" + encodeURIComponent("Video inquiry: " + d.business)
+      + "&body=" + encodeURIComponent(asText(d));
+    window.location.href = url;
+    finish(d, "Your email app should open with your answers filled in. Just hit send and I’ll be in touch within 1–2 business days.");
+    return;
+  }
+  console.warn("Intake page: set CONFIG.formEndpoint or CONFIG.email so submissions reach you.\n\n" + asText(d));
+  finish(d);
+}
+
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  const problem = validate(steps[cur]);
+  if (problem) { $("err").textContent = problem; return; }
+  if (cur < total - 1) {
+    show(cur + 1);
+    $("card").scrollIntoView({ behavior: "smooth", block: "start" });
+  } else {
+    submit();
+  }
+});
+
+$("back").addEventListener("click", () => show(cur - 1));
+
+show(0);
+</script>
+</body>
+</html>
