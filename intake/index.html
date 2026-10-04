@@ -178,11 +178,12 @@ footer { margin-top: 28px; text-align: center; font-size: 13px; color: var(--mut
 
 <script>
 /* ---- Settings ----
-   formEndpoint: your Formspree form link (https://formspree.io/f/xxxxxx). Each submission is emailed to you.
+   formEndpoint: where submissions go. FormSubmit (formsubmit.co) emails each one to the address at the end.
+                 The first submission sends a one-time "Activate form" email to that inbox; click it to start receiving.
    bookingUrl:   optional Calendly / Cal.com link. If set, a "see my full calendar" link shows under the times.
    callTimes:    the call times people can pick, on weekdays. */
 const CONFIG = {
-  formEndpoint: "",
+  formEndpoint: "https://formsubmit.co/ajax/sixthsensestudiosllc@gmail.com",
   bookingUrl: "",
   callTimes: ["9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM"],
   daysAhead: 9
@@ -271,9 +272,19 @@ form.addEventListener("submit", async e => {
     const res = await fetch(CONFIG.formEndpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify({ ...d, _subject: (call ? "Call request: " + d.call_day + ", " + d.call_time : "New video inquiry"), _replyto: d.email })
+      body: JSON.stringify({
+        "Phone": d.phone,
+        "Email": d.email,
+        "What they want to do with video": d.message,
+        "Call requested": call ? d.call_day + " at " + d.call_time : "No, just reach out",
+        _subject: call ? "Call request: " + d.call_day + ", " + picked("time") : "New video inquiry",
+        _replyto: d.email,
+        _template: "table",
+        _captcha: "false"
+      })
     });
-    if (!res.ok) throw new Error(res.status);
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok || String(out.success) === "false") throw new Error(out.message || res.status);
     finish(d);
   } catch (err) {
     btn.disabled = false; btn.textContent = "Send";
