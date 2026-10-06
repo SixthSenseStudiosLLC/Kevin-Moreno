@@ -1,1 +1,6 @@
-[]
+[
+  { "id": "fair-lawn", "name": "Fair Lawn", "county": "bergen" },
+  { "id": "glen-rock", "name": "Glen Rock", "county": "bergen" },
+  { "id": "ridgewood", "name": "Ridgewood", "county": "bergen" },
+  { "id": "paterson", "name": "Paterson", "county": "passaic" }
+]

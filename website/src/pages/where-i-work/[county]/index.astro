@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import Base from '../../layouts/Base.astro';
+import Base from '../../../layouts/Base.astro';
 
 export async function getStaticPaths() {
   const counties = await getCollection('counties');
@@ -18,10 +18,10 @@ const towns = (await getCollection('towns', (t) => t.data.county.id === county.i
     <div class="container">
       <p class="eyebrow"><a href="/where-i-work">Where I work</a></p>
       <h1>{county.data.name}</h1>
-      <p class="lede">{county.data.blurb}</p>
+      {county.data.blurb ? <p class="lede">{county.data.blurb}</p> : <p><span class="placeholder">County intro coming soon</span></p>}
       {towns.length ? (
         <ul class="towns">
-          {towns.map((t) => <li>{t.data.name}</li>)}
+          {towns.map((t) => <li><a href={`/where-i-work/${county.id}/${t.id}`}>{t.data.name}</a></li>)}
         </ul>
       ) : (
         <span class="placeholder">Towns coming soon</span>
@@ -33,5 +33,9 @@ const towns = (await getCollection('towns', (t) => t.data.county.id === county.i
 <style>
   .eyebrow a { text-decoration: none; }
   .towns { list-style: none; padding: 0; margin: 40px 0 0; display: flex; flex-wrap: wrap; gap: 10px; }
-  .towns li { border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; }
+  .towns a {
+    display: block; text-decoration: none; border: 1px solid var(--line);
+    padding: 12px 20px; font-size: 1.05rem; letter-spacing: 0.04em;
+  }
+  .towns a:hover { border-color: var(--text); }
 </style>

@@ -1,0 +1,86 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const towns = await getCollection('towns');
+  return towns.map((town) => ({ params: { county: town.data.county.id, town: town.id }, props: { town } }));
+}
+
+const { town } = Astro.props;
+const county = await getEntry(town.data.county);
+const work = (await getCollection('work', (w) => w.data.town.id === town.id && !w.data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const stories = (await getCollection('stories', (s) => s.data.town.id === town.id && !s.data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const name = town.data.name;
+---
+
+<Base
+  title={`${name}, NJ Videographer`}
+  description={`Video content, events coverage and podcasts in ${name}, ${county.data.name}, NJ.`}
+>
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow">
+        <a href="/where-i-work">Where I work</a> / <a href={`/where-i-work/${county.id}`}>{county.data.name}</a>
+      </p>
+      <h1>{name}</h1>
+      {town.data.blurb ? <p class="lede">{town.data.blurb}</p> : <span class="placeholder">Town intro coming soon</span>}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow">Work in {name}</p>
+      {work.length ? (
+        <div class="grid grid-3">
+          {work.map((w) => (
+            <a href={`/work/${w.id}`} class="card">
+              <h3>{w.data.client}</h3>
+              <p class="muted">{w.data.businessType}</p>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <span class="placeholder">Portfolio pieces coming soon</span>
+      )}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow">Stories from {name}</p>
+      {stories.length ? (
+        <div class="grid grid-3">
+          {stories.map((s) => (
+            <a href={`/stories/${s.id}`} class="card">
+              <h3>{s.data.title}</h3>
+              <p class="muted">{s.data.summary}</p>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <span class="placeholder">Stories coming soon</span>
+      )}
+    </div>
+  </section>
+
+  <section class="section cta">
+    <div class="container">
+      <h2>Filming in {name}?</h2>
+      <a href="/start" class="btn btn-primary">Start a Project</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .eyebrow a { text-decoration: none; }
+  .eyebrow a:hover { color: var(--text); }
+  .card { text-decoration: none; }
+  .card:hover { border-color: var(--text); }
+  .cta { text-align: center; }
+  .cta h2 { margin-bottom: 28px; }
+</style>

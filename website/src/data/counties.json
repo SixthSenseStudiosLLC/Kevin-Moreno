@@ -3,12 +3,12 @@
     "id": "bergen",
     "name": "Bergen County",
     "order": 1,
-    "blurb": "TODO: a line or two on the businesses and towns you film in Bergen."
+    "blurb": ""
   },
   {
     "id": "passaic",
     "name": "Passaic County",
     "order": 2,
-    "blurb": "TODO: a line or two on the businesses and towns you film in Passaic."
+    "blurb": ""
   }
 ]
