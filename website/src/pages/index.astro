@@ -23,6 +23,13 @@ const pillars = [
   },
 ];
 
+const audiences = [
+  { title: 'Towns', text: 'Municipalities and public projects. Showing residents what is being built, fixed and planned, and why.' },
+  { title: 'Downtowns & chambers', text: 'Business districts and chambers of commerce that want people walking their streets.' },
+  { title: 'Local businesses', text: 'Shops, restaurants and services that want neighbors to know the people behind the counter.' },
+  { title: 'Trades & contractors', text: 'Concrete, construction, landscaping and more. Real crews and real job sites, so customers trust you before you show up.' },
+];
+
 const services = [
   { title: 'Monthly content', text: 'Short-form clips every month, batched into shoot days so it never eats your week.' },
   { title: 'Business owner podcast', text: 'A podcast episode filmed on location, which also gets cut into clips.' },
@@ -40,8 +47,9 @@ const services = [
       <p class="eyebrow hero-sub">Video Content · Events Coverage · Podcast</p>
       <h2 class="hero-line">Full context storytelling in Bergen and Passaic County.</h2>
       <p class="lede">
-        Most videos show a business. I show the whole picture: the business, the person who
-        runs it, and the town it belongs to.
+        Trust is the most valuable thing a business has. People want to see who they are
+        hiring before they call. I show the whole picture: the work, the people behind it,
+        and the town it belongs to.
       </p>
       <div class="actions">
         <a href="/start" class="btn btn-primary">Start a Project</a>
@@ -65,6 +73,22 @@ const services = [
             <span class="num">0{i + 1}</span>
             <h3>{p.title}</h3>
             <p class="muted">{p.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow">Who I work with</p>
+      <h2>Everyone who builds a town.</h2>
+      <p class="lede">I understand how towns work, from the infrastructure to the main street. That means I can tell the story of everyone who keeps one running.</p>
+      <div class="grid audiences">
+        {audiences.map((a) => (
+          <div class="card">
+            <h3>{a.title}</h3>
+            <p class="muted">{a.text}</p>
           </div>
         ))}
       </div>
@@ -191,6 +215,7 @@ const services = [
   .thumb img { width: 100%; height: 100%; object-fit: cover; }
 
   .counties { margin-top: 40px; }
+  .audiences { margin-top: 40px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
   .county { display: flex; justify-content: space-between; align-items: center; text-decoration: none; transition: border-color 0.15s; }
   .county h3 { margin: 0; }
   .county:hover { border-color: var(--text); }
