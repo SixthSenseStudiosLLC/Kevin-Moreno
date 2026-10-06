@@ -1,0 +1,37 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const counties = await getCollection('counties');
+  return counties.map((county) => ({ params: { county: county.id }, props: { county } }));
+}
+
+const { county } = Astro.props;
+const towns = (await getCollection('towns', (t) => t.data.county.id === county.id)).sort((a, b) =>
+  a.data.name.localeCompare(b.data.name),
+);
+---
+
+<Base title={`Video production in ${county.data.name}, NJ`}>
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow"><a href="/where-i-work">Where I work</a></p>
+      <h1>{county.data.name}</h1>
+      <p class="lede">{county.data.blurb}</p>
+      {towns.length ? (
+        <ul class="towns">
+          {towns.map((t) => <li>{t.data.name}</li>)}
+        </ul>
+      ) : (
+        <span class="placeholder">Towns coming soon</span>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .eyebrow a { text-decoration: none; }
+  .towns { list-style: none; padding: 0; margin: 40px 0 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .towns li { border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; }
+</style>

@@ -1,0 +1,52 @@
+---
+import { getCollection } from 'astro:content';
+import { NAV, SITE } from '../site';
+
+const counties = (await getCollection('counties')).sort((a, b) => a.data.order - b.data.order);
+const socials = [
+  ['Instagram', SITE.instagram],
+  ['TikTok', SITE.tiktok],
+  ['YouTube', SITE.youtube],
+].filter(([, url]) => url);
+---
+
+<footer class="footer">
+  <div class="container cols">
+    <div>
+      <a href="/" class="logo">{SITE.name}</a>
+      <p class="muted">{SITE.tagline}</p>
+    </div>
+    <div>
+      <h4>Where I work</h4>
+      {counties.map((c) => <a href={`/where-i-work/${c.id}`}>{c.data.name}</a>)}
+    </div>
+    <div>
+      <h4>Site</h4>
+      {NAV.map((item) => <a href={item.href}>{item.label}</a>)}
+      <a href="/contact">Contact</a>
+    </div>
+    <div>
+      <h4>Get in touch</h4>
+      <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      {SITE.phone && <a href={`tel:${SITE.phone}`}>{SITE.phone}</a>}
+      {socials.map(([label, url]) => <a href={url}>{label}</a>)}
+    </div>
+  </div>
+  <div class="container legal muted">
+    © {new Date().getFullYear()} {SITE.name}. North Jersey.
+  </div>
+</footer>
+
+<style>
+  .footer { border-top: 1px solid var(--line); padding: 64px 0 32px; font-size: 0.95rem; }
+  .cols { display: grid; gap: 40px; grid-template-columns: 1.6fr repeat(3, 1fr); }
+  .logo { font-family: var(--font-display); font-size: 1.3rem; text-decoration: none; display: block; margin-bottom: 8px; }
+  h4 {
+    font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-muted); margin: 0 0 14px; font-weight: 600;
+  }
+  .cols a:not(.logo) { display: block; text-decoration: none; padding: 4px 0; }
+  .cols a:not(.logo):hover { color: var(--accent); }
+  .legal { margin-top: 48px; font-size: 0.85rem; }
+  @media (max-width: 760px) { .cols { grid-template-columns: 1fr 1fr; } .cols > :first-child { grid-column: 1 / -1; } }
+</style>

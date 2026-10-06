@@ -1,0 +1,86 @@
+---
+import { NAV, SITE } from '../site';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) => path === href || path.startsWith(href + '/');
+---
+
+<header class="header">
+  <div class="container bar">
+    <a href="/" class="logo">{SITE.name}</a>
+
+    <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">
+      <span class="sr-only">Menu</span>
+      <span class="burger" aria-hidden="true"></span>
+    </button>
+
+    <nav id="site-nav" class="nav" aria-label="Main">
+      {NAV.map((item) => (
+        <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
+      ))}
+      <a href="/start" class="btn btn-primary nav-cta">Start a Project</a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  const nav = document.getElementById('site-nav');
+  toggle?.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!open));
+    nav?.classList.toggle('open', !open);
+  });
+</script>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+  .logo {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .nav { display: flex; align-items: center; gap: 28px; }
+  .nav a:not(.btn) {
+    text-decoration: none;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+  }
+  .nav a:not(.btn):hover, .nav a[aria-current='page'] { color: var(--text); }
+  .nav-cta { padding: 0.6em 1.1em; }
+
+  .menu-toggle { display: none; background: none; border: 0; padding: 10px; cursor: pointer; color: var(--text); }
+  .burger, .burger::before, .burger::after {
+    display: block; width: 22px; height: 2px; background: currentColor; position: relative; content: '';
+  }
+  .burger::before { position: absolute; top: -7px; }
+  .burger::after { position: absolute; top: 7px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+  @media (max-width: 860px) {
+    .menu-toggle { display: block; }
+    .nav {
+      display: none;
+      position: absolute;
+      top: 68px; left: 0; right: 0;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+      padding: 8px var(--gutter) 24px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav.open { display: flex; }
+    .nav a:not(.btn) { padding: 12px 0; font-size: 1.1rem; width: 100%; }
+    .nav-cta { margin-top: 12px; }
+  }
+</style>

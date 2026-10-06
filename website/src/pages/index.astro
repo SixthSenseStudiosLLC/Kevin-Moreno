@@ -1,0 +1,198 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+const counties = (await getCollection('counties')).sort((a, b) => a.data.order - b.data.order);
+const featured = (await getCollection('work', (w) => w.data.featured && !w.data.draft)).slice(0, 3);
+const stories = (await getCollection('stories', (s) => !s.data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+
+const pillars = [
+  {
+    title: 'The business',
+    text: 'What you make, how you work, and why customers keep coming back. Filmed where it actually happens.',
+  },
+  {
+    title: 'The owner',
+    text: 'The person behind the counter. Your story, in your words, so people know who they are buying from.',
+  },
+  {
+    title: 'The town',
+    text: 'The street, the neighbors, the community you are part of. Local customers choose local for a reason.',
+  },
+];
+
+const services = [
+  { title: 'Monthly content', text: 'Short-form clips every month, batched into shoot days so it never eats your week.' },
+  { title: 'Business owner podcast', text: 'A podcast episode filmed on location, which also gets cut into clips.' },
+  { title: 'Projects', text: 'Brand films, launches and one-off pieces with a beginning, a middle and an end.' },
+];
+---
+
+<Base>
+  <section class="hero">
+    <div class="container">
+      <p class="eyebrow">Bergen · Passaic · Sussex</p>
+      <h1>Full context<br />storytelling.</h1>
+      <p class="lede">
+        Most videos show a business. I show the whole picture: the business, the person who
+        runs it, and the town it belongs to.
+      </p>
+      <div class="actions">
+        <a href="/start" class="btn btn-primary">Start a Project</a>
+        <a href="/work" class="btn">See the work</a>
+      </div>
+    </div>
+    <div class="container">
+      <div class="reel">
+        <span class="placeholder">Showreel goes here</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow">What full context means</p>
+      <h2>Three stories in every story.</h2>
+      <div class="grid grid-3 pillars">
+        {pillars.map((p, i) => (
+          <div class="pillar">
+            <span class="num">0{i + 1}</span>
+            <h3>{p.title}</h3>
+            <p class="muted">{p.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="split-head">
+        <div>
+          <p class="eyebrow">Selected work</p>
+          <h2>Recent stories.</h2>
+        </div>
+        <a href="/work" class="btn">All work</a>
+      </div>
+      <div class="grid grid-3">
+        {featured.length
+          ? featured.map((w) => (
+              <a href={`/work/${w.id}`} class="work-card">
+                <div class="thumb">{w.data.cover && <img src={w.data.cover} alt="" loading="lazy" />}</div>
+                <h3>{w.data.client}</h3>
+                <p class="muted">{w.data.businessType}</p>
+              </a>
+            ))
+          : [1, 2, 3].map(() => (
+              <div class="work-card">
+                <div class="thumb"><span class="placeholder">Portfolio piece</span></div>
+                <h3 class="muted">Client name</h3>
+                <p class="muted">Business type · Town</p>
+              </div>
+            ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow">Where I work</p>
+      <h2>Rooted in North Jersey.</h2>
+      <p class="lede">Every piece of work is tied to the town it was made in. Find yours.</p>
+      <div class="grid grid-3 counties">
+        {counties.map((c) => (
+          <a href={`/where-i-work/${c.id}`} class="card county">
+            <h3>{c.data.name}</h3>
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow">Services</p>
+      <h2>Ways to work together.</h2>
+      <div class="grid grid-3">
+        {services.map((s) => (
+          <div class="card">
+            <h3>{s.title}</h3>
+            <p class="muted">{s.text}</p>
+          </div>
+        ))}
+      </div>
+      <p class="more"><a href="/services" class="btn">See services</a></p>
+    </div>
+  </section>
+
+  {stories.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <p class="eyebrow">Stories</p>
+        <h2>From the towns.</h2>
+        <div class="grid grid-3">
+          {stories.map((s) => (
+            <a href={`/stories/${s.id}`} class="card story">
+              <h3>{s.data.title}</h3>
+              <p class="muted">{s.data.summary}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section cta">
+    <div class="container">
+      <h2>Your business has a story.<br />So does your town.</h2>
+      <a href="/start" class="btn btn-primary">Start a Project</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { padding: clamp(56px, 9vw, 112px) 0 var(--section); }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+  .reel {
+    margin-top: clamp(48px, 7vw, 88px);
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius);
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    display: grid;
+    place-items: center;
+  }
+
+  .pillars { margin-top: 48px; gap: 40px; }
+  .num { font-family: var(--font-display); color: var(--accent); font-size: 1.1rem; display: block; margin-bottom: 12px; }
+
+  .split-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; margin-bottom: 40px; }
+
+  .work-card { text-decoration: none; }
+  .work-card h3 { margin: 16px 0 4px; }
+  .thumb {
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius);
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+  .counties { margin-top: 40px; }
+  .county { display: flex; justify-content: space-between; align-items: center; text-decoration: none; transition: border-color 0.15s; }
+  .county h3 { margin: 0; }
+  .county:hover { border-color: var(--accent); }
+  .arrow { color: var(--accent); font-size: 1.4rem; }
+
+  .story { text-decoration: none; }
+  .more { margin-top: 32px; }
+
+  .cta { text-align: center; }
+  .cta h2 { margin-bottom: 32px; }
+</style>
