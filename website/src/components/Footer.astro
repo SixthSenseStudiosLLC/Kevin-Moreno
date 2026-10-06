@@ -13,7 +13,7 @@ const socials = [
 <footer class="footer">
   <div class="container cols">
     <div>
-      <a href="/" class="logo">{SITE.name}</a>
+      <a href="/" class="logo">SixthSenseStudios</a>
       <p class="muted">{SITE.tagline}</p>
     </div>
     <div>
@@ -40,13 +40,13 @@ const socials = [
 <style>
   .footer { border-top: 1px solid var(--line); padding: 64px 0 32px; font-size: 0.95rem; }
   .cols { display: grid; gap: 40px; grid-template-columns: 1.6fr repeat(3, 1fr); }
-  .logo { font-family: var(--font-display); font-size: 1.3rem; text-decoration: none; display: block; margin-bottom: 8px; }
+  .logo { font-size: 1rem; letter-spacing: 0.22em; text-decoration: none; display: block; margin-bottom: 8px; }
   h4 {
-    font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
+    font-family: var(--font-label); font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase;
     color: var(--text-muted); margin: 0 0 14px; font-weight: 600;
   }
   .cols a:not(.logo) { display: block; text-decoration: none; padding: 4px 0; }
-  .cols a:not(.logo):hover { color: var(--accent); }
+  .cols a:not(.logo):hover { color: var(--text-muted); }
   .legal { margin-top: 48px; font-size: 0.85rem; }
   @media (max-width: 760px) { .cols { grid-template-columns: 1fr 1fr; } .cols > :first-child { grid-column: 1 / -1; } }
 </style>

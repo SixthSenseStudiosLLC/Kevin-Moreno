@@ -33,8 +33,12 @@ const services = [
 <Base>
   <section class="hero">
     <div class="container">
-      <p class="eyebrow">Bergen · Passaic · Sussex</p>
-      <h1>Full context<br />storytelling.</h1>
+      <div class="lockup">
+        <h1 class="lockup-name">Reliable Kev</h1>
+        <p class="lockup-studio">SixthSenseStudios</p>
+      </div>
+      <p class="eyebrow hero-sub">Video Content · Events Coverage · Podcast</p>
+      <h2 class="hero-line">Full context storytelling in Bergen, Passaic and Sussex County.</h2>
       <p class="lede">
         Most videos show a business. I show the whole picture: the business, the person who
         runs it, and the town it belongs to.
@@ -155,6 +159,8 @@ const services = [
 
 <style>
   .hero { padding: clamp(56px, 9vw, 112px) 0 var(--section); }
+  .hero-sub { margin-top: 28px; }
+  .hero-line { font-size: clamp(1.3rem, 2.6vw, 1.8rem); max-width: 30ch; margin-top: 48px; }
   .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
   .reel {
     margin-top: clamp(48px, 7vw, 88px);
@@ -167,7 +173,7 @@ const services = [
   }
 
   .pillars { margin-top: 48px; gap: 40px; }
-  .num { font-family: var(--font-display); color: var(--accent); font-size: 1.1rem; display: block; margin-bottom: 12px; }
+  .num { font-family: var(--font-label); color: var(--text-muted); letter-spacing: 0.2em; font-size: 1.1rem; display: block; margin-bottom: 12px; }
 
   .split-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; margin-bottom: 40px; }
 
@@ -187,8 +193,8 @@ const services = [
   .counties { margin-top: 40px; }
   .county { display: flex; justify-content: space-between; align-items: center; text-decoration: none; transition: border-color 0.15s; }
   .county h3 { margin: 0; }
-  .county:hover { border-color: var(--accent); }
-  .arrow { color: var(--accent); font-size: 1.4rem; }
+  .county:hover { border-color: var(--text); }
+  .arrow { color: var(--text); font-size: 1.4rem; }
 
   .story { text-decoration: none; }
   .more { margin-top: 32px; }

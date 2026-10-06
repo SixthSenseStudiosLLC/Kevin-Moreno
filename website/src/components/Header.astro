@@ -7,7 +7,7 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
 
 <header class="header">
   <div class="container bar">
-    <a href="/" class="logo">{SITE.name}</a>
+    <a href="/" class="logo" aria-label={SITE.name}>SixthSenseStudios</a>
 
     <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">
       <span class="sr-only">Menu</span>
@@ -38,14 +38,14 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
     position: sticky;
     top: 0;
     z-index: 10;
-    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
   }
   .bar { display: flex; align-items: center; justify-content: space-between; height: 68px; }
   .logo {
-    font-family: var(--font-display);
-    font-size: 1.25rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.22em;
     text-decoration: none;
     white-space: nowrap;
   }

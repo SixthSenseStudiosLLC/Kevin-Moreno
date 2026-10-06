@@ -1,15 +1,16 @@
-/* Design tokens. Cinematic dark by default, warm "film light" accent. */
+/* Design tokens, from the business card: black and white, Montserrat + Monda. */
 :root {
-  --bg: #111110;
-  --bg-raised: #1a1a18;
-  --line: #2c2b28;
-  --text: #f1ede4;
-  --text-muted: #a8a397;
-  --accent: #e8a33d;
-  --accent-ink: #1a1206;
+  --bg: #000000;
+  --bg-raised: #0f0f0f;
+  --line: #262626;
+  --text: #ffffff;
+  --text-muted: #9a9a9a;
+  --accent: #ffffff;
+  --accent-ink: #000000;
 
-  --font-display: 'Fraunces', Georgia, serif;
-  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Montserrat', system-ui, sans-serif;
+  --font-body: 'Montserrat', system-ui, -apple-system, sans-serif;
+  --font-label: 'Monda', 'Montserrat', sans-serif;
 
   --max: 1180px;
   --gutter: clamp(16px, 4vw, 40px);
@@ -37,14 +38,14 @@ a { color: inherit; }
 
 h1, h2, h3 {
   font-family: var(--font-display);
-  font-weight: 500;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0.04em;
   margin: 0 0 0.5em;
 }
-h1 { font-size: clamp(2.6rem, 7vw, 5.2rem); }
-h2 { font-size: clamp(2rem, 4.5vw, 3.2rem); }
-h3 { font-size: 1.4rem; }
+h1 { font-size: clamp(2.3rem, 6.5vw, 4.6rem); }
+h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
+h3 { font-size: 1.2rem; font-weight: 500; letter-spacing: 0.02em; }
 
 p { margin: 0 0 1em; }
 
@@ -59,11 +60,11 @@ p { margin: 0 0 1em; }
 .section + .section { border-top: 1px solid var(--line); }
 
 .eyebrow {
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  font-family: var(--font-label);
+  font-size: 0.8rem;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--text-muted);
   margin-bottom: 1rem;
 }
 
@@ -75,16 +76,18 @@ p { margin: 0 0 1em; }
   align-items: center;
   gap: 0.5em;
   padding: 0.85em 1.4em;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 0.95rem;
+  border-radius: 2px;
+  font-family: var(--font-label);
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   text-decoration: none;
   border: 1px solid var(--text);
   transition: background 0.15s, color 0.15s;
 }
 .btn:hover { background: var(--text); color: var(--bg); }
 .btn-primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-.btn-primary:hover { background: var(--text); border-color: var(--text); }
+.btn-primary:hover { background: transparent; color: var(--text); }
 
 .grid { display: grid; gap: 24px; }
 .grid-3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
@@ -114,3 +117,12 @@ p { margin: 0 0 1em; }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* The business-card lockup: name, rule, studio. */
+.lockup { display: grid; gap: 14px; width: fit-content; max-width: 100%; }
+.lockup-name { font-size: clamp(2.4rem, 8vw, 5.4rem); letter-spacing: 0.18em; margin: 0; line-height: 1; }
+.lockup-studio {
+  display: flex; align-items: center; gap: 16px; width: 100%;
+  font-size: clamp(0.9rem, 2.2vw, 1.3rem); letter-spacing: 0.3em; margin: 0;
+}
+.lockup-studio::before, .lockup-studio::after { content: ''; height: 4px; background: var(--text); flex: 1; min-width: 24px; }
