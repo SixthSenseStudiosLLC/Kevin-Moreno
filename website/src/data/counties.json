@@ -10,11 +10,5 @@
     "name": "Passaic County",
     "order": 2,
     "blurb": "TODO: a line or two on the businesses and towns you film in Passaic."
-  },
-  {
-    "id": "sussex",
-    "name": "Sussex County",
-    "order": 3,
-    "blurb": "TODO: a line or two on the businesses and towns you film in Sussex."
   }
 ]

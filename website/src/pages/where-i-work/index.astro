@@ -6,11 +6,11 @@ const counties = (await getCollection('counties')).sort((a, b) => a.data.order -
 const towns = await getCollection('towns');
 ---
 
-<Base title="Where I Work" description="Video production across Bergen, Passaic and Sussex County, NJ.">
+<Base title="Where I Work" description="Video production across Bergen and Passaic County, NJ.">
   <section class="section">
     <div class="container">
       <p class="eyebrow">Where I work</p>
-      <h1>Bergen, Passaic<br />and Sussex County.</h1>
+      <h1>Bergen and<br />Passaic County.</h1>
       <p class="lede">Every story is tied to the town it was made in.</p>
       <div class="grid grid-3 list">
         {counties.map((c) => {
