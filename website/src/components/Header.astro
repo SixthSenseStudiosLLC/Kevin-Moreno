@@ -5,6 +5,16 @@ const path = Astro.url.pathname;
 const isActive = (href: string) => path === href || path.startsWith(href + '/');
 ---
 
+<div class="topbar">
+  <div class="container topbar-inner">
+    <span>{SITE.area}</span>
+    <span class="hide-sm">{SITE.hours}</span>
+    {SITE.phone
+      ? <a href={`tel:${SITE.phone}`}>Call {SITE.phone}</a>
+      : <a href={`mailto:${SITE.email}`}>{SITE.email}</a>}
+  </div>
+</div>
+
 <header class="header">
   <div class="container bar">
     <a href="/" class="logo" aria-label={SITE.name}>SixthSenseStudios</a>
@@ -22,6 +32,12 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
     </nav>
   </div>
 </header>
+
+<!-- Sticky call/quote bar on phones -->
+<div class="mobile-cta">
+  {SITE.phone ? <a href={`tel:${SITE.phone}`}>Call now</a> : <a href={`mailto:${SITE.email}`}>Email</a>}
+  <a href="/start" class="primary">Free quote</a>
+</div>
 
 <script>
   const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
@@ -42,6 +58,15 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
   }
+  .topbar {
+    background: var(--text); color: var(--bg);
+    font-family: var(--font-label); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .topbar-inner { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 36px; }
+  .topbar a { text-decoration: none; font-weight: 600; }
+
+  .mobile-cta { display: none; }
+
   .bar { display: flex; align-items: center; justify-content: space-between; height: 68px; }
   .logo {
     font-size: 0.95rem;
@@ -82,5 +107,18 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
     .nav.open { display: flex; }
     .nav a:not(.btn) { padding: 12px 0; font-size: 1.1rem; width: 100%; }
     .nav-cta { margin-top: 12px; }
+    .hide-sm { display: none; }
+    .mobile-cta {
+      display: grid; grid-template-columns: 1fr 1fr;
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+      border-top: 1px solid var(--line); background: var(--bg);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .mobile-cta a {
+      text-align: center; padding: 16px; text-decoration: none;
+      font-family: var(--font-label); font-size: 0.85rem; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+    .mobile-cta .primary { background: var(--text); color: var(--bg); }
+    :global(body) { padding-bottom: 56px; }
   }
 </style>

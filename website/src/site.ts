@@ -5,7 +5,9 @@ export const SITE = {
   description:
     'Sixth Sense Studios films towns, local businesses and trade companies in Bergen and Passaic County. Video that builds trust: the work, the people and the town around it.',
   email: 'hello@example.com', // TODO
-  phone: '', // TODO
+  phone: '', // TODO: e.g. (201) 555-0123
+  hours: 'Mon to Sat, 8 AM to 7 PM', // TODO: confirm
+  area: 'Bergen & Passaic County, NJ',
   instagram: '', // TODO: full URL
   tiktok: '', // TODO
   youtube: '', // TODO

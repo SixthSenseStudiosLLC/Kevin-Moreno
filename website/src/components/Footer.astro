@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import { NAV, SITE } from '../site';
 
 const counties = (await getCollection('counties')).sort((a, b) => a.data.order - b.data.order);
+const towns = (await getCollection('towns')).sort((a, b) => a.data.name.localeCompare(b.data.name));
 const socials = [
   ['Instagram', SITE.instagram],
   ['TikTok', SITE.tiktok],
@@ -15,10 +16,13 @@ const socials = [
     <div>
       <a href="/" class="logo">SixthSenseStudios</a>
       <p class="muted">{SITE.tagline}</p>
+      <p class="muted">{SITE.area}<br />{SITE.hours}</p>
+      <a href="/start" class="btn btn-primary">Get a free quote</a>
     </div>
     <div>
-      <h4>Where I work</h4>
+      <h4>Service areas</h4>
       {counties.map((c) => <a href={`/where-i-work/${c.id}`}>{c.data.name}</a>)}
+      {towns.map((t) => <a href={`/where-i-work/${t.data.county.id}/${t.id}`} class="sub">{t.data.name}, NJ</a>)}
     </div>
     <div>
       <h4>Site</h4>
@@ -45,8 +49,9 @@ const socials = [
     font-family: var(--font-label); font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase;
     color: var(--text-muted); margin: 0 0 14px; font-weight: 600;
   }
-  .cols a:not(.logo) { display: block; text-decoration: none; padding: 4px 0; }
-  .cols a:not(.logo):hover { color: var(--text-muted); }
+  .cols a:not(.logo):not(.btn) { display: block; text-decoration: none; padding: 4px 0; }
+  .cols a:not(.logo):not(.btn):hover { color: var(--text-muted); }
+  .cols .sub { color: var(--text-muted); font-size: 0.9rem; }
   .legal { margin-top: 48px; font-size: 0.85rem; }
   @media (max-width: 760px) { .cols { grid-template-columns: 1fr 1fr; } .cols > :first-child { grid-column: 1 / -1; } }
 </style>

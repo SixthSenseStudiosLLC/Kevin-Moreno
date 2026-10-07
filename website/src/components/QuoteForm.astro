@@ -1,0 +1,67 @@
+---
+import { getCollection } from 'astro:content';
+
+interface Props {
+  title?: string;
+}
+const { title = 'Get a free quote' } = Astro.props;
+const towns = (await getCollection('towns')).sort((a, b) => a.data.name.localeCompare(b.data.name));
+---
+
+<!-- TODO (brick 5): point action at the real form handler. For now it hands the answers to /start. -->
+<form class="quote" action="/start" method="get">
+  <h2>{title}</h2>
+  <p class="muted">Free call. No pressure. I'll get back to you within one business day.</p>
+  <div class="row">
+    <label>Name<input name="name" autocomplete="name" required /></label>
+    <label>Business<input name="business" autocomplete="organization" /></label>
+  </div>
+  <div class="row">
+    <label>Email<input type="email" name="email" autocomplete="email" required /></label>
+    <label>Phone<input type="tel" name="phone" autocomplete="tel" /></label>
+  </div>
+  <label>
+    What do you need?
+    <select name="service">
+      <option>Monthly content</option>
+      <option>Business owner podcast</option>
+      <option>Events coverage</option>
+      <option>A one-off project</option>
+      <option>Not sure yet</option>
+    </select>
+  </label>
+  <label>
+    Town
+    <select name="town">
+      {towns.map((t) => <option>{t.data.name}</option>)}
+      <option>Somewhere else</option>
+    </select>
+  </label>
+  <button class="btn btn-primary" type="submit">Get my free quote</button>
+</form>
+
+<style>
+  .quote {
+    background: var(--text);
+    color: var(--bg);
+    border-radius: var(--radius);
+    padding: clamp(24px, 3vw, 36px);
+    display: grid;
+    gap: 14px;
+  }
+  .quote h2 { font-size: 1.6rem; margin: 0; }
+  .quote .muted { color: #555; margin: 0 0 4px; font-size: 0.95rem; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  label {
+    display: grid; gap: 6px;
+    font-family: var(--font-label); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: #444;
+  }
+  input, select {
+    font: inherit; font-family: var(--font-body); font-size: 1rem; letter-spacing: 0; text-transform: none;
+    color: var(--bg); background: #f3f3f3; border: 1px solid #cfcfcf; border-radius: 4px; padding: 11px 12px; width: 100%;
+  }
+  input:focus, select:focus { outline: 2px solid var(--bg); outline-offset: 1px; }
+  .quote .btn { justify-content: center; margin-top: 6px; background: var(--bg); color: var(--text); border-color: var(--bg); }
+  .quote .btn:hover { background: transparent; color: var(--bg); }
+  @media (max-width: 480px) { .row { grid-template-columns: 1fr; } }
+</style>
