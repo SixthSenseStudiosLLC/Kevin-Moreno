@@ -10,7 +10,9 @@ npm run build    # outputs the site to dist/
 
 ## Where things live
 
-- `src/site.ts`: business name, tagline, email, phone, socials, menu
+- `src/site.ts`: business name, email, phone, hours, socials, services (they feed the menu dropdown, homepage slider, service grid and quote forms), menu
+- `src/data/reviews.ts`: client reviews for the Reviews page (real ones only)
+- `src/layouts/Page.astro`: inner-page layout (title banner, content, Request a Quote sidebar)
 - `src/data/counties.json`: Bergen, Passaic, Sussex
 - `src/data/towns.json`: every town you work in, each tagged with its county
 - `src/content/stories/`: blog posts (one Markdown file each, tagged with a town)

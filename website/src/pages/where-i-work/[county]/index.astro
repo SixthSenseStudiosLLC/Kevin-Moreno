@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
-import Base from '../../../layouts/Base.astro';
+import Page from '../../../layouts/Page.astro';
+import { SERVICES } from '../../../site';
 
 export async function getStaticPaths() {
   const counties = await getCollection('counties');
@@ -8,34 +9,36 @@ export async function getStaticPaths() {
 }
 
 const { county } = Astro.props;
+const name = county.data.name;
 const towns = (await getCollection('towns', (t) => t.data.county.id === county.id)).sort((a, b) =>
   a.data.name.localeCompare(b.data.name),
 );
 ---
 
-<Base title={`Video production in ${county.data.name}, NJ`}>
-  <section class="section">
-    <div class="container">
-      <p class="eyebrow"><a href="/where-i-work">Where I work</a></p>
-      <h1>{county.data.name}</h1>
-      {county.data.blurb ? <p class="lede">{county.data.blurb}</p> : <p><span class="placeholder">County intro coming soon</span></p>}
-      {towns.length ? (
-        <ul class="towns">
-          {towns.map((t) => <li><a href={`/where-i-work/${county.id}/${t.id}`}>{t.data.name}</a></li>)}
-        </ul>
-      ) : (
-        <span class="placeholder">Towns coming soon</span>
-      )}
-    </div>
-  </section>
-</Base>
+<Page
+  title={name}
+  description={`Video content, events coverage and podcasts in ${name}, NJ.`}
+  crumbs={[{ href: '/where-i-work', label: 'Service Areas' }]}
+>
+  <h1>Video production in {name}, NJ</h1>
+  {county.data.blurb ? <p>{county.data.blurb}</p> : <p><span class="placeholder">County intro coming soon</span></p>}
+
+  <h2>Towns I serve in {name}</h2>
+  {towns.length ? (
+    <ul class="checks towns">
+      {towns.map((t) => <li><a href={`/where-i-work/${county.id}/${t.id}`}>{t.data.name}, NJ</a></li>)}
+    </ul>
+  ) : (
+    <span class="placeholder">Towns coming soon</span>
+  )}
+
+  <h2>Services in {name}</h2>
+  <ul class="checks">
+    {SERVICES.map((s) => <li><a href={`/services#${s.id}`}>{s.title}</a>: {s.short}</li>)}
+  </ul>
+</Page>
 
 <style>
-  .eyebrow a { text-decoration: none; }
-  .towns { list-style: none; padding: 0; margin: 40px 0 0; display: flex; flex-wrap: wrap; gap: 10px; }
-  .towns a {
-    display: block; text-decoration: none; border: 1px solid var(--line);
-    padding: 12px 20px; font-size: 1.05rem; letter-spacing: 0.04em;
-  }
-  .towns a:hover { border-color: var(--text); }
+  .towns { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  .checks a { text-decoration: underline; }
 </style>

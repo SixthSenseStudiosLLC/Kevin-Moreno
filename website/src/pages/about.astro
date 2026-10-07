@@ -1,8 +1,52 @@
 ---
-import Base from '../layouts/Base.astro';
-import ComingSoon from '../components/ComingSoon.astro';
+import Page from '../layouts/Page.astro';
+import { SITE } from '../site';
 ---
 
-<Base title="About">
-  <ComingSoon eyebrow="About" title="About" note="Who I am and why I tell stories this way." />
-</Base>
+<Page title="About" description="Meet Reliable Kev, the person behind Sixth Sense Studios in Bergen and Passaic County, NJ.">
+  <h1>About Sixth Sense Studios</h1>
+  <p>
+    Sixth Sense Studios is the video studio of Reliable Kev, based in North Jersey and serving
+    <a href="/where-i-work">{SITE.area}</a>. I film monthly content, business owner podcasts, events and brand films for
+    towns, downtowns, local businesses and trade companies.
+  </p>
+
+  <div class="photo"><span class="placeholder">Photo of Kev on a shoot</span></div>
+
+  <h2>Full context storytelling</h2>
+  <p>
+    Trust is the most valuable thing a business has. People want to see who they are hiring before they call. So I
+    don't just film the product. I film three stories in every story:
+  </p>
+  <ul class="checks">
+    <li><strong>The business.</strong> What you make, how you work, and why customers keep coming back.</li>
+    <li><strong>The owner.</strong> Your story, in your words, so people know who they are buying from.</li>
+    <li><strong>The town.</strong> The street, the neighbors, the community you are part of.</li>
+  </ul>
+
+  <h2>Who I work with</h2>
+  <ul class="checks">
+    <li>Towns and municipalities showing residents what is being built, fixed and planned</li>
+    <li>Downtowns and chambers of commerce that want people walking their streets</li>
+    <li>Local shops, restaurants and services</li>
+    <li>Trades and contractors: concrete, construction, landscaping and more</li>
+  </ul>
+
+  <h2>Supporting our local community</h2>
+  <p>
+    {/* TODO: replace with the community work you actually do. */}
+    <span class="placeholder">Community involvement goes here</span>
+  </p>
+
+  <h2>Our standards for quality</h2>
+  <ul class="checks">
+    <li>A plan before every shoot, so nothing is wasted</li>
+    <li>Respect for your time, your crew and your customers on shoot day</li>
+    <li>Clean edits delivered on schedule, ready to post</li>
+  </ul>
+  <p><a href="/contact#quote">Book a free call</a> and let's talk about your story.</p>
+</Page>
+
+<style>
+  .photo { aspect-ratio: 16 / 9; background: var(--bg-raised); border: 1px solid var(--line); display: grid; place-items: center; margin: 28px 0; }
+</style>

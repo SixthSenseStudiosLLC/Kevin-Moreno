@@ -1,8 +1,41 @@
 ---
-import Base from '../layouts/Base.astro';
-import ComingSoon from '../components/ComingSoon.astro';
+import Page from '../layouts/Page.astro';
+import { SERVICES, SITE } from '../site';
 ---
 
-<Base title="Services">
-  <ComingSoon eyebrow="Services" title="Services" note="Monthly content, the business owner podcast, and projects." />
-</Base>
+<Page title="Services" description={`Monthly content, podcasts, events coverage and brand films in ${SITE.area}.`}>
+  <h1>Video services in Bergen and Passaic County</h1>
+  <p>
+    Everything I make is built to do one thing: help people trust you before they ever call. Pick one service or
+    combine them. Every project starts with a free planning call.
+  </p>
+  <ul class="jump">
+    {SERVICES.map((s) => <li><a href={`#${s.id}`}>{s.title}</a></li>)}
+  </ul>
+
+  {SERVICES.map((s) => (
+    <section id={s.id} class="service">
+      <div class="thumb"><span class="placeholder">{s.title} photo</span></div>
+      <h2>{s.title}</h2>
+      <p>{s.short}</p>
+      <p class="label">What's included:</p>
+      <ul class="checks">
+        {s.points.map((p) => <li>{p}</li>)}
+      </ul>
+      <a href="/contact#quote" class="btn btn-primary">Get a free quote</a>
+    </section>
+  ))}
+</Page>
+
+<style>
+  .jump { list-style: none; padding: 0; margin: 24px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .jump a {
+    display: block; padding: 8px 12px; border: 1px solid var(--line); text-decoration: none;
+    font-family: var(--font-label); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .jump a:hover { background: var(--text); color: var(--bg); }
+  .service { margin-top: 56px; padding-top: 40px; border-top: 1px solid var(--line); scroll-margin-top: 110px; }
+  .thumb { aspect-ratio: 16 / 7; background: var(--bg-raised); border: 1px solid var(--line); display: grid; place-items: center; margin-bottom: 24px; }
+  .service h2 { margin-top: 0 !important; }
+  .label { font-weight: 600; color: var(--text) !important; margin-bottom: 0.4em; }
+</style>

@@ -1,8 +1,58 @@
 ---
-import Base from '../layouts/Base.astro';
-import ComingSoon from '../components/ComingSoon.astro';
+import { getCollection } from 'astro:content';
+import Page from '../layouts/Page.astro';
+import { SITE } from '../site';
+
+const posts = (await getCollection('stories', (s) => !s.data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 ---
 
-<Base title="Stories">
-  <ComingSoon eyebrow="Stories" title="Stories" note="Stories from the towns and the businesses in them." />
-</Base>
+<Page title="Blog" description={`Stories from the towns and businesses of ${SITE.area}.`}>
+  <h1>Local stories blog</h1>
+  <p>
+    Stories from the towns and the businesses in them, plus tips on getting more out of video for your business.
+    <a href="/contact#quote">Contact me today</a> to schedule a free call.
+  </p>
+
+  {posts.length ? (
+    <ul class="posts">
+      {posts.map((p) => (
+        <li class="post">
+          <a href={`/stories/${p.id}`} class="thumb">
+            {p.data.cover ? <img src={p.data.cover} alt="" loading="lazy" /> : <span class="placeholder">Cover</span>}
+          </a>
+          <div>
+            <p class="meta">{fmt(p.data.date)}<br />By: Reliable Kev</p>
+            <h2><a href={`/stories/${p.id}`}>{p.data.title}</a></h2>
+            <p>{p.data.summary}</p>
+            <a href={`/stories/${p.id}`} class="sbtn">Read More</a>
+          </div>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <div class="empty">
+      <p>The first stories are being written now.</p>
+      <span class="placeholder">Add posts in src/content/stories/</span>
+    </div>
+  )}
+</Page>
+
+<style>
+  .posts { list-style: none; padding: 0; margin: 32px 0 0; }
+  .post { display: grid; grid-template-columns: 200px 1fr; gap: 20px; padding: 20px 0; border-bottom: 1px solid var(--line); }
+  .thumb { aspect-ratio: 4 / 3; background: var(--bg-raised); display: grid; place-items: center; overflow: hidden; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .meta { font-size: 0.75rem; color: var(--text-muted) !important; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .post h2 { font-size: 1.1rem !important; text-transform: none !important; margin: 0 0 6px !important; }
+  .post h2 a { text-decoration: none; }
+  .post p { font-size: 0.92rem; }
+  .sbtn {
+    display: inline-block; background: var(--text); color: var(--bg); text-decoration: none; border-radius: 2px; padding: 7px 14px;
+    font-family: var(--font-label); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .empty { margin-top: 32px; padding: 28px; border: 1px dashed var(--line); }
+  @media (max-width: 560px) { .post { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,49 @@
+---
+// Inner-page layout: title banner + breadcrumb, content on the left,
+// sticky "Request a Quote" form on the right.
+import Base from './Base.astro';
+import PageBanner from '../components/PageBanner.astro';
+import QuoteForm from '../components/QuoteForm.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  crumbs?: { href: string; label: string }[];
+  image?: string;
+  quote?: boolean;
+}
+const { title, description, crumbs, image, quote = true } = Astro.props;
+---
+
+<Base title={title} description={description}>
+  <PageBanner title={title} crumbs={crumbs} image={image} />
+  <div class:list={['container', 'page', { 'with-quote': quote }]}>
+    <article class="content">
+      <slot />
+    </article>
+    {quote && (
+      <aside class="side">
+        <QuoteForm />
+        <slot name="side" />
+      </aside>
+    )}
+  </div>
+  <slot name="after" />
+</Base>
+
+<style>
+  .page { padding-top: clamp(40px, 6vw, 72px); padding-bottom: clamp(56px, 8vw, 96px); }
+  .with-quote { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: clamp(32px, 5vw, 64px); align-items: start; }
+  .side { position: sticky; top: 108px; display: grid; gap: 20px; }
+  @media (max-width: 900px) {
+    .with-quote { grid-template-columns: 1fr; }
+    .side { position: static; }
+  }
+
+  /* Shared content styles for inner pages. */
+  .content :global(h1) { font-size: clamp(1.8rem, 3.6vw, 2.6rem); text-transform: uppercase; font-weight: 600; }
+  .content :global(h2) { font-size: clamp(1.3rem, 2.4vw, 1.7rem); text-transform: uppercase; font-weight: 600; margin-top: 1.6em; }
+  .content :global(h3) { text-transform: uppercase; font-weight: 600; margin-top: 1.4em; }
+  .content :global(p) { color: #d4d4d4; }
+  .content :global(p a) { text-decoration: underline; }
+</style>

@@ -1,473 +1,198 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import HeroSlider from '../components/HeroSlider.astro';
 import QuoteForm from '../components/QuoteForm.astro';
-import { SITE } from '../site';
+import AreaMap from '../components/AreaMap.astro';
+import { SERVICES, SITE } from '../site';
 
-// Homepage flow follows the local-contractor pattern:
-// hero + quote form → trust strip → services → who I work with → why me →
-// process → work → reviews → service areas → FAQ → final CTA.
+// Layout follows gardenstatehomeexteriors.com: hero slider → intro → why choose →
+// a section per service with a checklist → service grid → platforms strip → map → footer.
 
 const counties = (await getCollection('counties')).sort((a, b) => a.data.order - b.data.order);
 const towns = (await getCollection('towns')).sort((a, b) => a.data.name.localeCompare(b.data.name));
-const featured = (await getCollection('work', (w) => w.data.featured && !w.data.draft)).slice(0, 3);
-const stories = (await getCollection('stories', (s) => !s.data.draft))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 3);
 
-const heroPoints = [
-  'Based in North Jersey, filming in your town',
-  'Shoot days batched so it never eats your week',
-  'One person from first call to final cut',
-];
-
-const trust = [
-  { big: 'Bergen', small: '& Passaic County' },
-  { big: 'Monthly', small: 'clips, batched shoot days' },
-  { big: '1 person', small: 'start to finish' },
-  { big: 'Local', small: 'stories, local customers' },
-];
-
-const services = [
+const why = [
   {
-    title: 'Monthly content',
-    text: 'Short-form clips every month, batched into shoot days so it never eats your week.',
+    title: 'Every kind of video, one person',
+    text: 'Monthly content, podcasts, events and brand films. You work with me from the first call to the final cut, so nothing gets lost in a hand-off.',
   },
   {
-    title: 'Business owner podcast',
-    text: 'A podcast episode filmed on location, which also gets cut into clips.',
+    title: 'Local trust and full context',
+    text: 'I film the business, the owner and the town around them. Neighbors choose local, and they want to see who they are hiring before they call.',
   },
   {
-    title: 'Events coverage',
-    text: 'Openings, festivals, town events and ribbon cuttings. Captured and cut fast.',
-  },
-  {
-    title: 'Projects',
-    text: 'Brand films, launches and one-off pieces with a beginning, a middle and an end.',
+    title: 'Built around your week',
+    text: 'Shoot days are planned and batched, so filming never takes over your business. You get a steady stream of content without the hassle.',
   },
 ];
 
-const audiences = [
-  { title: 'Towns', text: 'Municipalities and public projects. Showing residents what is being built, fixed and planned, and why.' },
-  { title: 'Downtowns & chambers', text: 'Business districts and chambers of commerce that want people walking their streets.' },
-  { title: 'Local businesses', text: 'Shops, restaurants and services that want neighbors to know the people behind the counter.' },
-  { title: 'Trades & contractors', text: 'Concrete, construction, landscaping and more. Real crews and real job sites, so customers trust you before you show up.' },
-];
-
-const pillars = [
-  { title: 'The business', text: 'What you make, how you work, and why customers keep coming back. Filmed where it actually happens.' },
-  { title: 'The owner', text: 'The person behind the counter. Your story, in your words, so people know who they are buying from.' },
-  { title: 'The town', text: 'The street, the neighbors, the community you are part of. Local customers choose local for a reason.' },
-];
-
-// "Why choose" checklist, like the contractor-site credential list.
 const reasons = [
-  'Local to Bergen & Passaic County',
+  'Based in North Jersey, filming in your town',
   'One person from first call to final cut',
-  'Batched shoot days, minimal disruption',
-  'Clips delivered monthly, ready to post',
   'Free planning call before anything is filmed',
-  'Straight pricing, no long contracts', // TODO: confirm
 ];
 
-const steps = [
-  { title: 'Free call', text: 'Tell me about your business, your town and what you want people to know.' },
-  { title: 'Plan', text: 'I put together a simple plan: what we film, where, and when.' },
-  { title: 'Shoot day', text: 'I come to you. One day on location covers weeks of content.' },
-  { title: 'Deliver', text: 'Edited clips and videos, ready to post. Then we do it again next month.' },
-];
+// Simple line icons for the service grid, keyed by service id.
+const icons: Record<string, string> = {
+  'monthly-content': 'M7 3v3M17 3v3M4 8h16M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm3 7h3v3H8z',
+  podcast: 'M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zM5 11a7 7 0 0 0 14 0M12 18v3M8 21h8',
+  events: 'M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z',
+  projects: 'M3 6h14v12H3zM17 10l4-2.5v9L17 14',
+};
 
-// TODO: replace with real client quotes once you have them.
-const reviews = [
-  { quote: 'Client quote goes here.', name: 'Client name', meta: 'Business · Town' },
-  { quote: 'Client quote goes here.', name: 'Client name', meta: 'Business · Town' },
-  { quote: 'Client quote goes here.', name: 'Client name', meta: 'Business · Town' },
-];
-
-const faqs = [
-  {
-    q: 'What areas do you serve?',
-    a: `I work in ${SITE.area}, including Fair Lawn, Glen Rock, Ridgewood and Paterson. If you are nearby, reach out anyway.`,
-  },
-  {
-    q: 'How does monthly content work?',
-    a: 'We plan the month together, then I film everything in batched shoot days. You get a set of edited clips each month, ready to post.',
-  },
-  {
-    q: 'Do I need to be good on camera?',
-    a: 'No. Most owners are not, at first. I keep it conversational, and we film until it sounds like you.',
-  },
-  {
-    q: 'How much does it cost?',
-    a: 'It depends on how much you need each month and what kind of project it is. Start with a free call and I will give you a straight number.',
-  },
-  {
-    q: 'How fast do I get the videos?',
-    a: 'Monthly clips are delivered on a set schedule. Event recaps can be turned around quickly. We agree on timing before the shoot.',
-  },
-];
+const platforms = ['Instagram', 'TikTok', 'YouTube', 'Facebook', 'LinkedIn', 'Your Website'];
 ---
 
 <Base>
-  <!-- HERO: headline + points on the left, quick quote form on the right -->
-  <section class="hero">
-    <div class="container hero-grid">
-      <div class="hero-copy">
-        <p class="eyebrow">Video Content · Events Coverage · Podcast</p>
-        <h1 class="hero-title">North Jersey's full context storyteller.</h1>
-        <p class="lede">
-          People want to see who they are hiring before they call. I film the work, the people
-          behind it, and the town it belongs to.
+  <HeroSlider />
+
+  <div class="container home">
+    <div class="content">
+      <section>
+        <h1>Sixth Sense Studios: North Jersey's video partner for content, events and podcasts</h1>
+        <p>
+          Welcome to Sixth Sense Studios, home of Reliable Kev and your local video partner in New Jersey. I specialize in
+          {SERVICES.map((s, i) => <>{i === SERVICES.length - 1 ? ' and ' : i ? ', ' : ' '}<a href={`/services#${s.id}`}>{s.title.toLowerCase()}</a></>)}
+          for towns, downtowns, local businesses and trade companies throughout
+          {counties.map((c, i) => <>{i ? ' and ' : ' '}<a href={`/where-i-work/${c.id}`}>{c.data.name}</a></>)}.
         </p>
+        <p>
+          Trust is the most valuable thing a business has. People want to see who they are hiring before they call. I
+          tell the full story: the work, the people behind it, and the town it belongs to, so your customers feel like
+          they already know you.
+        </p>
+      </section>
+
+      <section>
+        <h2>Why choose Sixth Sense Studios for your video?</h2>
+        {why.map((w) => (
+          <>
+            <h3>{w.title}</h3>
+            <p>{w.text}</p>
+          </>
+        ))}
         <ul class="checks">
-          {heroPoints.map((p) => <li>{p}</li>)}
-        </ul>
-        <div class="actions">
-          <a href="/start" class="btn btn-primary">Start a Project</a>
-          {SITE.phone ? (
-            <a href={`tel:${SITE.phone}`} class="btn">Call {SITE.phone}</a>
-          ) : (
-            <a href="/work" class="btn">See the work</a>
-          )}
-        </div>
-        <div class="lockup hero-lockup">
-          <p class="lockup-name">Reliable Kev</p>
-          <p class="lockup-studio">SixthSenseStudios</p>
-        </div>
-      </div>
-      <QuoteForm />
-    </div>
-  </section>
-
-  <!-- TRUST STRIP -->
-  <section class="trust" aria-label="Why Sixth Sense Studios">
-    <div class="container trust-grid">
-      {trust.map((t) => (
-        <div class="trust-item">
-          <strong>{t.big}</strong>
-          <span>{t.small}</span>
-        </div>
-      ))}
-    </div>
-  </section>
-
-  <!-- SERVICES -->
-  <section class="section">
-    <div class="container">
-      <div class="head-center">
-        <p class="eyebrow">Services</p>
-        <h2>What I do.</h2>
-        <p class="lede">Video built for local businesses and the towns they belong to.</p>
-      </div>
-      <div class="grid services">
-        {services.map((s) => (
-          <a href="/services" class="service">
-            <div class="thumb"><span class="placeholder">Photo</span></div>
-            <div class="service-body">
-              <h3>{s.title}</h3>
-              <p class="muted">{s.text}</p>
-              <span class="link">Learn more →</span>
-            </div>
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- WHO I WORK WITH -->
-  <section class="section">
-    <div class="container">
-      <p class="eyebrow">Who I work with</p>
-      <h2>Everyone who builds a town.</h2>
-      <p class="lede">I understand how towns work, from the infrastructure to the main street.</p>
-      <div class="grid audiences">
-        {audiences.map((a) => (
-          <div class="card">
-            <h3>{a.title}</h3>
-            <p class="muted">{a.text}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- WHY CHOOSE ME -->
-  <section class="section">
-    <div class="container why">
-      <div>
-        <p class="eyebrow">Why choose Reliable Kev</p>
-        <h2>Three stories in every story.</h2>
-        <p class="lede">
-          Trust is the most valuable thing a business has. Full context means people see the
-          whole picture, not just an ad.
-        </p>
-        <ul class="checks reasons">
           {reasons.map((r) => <li>{r}</li>)}
         </ul>
-        <a href="/about" class="btn">About me</a>
-      </div>
-      <ol class="pillars">
-        {pillars.map((p, i) => (
-          <li>
-            <span class="num">0{i + 1}</span>
-            <div>
-              <h3>{p.title}</h3>
-              <p class="muted">{p.text}</p>
-            </div>
-          </li>
-        ))}
-      </ol>
-    </div>
-  </section>
 
-  <!-- PROCESS -->
-  <section class="section">
+        <a href="/about" class="meet">
+          <div class="meet-photo"><span class="placeholder">Photo of Kev</span></div>
+          <div>
+            <h3>Meet Reliable Kev</h3>
+            <p>
+              The person behind the camera. When you book a call, you are talking to the same person who plans, films and
+              edits your project from start to finish. <span class="more">Continue reading</span>
+            </p>
+          </div>
+        </a>
+      </section>
+
+      {SERVICES.map((s) => (
+        <section id={s.id}>
+          <h2>{s.title}</h2>
+          <p>{s.short}</p>
+          <p class="label">What's included:</p>
+          <ul class="checks">
+            {s.points.map((p) => <li>{p}</li>)}
+            <li><a href={`/services#${s.id}`}>{s.title} service page</a></li>
+          </ul>
+        </section>
+      ))}
+
+      <section>
+        <h2>Serving Bergen and Passaic County</h2>
+        <p>
+          Every piece of work is tied to the town it was made in. I currently work in
+          {towns.map((t, i) => <>{i === towns.length - 1 ? ' and ' : i ? ', ' : ' '}<a href={`/where-i-work/${t.data.county.id}/${t.id}`}>{t.data.name}</a></>)},
+          with more towns coming. Nearby? <a href="/contact#quote">Reach out anyway.</a>
+        </p>
+      </section>
+    </div>
+
+    <aside class="side">
+      <QuoteForm />
+    </aside>
+  </div>
+
+  <section class="services-band">
     <div class="container">
-      <div class="head-center">
-        <p class="eyebrow">How it works</p>
-        <h2>Simple from start to finish.</h2>
-      </div>
-      <ol class="grid steps">
-        {steps.map((s, i) => (
-          <li class="step">
-            <span class="step-num">{i + 1}</span>
+      <h2 class="band-title">Our Services</h2>
+      <div class="service-grid">
+        {SERVICES.map((s) => (
+          <div class="service">
+            <svg viewBox="0 0 24 24" width="56" height="56" aria-hidden="true">
+              <path d={icons[s.id]} fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" />
+            </svg>
             <h3>{s.title}</h3>
-            <p class="muted">{s.text}</p>
-          </li>
-        ))}
-      </ol>
-      <p class="center"><a href="/start" class="btn btn-primary">Book a free call</a></p>
-    </div>
-  </section>
-
-  <!-- RECENT WORK -->
-  <section class="section">
-    <div class="container">
-      <div class="split-head">
-        <div>
-          <p class="eyebrow">Recent work</p>
-          <h2>See it for yourself.</h2>
-        </div>
-        <a href="/work" class="btn">All work</a>
-      </div>
-      <div class="grid grid-3">
-        {featured.length
-          ? featured.map((w) => (
-              <a href={`/work/${w.id}`} class="work-card">
-                <div class="thumb tall">{w.data.cover && <img src={w.data.cover} alt="" loading="lazy" />}</div>
-                <h3>{w.data.client}</h3>
-                <p class="muted">{w.data.businessType}</p>
-              </a>
-            ))
-          : [1, 2, 3].map(() => (
-              <div class="work-card">
-                <div class="thumb tall"><span class="placeholder">Portfolio piece</span></div>
-                <h3 class="muted">Client name</h3>
-                <p class="muted">Business type · Town</p>
-              </div>
-            ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- REVIEWS -->
-  <section class="section">
-    <div class="container">
-      <div class="head-center">
-        <p class="eyebrow">Reviews</p>
-        <h2>What clients say.</h2>
-      </div>
-      <div class="grid grid-3">
-        {reviews.map((r) => (
-          <figure class="card review">
-            <div class="stars" aria-hidden="true">★★★★★</div>
-            <blockquote>“{r.quote}”</blockquote>
-            <figcaption>
-              <strong>{r.name}</strong>
-              <span class="muted">{r.meta}</span>
-            </figcaption>
-          </figure>
-        ))}
-      </div>
-      <p class="center"><span class="placeholder">Real reviews go here</span></p>
-    </div>
-  </section>
-
-  <!-- SERVICE AREAS -->
-  <section class="section">
-    <div class="container">
-      <div class="head-center">
-        <p class="eyebrow">Service areas</p>
-        <h2>Rooted in North Jersey.</h2>
-        <p class="lede">Every piece of work is tied to the town it was made in. Find yours.</p>
-      </div>
-      <div class="grid areas">
-        {counties.map((c) => (
-          <div class="card area">
-            <h3><a href={`/where-i-work/${c.id}`}>{c.data.name} →</a></h3>
-            <ul>
-              {towns
-                .filter((t) => t.data.county.id === c.id)
-                .map((t) => (
-                  <li><a href={`/where-i-work/${c.id}/${t.id}`}>{t.data.name}, NJ</a></li>
-                ))}
-            </ul>
+            <p>{s.short}</p>
+            <a href={`/services#${s.id}`} class="sbtn">Learn More</a>
           </div>
         ))}
       </div>
     </div>
   </section>
 
-  {stories.length > 0 && (
-    <section class="section">
-      <div class="container">
-        <p class="eyebrow">Stories</p>
-        <h2>From the towns.</h2>
-        <div class="grid grid-3">
-          {stories.map((s) => (
-            <a href={`/stories/${s.id}`} class="card story">
-              <h3>{s.data.title}</h3>
-              <p class="muted">{s.data.summary}</p>
-            </a>
-          ))}
-        </div>
-      </div>
-    </section>
-  )}
-
-  <!-- FAQ -->
-  <section class="section">
-    <div class="container faq-wrap">
-      <div>
-        <p class="eyebrow">FAQ</p>
-        <h2>Questions, answered.</h2>
-        <p class="muted">Don't see yours? <a href="/contact">Ask me directly.</a></p>
-      </div>
-      <div class="faq">
-        {faqs.map((f, i) => (
-          <details open={i === 0}>
-            <summary>{f.q}</summary>
-            <p class="muted">{f.a}</p>
-          </details>
-        ))}
-      </div>
+  <section class="platforms" aria-label="Where your videos go">
+    <div class="container">
+      <p class="eyebrow">Made for</p>
+      <ul>
+        {platforms.map((p) => <li>{p}</li>)}
+      </ul>
     </div>
   </section>
 
-  <!-- FINAL CTA BANNER -->
-  <section class="cta-band">
-    <div class="container cta-inner">
-      <div>
-        <h2>Your business has a story. So does your town.</h2>
-        <p class="muted">Free call. No pressure. Straight answers.</p>
-      </div>
-      <div class="actions">
-        <a href="/start" class="btn btn-primary">Start a Project</a>
-        {SITE.phone && <a href={`tel:${SITE.phone}`} class="btn">Call {SITE.phone}</a>}
-      </div>
-    </div>
-  </section>
+  <AreaMap />
 </Base>
 
 <style>
-  .hero { padding: clamp(40px, 7vw, 96px) 0 clamp(48px, 7vw, 88px); }
-  .hero-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: clamp(32px, 5vw, 72px); align-items: start; }
-  .hero-title { font-size: clamp(2.1rem, 5vw, 3.6rem); }
-  .checks { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 10px; }
-  .checks li { display: flex; gap: 12px; align-items: baseline; }
-  .checks li::before { content: '✓'; font-weight: 600; }
-  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
-  .hero-lockup { margin-top: 48px; }
-  .hero-lockup .lockup-name { font-size: clamp(1.6rem, 4vw, 2.6rem); }
-  .hero-lockup .lockup-studio { font-size: clamp(0.7rem, 1.4vw, 0.9rem); }
-  .hero-lockup .lockup-studio::before, .hero-lockup .lockup-studio::after { height: 3px; }
-
-  .trust { background: var(--text); color: var(--bg); }
-  .trust-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
-  .trust-item { padding: 28px 16px; text-align: center; display: grid; gap: 2px; }
-  .trust-item + .trust-item { border-left: 1px solid #d0d0d0; }
-  .trust-item strong { font-size: 1.4rem; font-weight: 600; letter-spacing: 0.04em; }
-  .trust-item span { font-family: var(--font-label); font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: #555; }
-
-  .head-center { text-align: center; margin-bottom: 48px; }
-  .head-center .lede { margin-inline: auto; }
-  .center { text-align: center; margin-top: 40px; }
-
-  .services { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-  .service {
-    text-decoration: none; background: var(--bg-raised); border: 1px solid var(--line);
-    border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; transition: border-color 0.15s;
+  .home {
+    display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: clamp(32px, 5vw, 64px); align-items: start;
+    padding-top: clamp(48px, 6vw, 80px); padding-bottom: clamp(56px, 8vw, 96px);
   }
-  .service:hover { border-color: var(--text); }
-  .service .thumb { aspect-ratio: 4 / 3; border: 0; border-radius: 0; border-bottom: 1px solid var(--line); }
-  .service-body { padding: 24px; display: flex; flex-direction: column; flex: 1; }
-  .link { margin-top: auto; font-family: var(--font-label); font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; }
+  .side { position: sticky; top: 108px; }
 
-  .audiences { margin-top: 40px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .content section + section { margin-top: 48px; scroll-margin-top: 110px; }
+  .content section { scroll-margin-top: 110px; }
+  .content h1 { font-size: clamp(1.8rem, 3.6vw, 2.5rem); text-transform: uppercase; font-weight: 600; letter-spacing: 0.02em; }
+  .content h2 { font-size: clamp(1.35rem, 2.6vw, 1.8rem); text-transform: uppercase; font-weight: 600; }
+  .content h3 { text-transform: uppercase; font-weight: 600; margin: 1.4em 0 0.4em; }
+  .content p { color: #d4d4d4; }
+  .content p a, .checks a { text-decoration: underline; }
+  .label { font-weight: 600; color: var(--text) !important; margin-bottom: 0.4em; }
 
-  .why { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(32px, 6vw, 80px); align-items: start; }
-  .why .lede { margin-bottom: 0; }
-  .reasons { margin: 24px 0 32px; }
-  .pillars { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
-  .pillars li { display: flex; gap: 24px; padding: 24px 0; border-top: 1px solid var(--line); }
-  .pillars li:last-child { border-bottom: 1px solid var(--line); }
-  .pillars p { margin: 0; }
-  .num { font-family: var(--font-label); color: var(--text-muted); letter-spacing: 0.2em; font-size: 1.1rem; }
-
-  .steps { list-style: none; padding: 0; margin: 0; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-  .step { position: relative; padding-top: 8px; }
-  .step-num {
-    display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%;
-    background: var(--text); color: var(--bg); font-family: var(--font-label); font-size: 1.2rem; margin-bottom: 18px;
+  .meet {
+    display: grid; grid-template-columns: 140px 1fr; gap: 20px; align-items: start;
+    margin-top: 32px; padding: 20px; max-width: 560px;
+    border: 1px solid var(--line); background: var(--bg-raised); text-decoration: none;
   }
+  .meet h3 { margin-top: 0; text-transform: none; }
+  .meet p { font-size: 0.9rem; margin: 0; }
+  .meet-photo { aspect-ratio: 4 / 3; background: #1a1a1a; display: grid; place-items: center; }
+  .more { text-decoration: underline; }
 
-  .split-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; margin-bottom: 40px; }
-  .work-card { text-decoration: none; }
-  .work-card h3 { margin: 16px 0 4px; }
-  .thumb {
-    background: var(--bg-raised); border: 1px solid var(--line); border-radius: var(--radius);
-    display: grid; place-items: center; overflow: hidden;
+  .services-band { background: var(--bg-raised); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: clamp(56px, 8vw, 96px) 0; }
+  .band-title { text-align: center; text-transform: uppercase; font-weight: 600; margin-bottom: 48px; }
+  .service-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 40px 32px; }
+  .service { text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .service svg { margin-bottom: 14px; }
+  .service h3 { text-transform: uppercase; font-weight: 600; }
+  .service p { color: var(--text-muted); font-size: 0.92rem; flex: 1; }
+  .sbtn {
+    background: var(--text); color: var(--bg); text-decoration: none; border-radius: 2px; padding: 9px 16px;
+    font-family: var(--font-label); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
   }
-  .thumb.tall { aspect-ratio: 4 / 5; }
-  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .sbtn:hover { opacity: 0.8; }
 
-  .review { margin: 0; display: flex; flex-direction: column; gap: 16px; }
-  .stars { letter-spacing: 0.2em; }
-  .review blockquote { margin: 0; font-size: 1.05rem; }
-  .review figcaption { display: grid; margin-top: auto; font-size: 0.95rem; }
-
-  .areas { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
-  .area h3 a { text-decoration: none; }
-  .area ul { list-style: none; padding: 0; margin: 16px 0 0; columns: 2; }
-  .area li a { display: block; padding: 4px 0; color: var(--text-muted); text-decoration: none; }
-  .area li a:hover { color: var(--text); }
-
-  .story { text-decoration: none; }
-
-  .faq-wrap { display: grid; grid-template-columns: 1fr 1.6fr; gap: clamp(32px, 6vw, 80px); }
-  .faq details { border-top: 1px solid var(--line); }
-  .faq details:last-child { border-bottom: 1px solid var(--line); }
-  .faq summary {
-    cursor: pointer; list-style: none; padding: 20px 40px 20px 0; position: relative; font-weight: 500; font-size: 1.05rem;
-  }
-  .faq summary::-webkit-details-marker { display: none; }
-  .faq summary::after { content: '+'; position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; font-weight: 300; }
-  .faq details[open] summary::after { content: '−'; }
-  .faq details p { padding-bottom: 12px; }
-
-  .cta-band { background: var(--text); color: var(--bg); padding: clamp(48px, 7vw, 80px) 0; }
-  .cta-band .muted { color: #555; margin: 0; }
-  .cta-band h2 { max-width: 22ch; }
-  .cta-inner { display: flex; justify-content: space-between; align-items: center; gap: 32px; flex-wrap: wrap; }
-  .cta-band .actions { margin-top: 0; }
-  .cta-band .btn { border-color: var(--bg); }
-  .cta-band .btn-primary { background: var(--bg); color: var(--text); }
-  .cta-band .btn-primary:hover, .cta-band .btn:hover { background: transparent; color: var(--bg); }
+  .platforms { padding: 40px 0; text-align: center; }
+  .platforms ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 48px; }
+  .platforms li { font-size: 1.15rem; font-weight: 600; letter-spacing: 0.06em; color: var(--text-muted); }
 
   @media (max-width: 900px) {
-    .hero-grid, .why, .faq-wrap { grid-template-columns: 1fr; }
-    .trust-grid { grid-template-columns: repeat(2, 1fr); }
-    .trust-item:nth-child(3) { border-left: 0; }
-    .trust-item:nth-child(n + 3) { border-top: 1px solid #d0d0d0; }
+    .home { grid-template-columns: 1fr; }
+    .side { position: static; }
+  }
+  @media (max-width: 520px) {
+    .meet { grid-template-columns: 1fr; }
   }
 </style>

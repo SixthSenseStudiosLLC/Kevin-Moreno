@@ -1,8 +1,58 @@
 ---
-import Base from '../layouts/Base.astro';
-import ComingSoon from '../components/ComingSoon.astro';
+import Page from '../layouts/Page.astro';
+import QuoteForm from '../components/QuoteForm.astro';
+import Socials from '../components/Socials.astro';
+import AreaMap from '../components/AreaMap.astro';
+import { SITE } from '../site';
+
+const hasSocials = Object.values(SITE.socials).some(Boolean);
 ---
 
-<Base title="Contact">
-  <ComingSoon eyebrow="Contact" title="Contact" note="Quick question? Reach out here." />
-</Base>
+<Page title="Contact" description={`Contact ${SITE.name} for a free quote on video in ${SITE.area}.`} quote={false}>
+  <h1>Contact Sixth Sense Studios</h1>
+  <div class="intro">
+    <div>
+      <p>
+        Your business already has a story. The only question is whether people can see it. Whether you need a steady
+        stream of monthly content, a podcast, coverage of an upcoming event, or a single brand film, I'm happy to talk
+        it through.
+      </p>
+      <p>
+        Every project starts with a free, no-pressure call. Tell me about your business and your town, and I'll come
+        back with a simple plan and a straight number.
+      </p>
+    </div>
+    <div class="photo"><span class="placeholder">Photo</span></div>
+  </div>
+
+  <div class="contact-grid">
+    <div class="info">
+      <h2>{SITE.name}</h2>
+      <dl>
+        <div><dt>⚲ Service Area</dt><dd>{SITE.area}</dd></div>
+        {SITE.phone && <div><dt>☎ Phone Number</dt><dd><a href={`tel:${SITE.phone}`}>{SITE.phone}</a></dd></div>}
+        <div><dt>✉ Email</dt><dd><a href={`mailto:${SITE.email}`}>{SITE.email}</a></dd></div>
+        <div><dt>◷ Hours of Operation</dt><dd>{SITE.hours}</dd></div>
+        {hasSocials && <div><dt>Follow Us</dt><dd><Socials /></dd></div>}
+      </dl>
+    </div>
+    <QuoteForm title="Contact Us" id="quote" />
+  </div>
+
+  <AreaMap slot="after" />
+</Page>
+
+<style>
+  .intro { display: grid; grid-template-columns: 1fr 260px; gap: 24px; align-items: start; }
+  .photo { aspect-ratio: 4 / 3; background: var(--bg-raised); border: 1px solid var(--line); display: grid; place-items: center; }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 48px; align-items: start; }
+  .contact-grid :global(form) { scroll-margin-top: 110px; }
+  .info h2 { margin-top: 0 !important; }
+  dl { margin: 0; display: grid; gap: 18px; }
+  dt { font-weight: 600; text-transform: uppercase; font-size: 0.9rem; }
+  dd { margin: 4px 0 0; color: #d4d4d4; }
+  dd a { text-decoration: underline; }
+  @media (max-width: 760px) {
+    .intro, .contact-grid { grid-template-columns: 1fr; }
+  }
+</style>

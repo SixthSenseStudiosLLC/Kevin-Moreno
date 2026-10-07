@@ -1,34 +1,41 @@
 ---
 import { getCollection } from 'astro:content';
-import Base from '../../layouts/Base.astro';
+import Page from '../../layouts/Page.astro';
+import AreaMap from '../../components/AreaMap.astro';
 
 const counties = (await getCollection('counties')).sort((a, b) => a.data.order - b.data.order);
-const towns = await getCollection('towns');
+const towns = (await getCollection('towns')).sort((a, b) => a.data.name.localeCompare(b.data.name));
 ---
 
-<Base title="Where I Work" description="Video production across Bergen and Passaic County, NJ.">
-  <section class="section">
-    <div class="container">
-      <p class="eyebrow">Where I work</p>
-      <h1>Bergen and<br />Passaic County.</h1>
-      <p class="lede">Every story is tied to the town it was made in.</p>
-      <div class="grid grid-3 list">
-        {counties.map((c) => {
-          const count = towns.filter((t) => t.data.county.id === c.id).length;
-          return (
-            <a href={`/where-i-work/${c.id}`} class="card">
-              <h3>{c.data.name}</h3>
-              <p class="muted">{count ? `${count} town${count === 1 ? '' : 's'}` : 'Towns coming soon'}</p>
-            </a>
-          );
-        })}
-      </div>
-    </div>
-  </section>
-</Base>
+<Page title="Service Areas" description="Video production across Bergen and Passaic County, NJ.">
+  <h1>Service areas: Bergen and Passaic County</h1>
+  <p>
+    I film towns, downtowns, local businesses and trade companies across North Jersey. Every story is tied to the town
+    it was made in. Find yours below. Don't see it? <a href="/contact#quote">Reach out anyway.</a>
+  </p>
+
+  {counties.map((c) => {
+    const list = towns.filter((t) => t.data.county.id === c.id);
+    return (
+      <section class="county">
+        <h2><a href={`/where-i-work/${c.id}`}>{c.data.name}</a></h2>
+        {list.length ? (
+          <ul class="checks towns">
+            {list.map((t) => <li><a href={`/where-i-work/${c.id}/${t.id}`}>{t.data.name}, NJ</a></li>)}
+          </ul>
+        ) : (
+          <span class="placeholder">Towns coming soon</span>
+        )}
+      </section>
+    );
+  })}
+
+  <AreaMap slot="after" />
+</Page>
 
 <style>
-  .list { margin-top: 48px; }
-  .list a { text-decoration: none; }
-  .list a:hover { border-color: var(--text); }
+  .county h2 a { text-decoration: none; }
+  .towns { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  .towns a { text-decoration: none; }
+  .towns a:hover { text-decoration: underline; }
 </style>

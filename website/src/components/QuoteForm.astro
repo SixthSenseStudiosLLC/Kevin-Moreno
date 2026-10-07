@@ -1,67 +1,51 @@
 ---
-import { getCollection } from 'astro:content';
+import { SERVICES } from '../site';
 
 interface Props {
   title?: string;
+  id?: string;
 }
-const { title = 'Get a free quote' } = Astro.props;
-const towns = (await getCollection('towns')).sort((a, b) => a.data.name.localeCompare(b.data.name));
+const { title = 'Request a Quote', id } = Astro.props;
 ---
 
-<!-- TODO (brick 5): point action at the real form handler. For now it hands the answers to /start. -->
-<form class="quote" action="/start" method="get">
+<!-- TODO (brick 5): point action at the real form handler (Formspree, Netlify Forms, etc.). -->
+<form class="quote" action="/start" method="get" id={id}>
   <h2>{title}</h2>
-  <p class="muted">Free call. No pressure. I'll get back to you within one business day.</p>
-  <div class="row">
-    <label>Name<input name="name" autocomplete="name" required /></label>
-    <label>Business<input name="business" autocomplete="organization" /></label>
+  <div class="fields">
+    <label><span class="sr-only">Name</span><input name="name" placeholder="Name *" autocomplete="name" required /></label>
+    <label><span class="sr-only">Phone</span><input type="tel" name="phone" placeholder="Phone *" autocomplete="tel" required /></label>
+    <label><span class="sr-only">Email</span><input type="email" name="email" placeholder="Email *" autocomplete="email" required /></label>
+    <label>
+      <span class="sr-only">Interested in</span>
+      <select name="service">
+        <option value="">Interested In</option>
+        {SERVICES.map((s) => <option>{s.title}</option>)}
+        <option>Not sure yet</option>
+      </select>
+    </label>
+    <label><span class="sr-only">Message</span><textarea name="message" rows="4" placeholder="Message"></textarea></label>
+    <button class="submit" type="submit">Get My Free Quote</button>
   </div>
-  <div class="row">
-    <label>Email<input type="email" name="email" autocomplete="email" required /></label>
-    <label>Phone<input type="tel" name="phone" autocomplete="tel" /></label>
-  </div>
-  <label>
-    What do you need?
-    <select name="service">
-      <option>Monthly content</option>
-      <option>Business owner podcast</option>
-      <option>Events coverage</option>
-      <option>A one-off project</option>
-      <option>Not sure yet</option>
-    </select>
-  </label>
-  <label>
-    Town
-    <select name="town">
-      {towns.map((t) => <option>{t.data.name}</option>)}
-      <option>Somewhere else</option>
-    </select>
-  </label>
-  <button class="btn btn-primary" type="submit">Get my free quote</button>
 </form>
 
 <style>
-  .quote {
-    background: var(--text);
-    color: var(--bg);
-    border-radius: var(--radius);
-    padding: clamp(24px, 3vw, 36px);
-    display: grid;
-    gap: 14px;
+  .quote { background: #fff; color: #111; border-radius: 3px; overflow: hidden; box-shadow: 0 6px 24px rgb(0 0 0 / 0.35); }
+  .quote h2 {
+    margin: 0; padding: 16px; text-align: center; background: var(--bg); color: var(--text);
+    font-size: 1.05rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; border: 4px solid #fff; border-bottom: 0;
   }
-  .quote h2 { font-size: 1.6rem; margin: 0; }
-  .quote .muted { color: #555; margin: 0 0 4px; font-size: 0.95rem; }
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  label {
-    display: grid; gap: 6px;
-    font-family: var(--font-label); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: #444;
+  .fields { display: grid; gap: 8px; padding: 12px; }
+  input, select, textarea {
+    font: inherit; font-size: 0.9rem; color: #111; background: #fff;
+    border: 1px solid #d6d6d6; border-radius: 2px; padding: 10px; width: 100%;
   }
-  input, select {
-    font: inherit; font-family: var(--font-body); font-size: 1rem; letter-spacing: 0; text-transform: none;
-    color: var(--bg); background: #f3f3f3; border: 1px solid #cfcfcf; border-radius: 4px; padding: 11px 12px; width: 100%;
+  select { color: #555; }
+  textarea { resize: vertical; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid #111; outline-offset: 0; }
+  .submit {
+    font: inherit; font-weight: 600; font-size: 0.9rem; cursor: pointer;
+    background: var(--bg); color: var(--text); border: 0; border-radius: 3px; padding: 12px;
   }
-  input:focus, select:focus { outline: 2px solid var(--bg); outline-offset: 1px; }
-  .quote .btn { justify-content: center; margin-top: 6px; background: var(--bg); color: var(--text); border-color: var(--bg); }
-  .quote .btn:hover { background: transparent; color: var(--bg); }
-  @media (max-width: 480px) { .row { grid-template-columns: 1fr; } }
+  .submit:hover { opacity: 0.85; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 </style>

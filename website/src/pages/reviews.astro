@@ -1,0 +1,56 @@
+---
+import Page from '../layouts/Page.astro';
+import { REVIEWS, REVIEW_LINK } from '../data/reviews';
+import { SITE } from '../site';
+
+const average = REVIEWS.length ? REVIEWS.reduce((sum, r) => sum + r.rating, 0) / REVIEWS.length : 0;
+const stars = (n: number) => '★'.repeat(Math.round(n)) + '☆'.repeat(5 - Math.round(n));
+---
+
+<Page title="Reviews" description={`What clients say about ${SITE.name}.`}>
+  <h1>Our reviews: video content, events and podcasts</h1>
+  <div class="intro">
+    <p>
+      The best proof is what clients say after the cameras are off. Here's what local businesses and organizations in
+      {SITE.area} say about working with {SITE.name}.
+    </p>
+    <div class="photo"><span class="placeholder">Behind-the-scenes photo</span></div>
+  </div>
+
+  {REVIEWS.length > 0 ? (
+    <>
+      <div class="summary">
+        <div class="stars" aria-hidden="true">{stars(average)}</div>
+        <p>Average Rating: {average.toFixed(1)}<br />Total Reviews: {REVIEWS.length}</p>
+      </div>
+      <h3>List of reviews</h3>
+      {REVIEWS.map((r) => (
+        <article class="review">
+          <div class="stars" aria-label={`${r.rating} out of 5 stars`}>{stars(r.rating)}</div>
+          <p class="by">By: {r.name}{r.business && <> on <strong>{r.business}</strong></>}</p>
+          <p class="text">{r.text}</p>
+        </article>
+      ))}
+    </>
+  ) : (
+    <div class="empty">
+      <p>Reviews are on the way. Worked with me? I'd love to hear how it went.</p>
+      <span class="placeholder">Add reviews in src/data/reviews.ts</span>
+    </div>
+  )}
+
+  {REVIEW_LINK && <p><a href={REVIEW_LINK} class="btn">Leave a review</a></p>}
+</Page>
+
+<style>
+  .intro { display: grid; grid-template-columns: 1fr 240px; gap: 24px; align-items: start; }
+  .photo { aspect-ratio: 4 / 3; background: var(--bg-raised); border: 1px solid var(--line); display: grid; place-items: center; }
+  .summary { margin: 32px 0 8px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+  .summary p { margin: 6px 0 0; font-size: 0.9rem; }
+  .stars { color: #f5b301; letter-spacing: 0.12em; }
+  .review { padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .by { font-size: 0.9rem; margin: 4px 0 8px; }
+  .text { background: var(--bg-raised); padding: 14px 16px; font-size: 0.92rem; margin: 0; }
+  .empty { margin-top: 32px; padding: 28px; border: 1px dashed var(--line); }
+  @media (max-width: 600px) { .intro { grid-template-columns: 1fr; } }
+</style>

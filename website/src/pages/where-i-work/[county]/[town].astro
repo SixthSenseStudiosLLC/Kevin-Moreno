@@ -1,6 +1,7 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
-import Base from '../../../layouts/Base.astro';
+import Page from '../../../layouts/Page.astro';
+import { SERVICES } from '../../../site';
 
 export async function getStaticPaths() {
   const towns = await getCollection('towns');
@@ -18,69 +19,56 @@ const stories = (await getCollection('stories', (s) => s.data.town.id === town.i
 const name = town.data.name;
 ---
 
-<Base
-  title={`${name}, NJ Videographer`}
+<Page
+  title={`${name}, NJ`}
   description={`Video content, events coverage and podcasts in ${name}, ${county.data.name}, NJ.`}
+  crumbs={[
+    { href: '/where-i-work', label: 'Service Areas' },
+    { href: `/where-i-work/${county.id}`, label: county.data.name },
+  ]}
 >
-  <section class="section">
-    <div class="container">
-      <p class="eyebrow">
-        <a href="/where-i-work">Where I work</a> / <a href={`/where-i-work/${county.id}`}>{county.data.name}</a>
-      </p>
-      <h1>{name}</h1>
-      {town.data.blurb ? <p class="lede">{town.data.blurb}</p> : <span class="placeholder">Town intro coming soon</span>}
-    </div>
-  </section>
+  <h1>Video production in {name}, NJ</h1>
+  {town.data.blurb ? <p>{town.data.blurb}</p> : <p><span class="placeholder">Town intro coming soon</span></p>}
 
-  <section class="section">
-    <div class="container">
-      <p class="eyebrow">Work in {name}</p>
-      {work.length ? (
-        <div class="grid grid-3">
-          {work.map((w) => (
-            <a href={`/work/${w.id}`} class="card">
-              <h3>{w.data.client}</h3>
-              <p class="muted">{w.data.businessType}</p>
-            </a>
-          ))}
-        </div>
-      ) : (
-        <span class="placeholder">Portfolio pieces coming soon</span>
-      )}
-    </div>
-  </section>
+  <h2>Why choose a local videographer in {name}?</h2>
+  <ul class="checks">
+    <li>I know {county.data.name}, its towns and the people who keep them running</li>
+    <li>One person from first call to final cut</li>
+    <li>Batched shoot days, so filming never takes over your week</li>
+  </ul>
 
-  <section class="section">
-    <div class="container">
-      <p class="eyebrow">Stories from {name}</p>
-      {stories.length ? (
-        <div class="grid grid-3">
-          {stories.map((s) => (
-            <a href={`/stories/${s.id}`} class="card">
-              <h3>{s.data.title}</h3>
-              <p class="muted">{s.data.summary}</p>
-            </a>
-          ))}
-        </div>
-      ) : (
-        <span class="placeholder">Stories coming soon</span>
-      )}
-    </div>
-  </section>
+  <h2>Services in {name}</h2>
+  {SERVICES.map((s) => (
+    <>
+      <h3>{s.title} in {name}</h3>
+      <p>{s.short}</p>
+      <ul class="checks">
+        {s.points.map((p) => <li>{p}</li>)}
+      </ul>
+    </>
+  ))}
 
-  <section class="section cta">
-    <div class="container">
-      <h2>Filming in {name}?</h2>
-      <a href="/start" class="btn btn-primary">Start a Project</a>
-    </div>
-  </section>
-</Base>
+  <h2>Work in {name}</h2>
+  {work.length ? (
+    <ul class="checks">
+      {work.map((w) => <li><a href={`/work/${w.id}`}>{w.data.client}</a>: {w.data.businessType}</li>)}
+    </ul>
+  ) : (
+    <p><span class="placeholder">Portfolio pieces coming soon</span></p>
+  )}
+
+  {stories.length > 0 && (
+    <>
+      <h2>Stories from {name}</h2>
+      <ul class="checks">
+        {stories.map((s) => <li><a href={`/stories/${s.id}`}>{s.data.title}</a></li>)}
+      </ul>
+    </>
+  )}
+
+  <p><a href="/contact#quote" class="btn btn-primary">Get a free quote in {name}</a></p>
+</Page>
 
 <style>
-  .eyebrow a { text-decoration: none; }
-  .eyebrow a:hover { color: var(--text); }
-  .card { text-decoration: none; }
-  .card:hover { border-color: var(--text); }
-  .cta { text-align: center; }
-  .cta h2 { margin-bottom: 28px; }
+  .checks a { text-decoration: underline; }
 </style>

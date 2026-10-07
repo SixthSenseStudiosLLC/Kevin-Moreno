@@ -1,57 +1,92 @@
 ---
-import { getCollection } from 'astro:content';
 import { NAV, SITE } from '../site';
+import Socials from './Socials.astro';
 
-const counties = (await getCollection('counties')).sort((a, b) => a.data.order - b.data.order);
-const towns = (await getCollection('towns')).sort((a, b) => a.data.name.localeCompare(b.data.name));
-const socials = [
-  ['Instagram', SITE.instagram],
-  ['TikTok', SITE.tiktok],
-  ['YouTube', SITE.youtube],
-].filter(([, url]) => url);
+const hasSocials = Object.values(SITE.socials).some(Boolean);
 ---
 
 <footer class="footer">
   <div class="container cols">
-    <div>
-      <a href="/" class="logo">SixthSenseStudios</a>
-      <p class="muted">{SITE.tagline}</p>
-      <p class="muted">{SITE.area}<br />{SITE.hours}</p>
-      <a href="/start" class="btn btn-primary">Get a free quote</a>
+    <div class="about">
+      <a href="/" class="logo">
+        <span class="logo-name">Reliable Kev</span>
+        <span class="logo-studio">SixthSenseStudios</span>
+      </a>
+      <p class="muted">
+        Get in touch with {SITE.name} for video content, events coverage and podcasts across {SITE.area}.
+        {SITE.phone ? <>Call <a href={`tel:${SITE.phone}`}>{SITE.phone}</a> to schedule your free call.</> : 'Reach out to schedule your free call.'}
+      </p>
     </div>
+
     <div>
-      <h4>Service areas</h4>
-      {counties.map((c) => <a href={`/where-i-work/${c.id}`}>{c.data.name}</a>)}
-      {towns.map((t) => <a href={`/where-i-work/${t.data.county.id}/${t.id}`} class="sub">{t.data.name}, NJ</a>)}
+      <h4>Company Information</h4>
+      <ul class="info">
+        <li><span aria-hidden="true">⌂</span>{SITE.name}</li>
+        {SITE.phone && <li><span aria-hidden="true">☎</span><a href={`tel:${SITE.phone}`}>{SITE.phone}</a></li>}
+        <li><span aria-hidden="true">✉</span><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
+        <li><span aria-hidden="true">◷</span>{SITE.hours}</li>
+        <li><span aria-hidden="true">⚲</span>{SITE.area}</li>
+      </ul>
     </div>
+
     <div>
-      <h4>Site</h4>
-      {NAV.map((item) => <a href={item.href}>{item.label}</a>)}
-      <a href="/contact">Contact</a>
+      <h4>Quick Links</h4>
+      <ul class="links">
+        {NAV.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+        <li><a href="/contact#quote">Free Quote</a></li>
+      </ul>
     </div>
+
     <div>
-      <h4>Get in touch</h4>
-      <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
-      {SITE.phone && <a href={`tel:${SITE.phone}`}>{SITE.phone}</a>}
-      {socials.map(([label, url]) => <a href={url}>{label}</a>)}
+      <h4>Follow Us</h4>
+      {hasSocials ? <Socials boxed /> : <p class="muted">Social links coming soon.</p>}
     </div>
   </div>
-  <div class="container legal muted">
-    © {new Date().getFullYear()} {SITE.name}. North Jersey.
+  <div class="legal">
+    <div class="container">{SITE.name} © All Rights Reserved - {new Date().getFullYear()}</div>
   </div>
 </footer>
 
+<a href="#top" class="to-top" aria-label="Back to top">↑</a>
+
 <style>
-  .footer { border-top: 1px solid var(--line); padding: 64px 0 32px; font-size: 0.95rem; }
-  .cols { display: grid; gap: 40px; grid-template-columns: 1.6fr repeat(3, 1fr); }
-  .logo { font-size: 1rem; letter-spacing: 0.22em; text-decoration: none; display: block; margin-bottom: 8px; }
-  h4 {
-    font-family: var(--font-label); font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--text-muted); margin: 0 0 14px; font-weight: 600;
+  .footer {
+    margin-top: 0;
+    padding-top: 72px;
+    font-size: 0.92rem;
+    background: linear-gradient(to bottom, var(--bg), var(--bg-raised));
+    border-top: 1px solid var(--line);
   }
-  .cols a:not(.logo):not(.btn) { display: block; text-decoration: none; padding: 4px 0; }
-  .cols a:not(.logo):not(.btn):hover { color: var(--text-muted); }
-  .cols .sub { color: var(--text-muted); font-size: 0.9rem; }
-  .legal { margin-top: 48px; font-size: 0.85rem; }
-  @media (max-width: 760px) { .cols { grid-template-columns: 1fr 1fr; } .cols > :first-child { grid-column: 1 / -1; } }
+  .cols { display: grid; gap: 40px; grid-template-columns: 1.4fr 1.3fr 1fr 1fr; padding-bottom: 56px; }
+  .logo { text-decoration: none; display: grid; gap: 6px; width: fit-content; margin-bottom: 20px; }
+  .logo-name { font-size: 1.4rem; letter-spacing: 0.18em; text-transform: uppercase; line-height: 1; }
+  .logo-studio { display: flex; align-items: center; gap: 8px; font-size: 0.62rem; letter-spacing: 0.26em; color: var(--text-muted); }
+  .logo-studio::before, .logo-studio::after { content: ''; height: 2px; background: var(--text); flex: 1; min-width: 10px; }
+  .about a:not(.logo) { text-decoration: underline; }
+
+  h4 {
+    font-family: var(--font-label); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase;
+    margin: 0 0 16px; padding-bottom: 10px; border-bottom: 1px solid var(--line); font-weight: 600;
+  }
+  ul { list-style: none; margin: 0; padding: 0; }
+  .info li { display: flex; gap: 10px; padding: 5px 0; }
+  .info span { width: 16px; flex: none; text-align: center; }
+  .links li a::before { content: '›'; margin-right: 8px; }
+  .footer a { text-decoration: none; }
+  .links a { display: block; padding: 4px 0; }
+  .footer a:hover { color: var(--text-muted); }
+
+  .legal { background: var(--text); color: var(--bg); text-align: center; padding: 14px 0; font-size: 0.82rem; }
+
+  .to-top {
+    position: fixed; right: 16px; bottom: 76px; z-index: 15;
+    width: 40px; height: 40px; display: grid; place-items: center;
+    background: var(--text); color: var(--bg); text-decoration: none; border-radius: 3px; font-size: 1.1rem;
+  }
+
+  @media (max-width: 860px) {
+    .cols { grid-template-columns: 1fr 1fr; }
+    .about { grid-column: 1 / -1; }
+  }
+  @media (min-width: 861px) { .to-top { bottom: 24px; } }
 </style>

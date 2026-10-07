@@ -1,8 +1,37 @@
 ---
-import Base from '../layouts/Base.astro';
-import ComingSoon from '../components/ComingSoon.astro';
+import { getCollection } from 'astro:content';
+import Page from '../layouts/Page.astro';
+
+const work = (await getCollection('work', (w) => !w.data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
 ---
 
-<Base title="Work">
-  <ComingSoon eyebrow="Portfolio" title="Work" note="Every project, filterable by county, town and type of business." />
-</Base>
+<Page title="Work" description="Video work across Bergen and Passaic County, NJ.">
+  <h1>Our work</h1>
+  <p>Real businesses, real towns. Every project here was filmed on location in North Jersey.</p>
+  <div class="gallery">
+    {work.length
+      ? work.map((w) => (
+          <a href={`/work/${w.id}`} class="item">
+            <div class="thumb">{w.data.cover ? <img src={w.data.cover} alt="" loading="lazy" /> : <span class="placeholder">Cover</span>}</div>
+            <h3>{w.data.client}</h3>
+            <p>{w.data.businessType}</p>
+          </a>
+        ))
+      : [1, 2, 3, 4, 5, 6].map(() => (
+          <div class="item">
+            <div class="thumb"><span class="placeholder">Portfolio piece</span></div>
+          </div>
+        ))}
+  </div>
+</Page>
+
+<style>
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-top: 32px; }
+  .item { text-decoration: none; }
+  .thumb { aspect-ratio: 4 / 5; background: var(--bg-raised); border: 1px solid var(--line); display: grid; place-items: center; overflow: hidden; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .item h3 { margin: 12px 0 2px !important; font-size: 1rem; }
+  .item p { font-size: 0.9rem; color: var(--text-muted) !important; }
+</style>
