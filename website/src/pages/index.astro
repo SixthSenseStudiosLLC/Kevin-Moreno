@@ -53,7 +53,7 @@ const platforms = ['Instagram', 'TikTok', 'YouTube', 'Facebook', 'LinkedIn', 'Yo
         <h1>Sixth Sense Studios: North Jersey's video partner for content, events and podcasts</h1>
         <p>
           Welcome to Sixth Sense Studios, home of Reliable Kev and your local video partner in New Jersey. I specialize in
-          {SERVICES.map((s, i) => <>{i === SERVICES.length - 1 ? ' and ' : i ? ', ' : ' '}<a href={`/services#${s.id}`}>{s.title.toLowerCase()}</a></>)}
+          {SERVICES.map((s, i) => <>{i === SERVICES.length - 1 ? ' and ' : i ? ', ' : ' '}<a href={`/services#${s.id}`}>{s.title.toLowerCase()}</a></>)}{' '}
           for towns, downtowns, local businesses and trade companies throughout
           {counties.map((c, i) => <>{i ? ' and ' : ' '}<a href={`/where-i-work/${c.id}`}>{c.data.name}</a></>)}.
         </p>
