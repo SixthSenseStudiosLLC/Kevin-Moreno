@@ -58,6 +58,8 @@ const hasSocials = Object.values(SITE.socials).some(Boolean);
     border-top: 1px solid var(--line);
   }
   .cols { display: grid; gap: 40px; grid-template-columns: 1.4fr 1.3fr 1fr 1fr; padding-bottom: 56px; }
+  .cols > * { min-width: 0; }
+  .info li { overflow-wrap: anywhere; }
   .logo { text-decoration: none; display: grid; gap: 6px; width: fit-content; margin-bottom: 20px; }
   .logo-name { font-size: 1.4rem; letter-spacing: 0.18em; text-transform: uppercase; line-height: 1; }
   .logo-studio { display: flex; align-items: center; gap: 8px; font-size: 0.62rem; letter-spacing: 0.26em; color: var(--text-muted); }

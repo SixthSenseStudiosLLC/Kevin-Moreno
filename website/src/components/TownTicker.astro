@@ -1,0 +1,46 @@
+---
+// The scrolling strip of towns under the header. Every name links to its page.
+import { getCollection } from 'astro:content';
+
+const counties = (await getCollection('counties')).sort((a, b) => a.data.order - b.data.order);
+const towns = (await getCollection('towns')).sort((a, b) => a.data.name.localeCompare(b.data.name));
+const items = [
+  ...counties.flatMap((c) => [
+    { label: c.data.name, href: `/where-i-work/${c.id}` },
+    ...towns
+      .filter((t) => t.data.county.id === c.id)
+      .map((t) => ({ label: t.data.name, href: `/where-i-work/${c.id}/${t.id}` })),
+  ]),
+];
+// Repeat the list so one copy is always wider than the screen, then show two copies
+// side by side and slide by exactly one copy for a seamless loop.
+const run = Array.from({ length: Math.max(2, Math.ceil(16 / items.length)) }, () => items).flat();
+---
+
+<nav class="ticker" aria-label="Towns I film in">
+  <div class="track">
+    {[0, 1].map((copy) => (
+      <ul aria-hidden={copy ? 'true' : undefined}>
+        {run.map((item) => (
+          <li><a href={item.href} tabindex={copy ? -1 : undefined}>{item.label}</a></li>
+        ))}
+      </ul>
+    ))}
+  </div>
+</nav>
+
+<style>
+  .ticker { background: #f2f2f2; color: #111; border-bottom: 1px solid #d9d9d9; overflow: hidden; }
+  .track { display: flex; width: max-content; animation: scroll 60s linear infinite; }
+  .ticker:hover .track, .ticker:focus-within .track { animation-play-state: paused; }
+  ul { list-style: none; margin: 0; padding: 0; display: flex; }
+  li { display: flex; align-items: center; }
+  li::after { content: '•'; color: #9a9a9a; padding: 0 22px; }
+  a {
+    display: block; padding: 11px 0; text-decoration: none; white-space: nowrap;
+    font-family: var(--font-label); font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  a:hover { text-decoration: underline; }
+  @keyframes scroll { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .ticker { overflow-x: auto; } }
+</style>
