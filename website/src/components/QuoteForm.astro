@@ -1,5 +1,5 @@
 ---
-import { SERVICES } from '../site';
+import { SERVICES, SITE } from '../site';
 
 interface Props {
   title?: string;
@@ -8,10 +8,15 @@ interface Props {
 const { title = 'Request a Quote', id } = Astro.props;
 ---
 
-<!-- TODO (brick 5): point action at the real form handler (Formspree, Netlify Forms, etc.). -->
-<form class="quote" action="/start" method="get" id={id}>
+<!-- Submissions are emailed to SITE.email by FormSubmit. The very first one triggers
+     an activation email from FormSubmit; click its link once and every lead after that comes through. -->
+<form class="quote" action={`https://formsubmit.co/${SITE.email}`} method="post" id={id} data-quote>
   <h2>{title}</h2>
   <div class="fields">
+    <input type="hidden" name="_subject" value="New quote request from the website" />
+    <input type="hidden" name="_template" value="table" />
+    <input type="hidden" name="_captcha" value="false" />
+    <input type="text" name="_honey" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true" />
     <label><span class="sr-only">Name</span><input name="name" placeholder="Name *" autocomplete="name" required /></label>
     <label><span class="sr-only">Phone</span><input type="tel" name="phone" placeholder="Phone *" autocomplete="tel" required /></label>
     <label><span class="sr-only">Email</span><input type="email" name="email" placeholder="Email *" autocomplete="email" required /></label>
@@ -25,8 +30,36 @@ const { title = 'Request a Quote', id } = Astro.props;
     </label>
     <label><span class="sr-only">Message</span><textarea name="message" rows="4" placeholder="Message"></textarea></label>
     <button class="submit" type="submit">Get My Free Quote</button>
+    <p class="status" role="status" aria-live="polite"></p>
   </div>
 </form>
+
+<script>
+  // Send without leaving the page. Without JavaScript the form still posts normally.
+  for (const form of document.querySelectorAll<HTMLFormElement>('form[data-quote]')) {
+    const status = form.querySelector<HTMLElement>('.status')!;
+    const button = form.querySelector<HTMLButtonElement>('.submit')!;
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      button.disabled = true;
+      status.textContent = 'Sending…';
+      try {
+        const res = await fetch(form.action.replace('formsubmit.co/', 'formsubmit.co/ajax/'), {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        status.textContent = "Thanks! I'll get back to you within one business day.";
+      } catch {
+        status.textContent = 'Something went wrong. Please call or email me instead.';
+      } finally {
+        button.disabled = false;
+      }
+    });
+  }
+</script>
 
 <style>
   .quote { background: #fff; color: #111; border-radius: 3px; overflow: hidden; box-shadow: 0 6px 24px rgb(0 0 0 / 0.35); }
@@ -47,5 +80,8 @@ const { title = 'Request a Quote', id } = Astro.props;
     background: var(--bg); color: var(--text); border: 0; border-radius: 3px; padding: 12px;
   }
   .submit:hover { opacity: 0.85; }
+  .submit:disabled { opacity: 0.5; cursor: wait; }
+  .status { margin: 0; font-size: 0.85rem; color: #333; text-align: center; }
+  .status:empty { display: none; }
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 </style>

@@ -3,7 +3,6 @@ import Page from '../layouts/Page.astro';
 import { SITE } from '../site';
 ---
 
-<!-- Quote forms land here until a real form handler is connected (brick 5). -->
 <Page title="Start a Project" description="Tell me about your business and what you want to make.">
   <h1>Start a project</h1>
   <p>
@@ -13,5 +12,5 @@ import { SITE } from '../site';
   <p>
     Prefer email? Write to <a href={`mailto:${SITE.email}`}>{SITE.email}</a>{SITE.phone && <> or call <a href={`tel:${SITE.phone}`}>{SITE.phone}</a></>}.
   </p>
-  <span class="placeholder">Form delivery not connected yet</span>
+  <p>Fill out the quote form and it comes straight to me.</p>
 </Page>

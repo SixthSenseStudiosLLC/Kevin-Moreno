@@ -4,13 +4,13 @@ export const SITE = {
   tagline: 'Video content, events coverage and podcasts. Full context storytelling for North Jersey.',
   description:
     'Sixth Sense Studios films towns, local businesses and trade companies in Bergen and Passaic County. Video that builds trust: the work, the people and the town around it.',
-  email: 'hello@example.com', // TODO
-  phone: '', // TODO: e.g. (201) 555-0123
+  email: 'sixthsensestudiosllc@gmail.com',
+  phone: '(973) 820-5511',
   hours: 'Monday - Saturday: 8:00 AM - 7:00 PM', // TODO: confirm
   area: 'Bergen & Passaic County, NJ',
   // Leave a URL empty to hide that icon.
   socials: {
-    instagram: '', // TODO: full URL
+    instagram: 'https://www.instagram.com/reliable_kev/',
     tiktok: '', // TODO
     youtube: '', // TODO
     facebook: '', // TODO
