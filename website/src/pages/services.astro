@@ -15,16 +15,21 @@ import { SERVICES, SITE } from '../site';
 
   {SERVICES.map((s) => (
     <section id={s.id} class="service">
-      <div class="thumb"><span class="placeholder">{s.title} photo</span></div>
       <h2>{s.title}</h2>
       <p>{s.short}</p>
       <p class="label">What's included:</p>
       <ul class="checks">
         {s.points.map((p) => <li>{p}</li>)}
       </ul>
-      <a href="/contact#quote" class="btn btn-primary">Get a free quote</a>
     </section>
   ))}
+
+  <h2>Not sure which one fits?</h2>
+  <p>
+    Most clients mix them: a podcast episode that feeds a month of clips, or event coverage that turns into a brand
+    film. Tell me about your business and I'll put together a plan.
+  </p>
+  <a href="/contact#quote" class="btn btn-primary">Get a free quote</a>
 </Page>
 
 <style>
@@ -34,8 +39,6 @@ import { SERVICES, SITE } from '../site';
     font-family: var(--font-label); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
   }
   .jump a:hover { background: var(--text); color: var(--bg); }
-  .service { margin-top: 56px; padding-top: 40px; border-top: 1px solid var(--line); scroll-margin-top: 110px; }
-  .thumb { aspect-ratio: 16 / 7; background: var(--bg-raised); border: 1px solid var(--line); display: grid; place-items: center; margin-bottom: 24px; }
-  .service h2 { margin-top: 0 !important; }
+  .service { scroll-margin-top: 110px; }
   .label { font-weight: 600; color: var(--text) !important; margin-bottom: 0.4em; }
 </style>
