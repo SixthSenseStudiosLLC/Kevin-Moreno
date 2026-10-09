@@ -73,6 +73,7 @@ export const NAV: NavItem[] = [
   { href: '/', label: 'Home' },
   { href: '/about', label: 'About' },
   { href: '/services', label: 'Services', children: SERVICES.map((s) => ({ href: `/services#${s.id}`, label: s.title })) },
+  { href: '/drone', label: 'Drone' },
   { href: '/work', label: 'Work' },
   { href: '/reviews', label: 'Reviews' },
   { href: '/stories', label: 'Blog' },

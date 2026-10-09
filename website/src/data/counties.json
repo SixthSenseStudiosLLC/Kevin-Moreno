@@ -1,14 +1,6 @@
 [
-  {
-    "id": "bergen",
-    "name": "Bergen County",
-    "order": 1,
-    "blurb": ""
-  },
-  {
-    "id": "passaic",
-    "name": "Passaic County",
-    "order": 2,
-    "blurb": ""
-  }
+  { "id": "bergen", "name": "Bergen County", "order": 1, "blurb": "" },
+  { "id": "passaic", "name": "Passaic County", "order": 2, "blurb": "" },
+  { "id": "essex", "name": "Essex County", "order": 3, "blurb": "" },
+  { "id": "morris", "name": "Morris County", "order": 4, "blurb": "" }
 ]

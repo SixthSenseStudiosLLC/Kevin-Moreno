@@ -1,6 +1,13 @@
 [
+  { "id": "bergenfield", "name": "Bergenfield", "county": "bergen" },
+  { "id": "dumont", "name": "Dumont", "county": "bergen" },
   { "id": "fair-lawn", "name": "Fair Lawn", "county": "bergen" },
   { "id": "glen-rock", "name": "Glen Rock", "county": "bergen" },
+  { "id": "hillsdale", "name": "Hillsdale", "county": "bergen" },
+  { "id": "new-milford", "name": "New Milford", "county": "bergen" },
+  { "id": "ramsey", "name": "Ramsey", "county": "bergen" },
   { "id": "ridgewood", "name": "Ridgewood", "county": "bergen" },
-  { "id": "paterson", "name": "Paterson", "county": "passaic" }
+  { "id": "paterson", "name": "Paterson", "county": "passaic" },
+  { "id": "bloomfield", "name": "Bloomfield", "county": "essex" },
+  { "id": "kinnelon", "name": "Kinnelon", "county": "morris" }
 ]

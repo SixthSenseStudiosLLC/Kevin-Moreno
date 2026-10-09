@@ -1,0 +1,66 @@
+---
+import { getCollection } from 'astro:content';
+import Page from '../layouts/Page.astro';
+import { SITE } from '../site';
+import { DRONE_POSTS } from '../data/drone';
+
+const towns = (await getCollection('towns')).sort((a, b) => a.data.name.localeCompare(b.data.name));
+const uses = [
+  { title: 'Towns and public projects', text: 'Parks, downtowns, road work and new buildings, shown from above so residents see the whole picture.' },
+  { title: 'Contractors and trades', text: 'Roofs, driveways, hardscapes and job-site progress. Before and after from the angle customers never get to see.' },
+  { title: 'Businesses and real estate', text: 'Your building, your lot and the neighborhood around it, so people know exactly where to find you.' },
+  { title: 'Events', text: 'Festivals, parades, openings and fundraisers. The size of the crowd tells the story.' },
+];
+---
+
+<Page
+  title="Drone Video"
+  description={`Drone and aerial video across North Jersey: towns, contractors, businesses and events. ${SITE.area}.`}
+>
+  <h1>Drone and aerial video in the Garden State</h1>
+  <p>
+    Some stories only make sense from above. I fly over the towns of North Jersey to show the full picture: the
+    project, the property, the street and the community around it. Every drone shoot can be its own piece or folded
+    into your monthly content, a brand film or event coverage.
+  </p>
+
+  <h2>Recent flights</h2>
+  <div class="posts">
+    {DRONE_POSTS.map((url) => (
+      <blockquote class="instagram-media" data-instgrm-permalink={url} data-instgrm-version="14">
+        <a href={url} target="_blank" rel="noopener">Watch on Instagram</a>
+      </blockquote>
+    ))}
+  </div>
+  <p class="follow">
+    More flights on <a href={SITE.socials.instagram} target="_blank" rel="noopener">Instagram @reliable_kev</a>.
+  </p>
+
+  <h2>What drone footage is good for</h2>
+  {uses.map((u) => (
+    <>
+      <h3>{u.title}</h3>
+      <p>{u.text}</p>
+    </>
+  ))}
+
+  <h2>Where I fly</h2>
+  <p>
+    {towns.map((t, i) => (
+      <>{i ? (i === towns.length - 1 ? ' and ' : ', ') : ''}<a href={`/where-i-work/${t.data.county.id}/${t.id}`}>{t.data.name}</a></>
+    ))}, plus the towns around them. Every flight follows FAA rules and local airspace limits.
+  </p>
+  <a href="/contact#quote" class="btn btn-primary">Get a drone quote</a>
+</Page>
+
+<script is:inline async src="https://www.instagram.com/embed.js"></script>
+
+<style>
+  .posts { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 16px; align-items: start; }
+  .posts :global(.instagram-media) {
+    margin: 0 !important; min-width: 0 !important; width: 100% !important; max-width: 100% !important;
+    background: var(--bg-raised); border: 1px solid var(--line); border-radius: 3px;
+  }
+  .posts blockquote { padding: 24px; text-align: center; }
+  .follow { margin-top: 16px; }
+</style>

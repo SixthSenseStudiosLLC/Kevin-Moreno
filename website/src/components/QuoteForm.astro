@@ -25,6 +25,7 @@ const { title = 'Request a Quote', id } = Astro.props;
       <select name="service">
         <option value="">Interested In</option>
         {SERVICES.map((s) => <option>{s.title}</option>)}
+        <option>Drone & Aerial</option>
         <option>Not sure yet</option>
       </select>
     </label>
