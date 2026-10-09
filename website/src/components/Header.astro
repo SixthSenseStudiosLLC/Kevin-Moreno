@@ -26,11 +26,6 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
       <span class="logo-studio">SixthSenseStudios</span>
     </a>
 
-    <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">
-      <span class="sr-only">Menu</span>
-      <span class="burger" aria-hidden="true"></span>
-    </button>
-
     <nav id="site-nav" class="nav" aria-label="Main">
       <ul>
         {NAV.map((item) => (
@@ -58,15 +53,6 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
   <a href="/contact#quote" class="primary">Free quote</a>
 </div>
 
-<script>
-  const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
-  const nav = document.getElementById('site-nav');
-  toggle?.addEventListener('click', () => {
-    const open = toggle.getAttribute('aria-expanded') === 'true';
-    toggle.setAttribute('aria-expanded', String(!open));
-    nav?.classList.toggle('open', !open);
-  });
-</script>
 
 <style>
   .topbar { background: var(--text); color: var(--bg); font-size: 0.8rem; }
@@ -112,31 +98,17 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
   }
   .dropdown a:hover { background: var(--text); color: var(--bg); }
 
-  .menu-toggle { display: none; background: none; border: 0; padding: 10px; cursor: pointer; color: var(--text); }
-  .burger, .burger::before, .burger::after {
-    display: block; width: 22px; height: 2px; background: currentColor; position: relative; content: '';
-  }
-  .burger::before { position: absolute; top: -7px; }
-  .burger::after { position: absolute; top: 7px; }
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
   .mobile-cta { display: none; }
 
+  /* Smaller screens: no burger. The menu moves under the logo and wraps, so every option stays visible. */
   @media (max-width: 1000px) {
-    .menu-toggle { display: block; }
-    .nav {
-      display: none; position: absolute; top: 100%; left: 0; right: 0;
-      max-height: calc(100vh - 120px); overflow-y: auto;
-      padding: 8px var(--gutter) 24px; background: var(--bg-raised); border-bottom: 1px solid var(--line);
-    }
-    .nav.open { display: block; }
-    .nav > ul { flex-direction: column; align-items: stretch; gap: 2px; }
-    .nav > ul > li > a { padding: 12px; font-size: 0.9rem; }
-    .dropdown {
-      position: static; opacity: 1; visibility: visible; transform: none;
-      border: 0; box-shadow: none; padding: 0 0 6px 12px; background: none;
-    }
-    .dropdown a { color: var(--text-muted); }
+    .bar { flex-wrap: wrap; row-gap: 0; min-height: 0; padding-top: 14px; }
+    .nav { order: 2; width: 100%; margin-top: 10px; }
+    .nav > ul { flex-wrap: wrap; gap: 2px; padding-bottom: 10px; }
+    .nav > ul > li > a { padding: 8px 10px; font-size: 0.74rem; white-space: nowrap; }
+    .caret, .dropdown { display: none; }
     .area { display: none; }
   }
 
