@@ -1,6 +1,6 @@
 # Sixth Sense Studios / Reliable Kev
 
-The business website lives in `website/` (Astro). It is live at https://sixthsensestudios.com,
+The business website lives in `website/` (Astro). It is live at https://sixthsensestudiosllc.github.io/Kevin-Moreno/,
 served by GitHub Pages from the `docs/` folder on the `main` branch.
 
 ## Updating the live site
