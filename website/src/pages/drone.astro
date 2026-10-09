@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import Page from '../layouts/Page.astro';
 import { SITE } from '../site';
-import { DRONE_CLIPS, DRONE_POSTS } from '../data/drone';
+import { DRONE_BANNER, DRONE_CLIPS } from '../data/drone';
 
 const towns = (await getCollection('towns')).sort((a, b) => a.data.name.localeCompare(b.data.name));
 const uses = [
@@ -14,6 +14,7 @@ const uses = [
 ---
 
 <Page
+  image={DRONE_BANNER}
   title="Drone Video"
   description="Drone and aerial video across North Jersey: towns, contractors, businesses and events."
 >
@@ -25,24 +26,25 @@ const uses = [
   </p>
 
   <h2>Recent flights</h2>
-  {DRONE_CLIPS.length ? (
-    <div class="clips">
-      {DRONE_CLIPS.map((c) => (
-        <figure>
-          <video src={c.file} poster={c.poster} muted loop playsinline controls preload="none" aria-label={c.title}></video>
-          <figcaption>{c.title}{c.town && <span> · {c.town}</span>}</figcaption>
-        </figure>
-      ))}
-    </div>
-  ) : (
-    <div class="posts">
-      {DRONE_POSTS.map((url) => (
-        <blockquote class="instagram-media" data-instgrm-permalink={url} data-instgrm-version="14">
-          <a href={url} target="_blank" rel="noopener">Watch on Instagram</a>
-        </blockquote>
-      ))}
-    </div>
-  )}
+  <div class="clips wide">
+    {DRONE_CLIPS.filter((c) => c.shape === 'wide').map((c) => (
+      <figure>
+        <video src={`/videos/${c.name}.mp4`} poster={`/videos/${c.name}.jpg`} muted loop playsinline preload="none" aria-label={`${c.title}, ${c.town}`}></video>
+        <figcaption>{c.title}<span> · {c.town}</span></figcaption>
+      </figure>
+    ))}
+  </div>
+
+  <h2>On the job</h2>
+  <p>The drone also covers the work while it happens: crews, materials and progress, from angles nobody else gets.</p>
+  <div class="clips tall">
+    {DRONE_CLIPS.filter((c) => c.shape === 'tall').map((c) => (
+      <figure>
+        <video src={`/videos/${c.name}.mp4`} poster={`/videos/${c.name}.jpg`} muted loop playsinline preload="none" aria-label={`${c.title}, ${c.town}`}></video>
+        <figcaption>{c.title}<span> · {c.town}</span></figcaption>
+      </figure>
+    ))}
+  </div>
 
   <h2>What drone footage is good for</h2>
   {uses.map((u) => (
@@ -61,8 +63,6 @@ const uses = [
   <a href="/contact#quote" class="btn btn-primary">Get a drone quote</a>
 </Page>
 
-{!DRONE_CLIPS.length && <script is:inline async src="https://www.instagram.com/embed.js"></script>}
-
 <script>
   // Clips play silently while on screen and pause when scrolled away.
   const videos = document.querySelectorAll<HTMLVideoElement>('.clips video');
@@ -74,20 +74,21 @@ const uses = [
         else v.pause();
       }
     }, { threshold: 0.5 });
-    videos.forEach((v) => seen.observe(v));
+    videos.forEach((v) => {
+      seen.observe(v);
+      v.addEventListener('click', () => (v.paused ? v.play() : v.pause()));
+    });
   }
 </script>
 
 <style>
-  .posts { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 16px; align-items: start; }
-  .posts :global(.instagram-media) {
-    margin: 0 !important; min-width: 0 !important; width: 100% !important; max-width: 100% !important;
-    background: var(--bg-raised); border: 1px solid var(--line); border-radius: 3px;
-  }
-  .posts blockquote { padding: 24px; text-align: center; }
-  .clips { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 16px; }
-  figure { margin: 0; }
-  video { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: var(--bg-raised); border: 1px solid var(--line); display: block; }
+  .clips { display: grid; gap: 16px; margin-top: 16px; }
+  .clips.wide { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .clips.tall { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  figure { margin: 0; min-width: 0; }
+  video { width: 100%; object-fit: cover; background: var(--bg-raised); border: 1px solid var(--line); display: block; }
+  .wide video { aspect-ratio: 4 / 3; }
+  .tall video { aspect-ratio: 9 / 16; }
   figcaption { font-size: 0.9rem; margin-top: 8px; }
   figcaption span { color: var(--text-muted); }
 </style>

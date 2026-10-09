@@ -40,6 +40,10 @@ export default function relativeLinks() {
             else if (!path.posix.extname(target)) url += '/';
             return `${attr}="${url}${rest}"`;
           });
+          // Inline background images: url(/videos/x.jpg)
+          html = html.replace(/url\(\/(?!\/)([^)'"]*)\)/g, (_, target) =>
+            rel === '404.html' ? `url(${base}${target})` : `url(${path.posix.relative(from, target)})`,
+          );
           await writeFile(file, html);
           if (rel !== '404.html') pages.push(rel.replace(/index\.html$/, ''));
         }
