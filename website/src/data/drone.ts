@@ -1,4 +1,11 @@
-// Drone posts shown on the Drone page. Paste any Instagram post or reel link to add one.
+// Drone clips hosted on the site itself. Put the compressed .mp4 and its poster .jpg in
+// public/videos/ and list them here. When this list has clips, the Drone page shows them
+// instead of the Instagram posts below.
+export type DroneClip = { file: string; poster: string; title: string; town?: string };
+
+export const DRONE_CLIPS: DroneClip[] = [];
+
+// Shown only while DRONE_CLIPS is empty.
 export const DRONE_POSTS = [
   'https://www.instagram.com/p/DeNfspCMaXR/',
   'https://www.instagram.com/p/DeKY3VlJnwO/',

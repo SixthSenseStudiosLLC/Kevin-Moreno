@@ -33,7 +33,7 @@ export default function relativeLinks() {
           let html = await readFile(file, 'utf8');
           // GitHub serves 404.html at whatever address was missed, so its links must be absolute.
           const base = new URL(site).pathname;
-          html = html.replace(/\b(href|src)="\/(?!\/)([^"#?]*)([#?][^"]*)?"/g, (_, attr, target, rest = '') => {
+          html = html.replace(/\b(href|src|poster)="\/(?!\/)([^"#?]*)([#?][^"]*)?"/g, (_, attr, target, rest = '') => {
             if (rel === '404.html') return `${attr}="${base}${target}${rest}"`;
             let url = path.posix.relative(from, target) || '.';
             if (target === '' || target.endsWith('/')) url += url.endsWith('/') ? '' : '/';

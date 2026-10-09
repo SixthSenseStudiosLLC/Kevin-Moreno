@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import Page from '../layouts/Page.astro';
 import { SITE } from '../site';
-import { DRONE_POSTS } from '../data/drone';
+import { DRONE_CLIPS, DRONE_POSTS } from '../data/drone';
 
 const towns = (await getCollection('towns')).sort((a, b) => a.data.name.localeCompare(b.data.name));
 const uses = [
@@ -15,7 +15,7 @@ const uses = [
 
 <Page
   title="Drone Video"
-  description={`Drone and aerial video across North Jersey: towns, contractors, businesses and events. ${SITE.area}.`}
+  description="Drone and aerial video across North Jersey: towns, contractors, businesses and events."
 >
   <h1>Drone and aerial video in the Garden State</h1>
   <p>
@@ -25,16 +25,24 @@ const uses = [
   </p>
 
   <h2>Recent flights</h2>
-  <div class="posts">
-    {DRONE_POSTS.map((url) => (
-      <blockquote class="instagram-media" data-instgrm-permalink={url} data-instgrm-version="14">
-        <a href={url} target="_blank" rel="noopener">Watch on Instagram</a>
-      </blockquote>
-    ))}
-  </div>
-  <p class="follow">
-    More flights on <a href={SITE.socials.instagram} target="_blank" rel="noopener">Instagram @reliable_kev</a>.
-  </p>
+  {DRONE_CLIPS.length ? (
+    <div class="clips">
+      {DRONE_CLIPS.map((c) => (
+        <figure>
+          <video src={c.file} poster={c.poster} muted loop playsinline controls preload="none" aria-label={c.title}></video>
+          <figcaption>{c.title}{c.town && <span> · {c.town}</span>}</figcaption>
+        </figure>
+      ))}
+    </div>
+  ) : (
+    <div class="posts">
+      {DRONE_POSTS.map((url) => (
+        <blockquote class="instagram-media" data-instgrm-permalink={url} data-instgrm-version="14">
+          <a href={url} target="_blank" rel="noopener">Watch on Instagram</a>
+        </blockquote>
+      ))}
+    </div>
+  )}
 
   <h2>What drone footage is good for</h2>
   {uses.map((u) => (
@@ -53,7 +61,22 @@ const uses = [
   <a href="/contact#quote" class="btn btn-primary">Get a drone quote</a>
 </Page>
 
-<script is:inline async src="https://www.instagram.com/embed.js"></script>
+{!DRONE_CLIPS.length && <script is:inline async src="https://www.instagram.com/embed.js"></script>}
+
+<script>
+  // Clips play silently while on screen and pause when scrolled away.
+  const videos = document.querySelectorAll<HTMLVideoElement>('.clips video');
+  if (videos.length && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const seen = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        const v = e.target as HTMLVideoElement;
+        if (e.isIntersecting) v.play().catch(() => {});
+        else v.pause();
+      }
+    }, { threshold: 0.5 });
+    videos.forEach((v) => seen.observe(v));
+  }
+</script>
 
 <style>
   .posts { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 16px; align-items: start; }
@@ -62,5 +85,9 @@ const uses = [
     background: var(--bg-raised); border: 1px solid var(--line); border-radius: 3px;
   }
   .posts blockquote { padding: 24px; text-align: center; }
-  .follow { margin-top: 16px; }
+  .clips { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 16px; }
+  figure { margin: 0; }
+  video { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: var(--bg-raised); border: 1px solid var(--line); display: block; }
+  figcaption { font-size: 0.9rem; margin-top: 8px; }
+  figcaption span { color: var(--text-muted); }
 </style>
