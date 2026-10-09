@@ -1,6 +1,8 @@
 import { defineConfig } from 'astro/config';
+import relativeLinks from './integrations/relative-links.mjs';
 
 export default defineConfig({
-  // TODO: replace with the real domain once it's chosen.
-  site: 'https://example.com',
+  // Where the site lives. Change this when a custom domain is set up.
+  site: 'https://sixthsensestudiosllc.github.io/Kevin-Moreno/',
+  integrations: [relativeLinks()],
 });

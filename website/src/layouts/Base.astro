@@ -11,6 +11,23 @@ interface Props {
 
 const { title, description = SITE.description } = Astro.props;
 const fullTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} | ${SITE.tagline}`;
+const canonical = new URL('.' + Astro.url.pathname, Astro.site);
+const home = new URL('./', Astro.site).href;
+
+// Business details for Google, kept identical to the Google Business Profile.
+const business = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: SITE.name,
+  alternateName: 'Reliable Kev',
+  description: SITE.description,
+  url: home,
+  email: SITE.email,
+  telephone: SITE.phone || undefined,
+  areaServed: ['Bergen County, NJ', 'Passaic County, NJ'],
+  address: { '@type': 'PostalAddress', addressRegion: 'NJ', addressCountry: 'US' },
+  sameAs: Object.values(SITE.socials).filter(Boolean),
+};
 ---
 
 <!doctype html>
@@ -20,7 +37,8 @@ const fullTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} | ${SITE.tag
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:url" content={canonical} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
@@ -31,6 +49,7 @@ const fullTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} | ${SITE.tag
       href="https://fonts.googleapis.com/css2?family=Monda&family=Montserrat:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
+    {Astro.url.pathname === '/' && <script type="application/ld+json" set:html={JSON.stringify(business)} />}
   </head>
   <body id="top">
     <Header />

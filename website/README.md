@@ -6,7 +6,13 @@ Built with [Astro](https://astro.build). Run it locally:
 npm install
 npm run dev      # http://localhost:4321
 npm run build    # outputs the site to dist/
+npm run publish  # builds the live site into ../docs (GitHub Pages serves that folder)
 ```
+
+## Going live
+
+GitHub Pages serves the `docs/` folder. After any change, run `npm run publish`, commit `docs/`, and push.
+The address is set in `astro.config.mjs` (`site`); change it there when a custom domain is set up.
 
 ## Where things live
 
