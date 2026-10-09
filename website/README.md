@@ -11,8 +11,9 @@ npm run publish  # builds the live site into ../docs (GitHub Pages serves that f
 
 ## Going live
 
-GitHub Pages serves the `docs/` folder. After any change, run `npm run publish`, commit `docs/`, and push.
-The address is set in `astro.config.mjs` (`site`); change it there when a custom domain is set up.
+The site is live at https://sixthsensestudios.com. GitHub Pages serves the `docs/` folder on the `main` branch.
+After any change, run `npm run publish`, commit `docs/`, and push to `main`.
+The address is set in `astro.config.mjs` (`site`) and `public/CNAME`; keep them matching.
 
 ## Where things live
 
