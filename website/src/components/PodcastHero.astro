@@ -1,12 +1,12 @@
 ---
-// Homepage opener: the Business Owner Podcast and the 1-on-1 experience.
+// Homepage opener: the Business Owner Podcast and how an episode comes together.
 import { PODCAST_HERO_IMAGE, ONE_ON_ONE_STEPS } from '../data/home';
 ---
 
 <section class:list={['hero', { 'has-photo': PODCAST_HERO_IMAGE }]} style={PODCAST_HERO_IMAGE ? `background-image: url(${PODCAST_HERO_IMAGE})` : undefined}>
   <div class="container hero-inner">
     <p class="kicker">The Business Owner Podcast</p>
-    <p class="headline">Your story,<br />one on one.</p>
+    <p class="headline">Your story,<br />in your words.</p>
     <p class="sub">
       I sit down across from you, ask the questions that matter and direct a conversation your customers will actually
       watch. Filmed where you work, then cut into a full episode and clips for every platform.
@@ -18,9 +18,9 @@ import { PODCAST_HERO_IMAGE, ONE_ON_ONE_STEPS } from '../data/home';
   </div>
 </section>
 
-<section class="steps-band" aria-labelledby="one-on-one">
+<section class="steps-band" aria-labelledby="episode-steps">
   <div class="container">
-    <h2 id="one-on-one" class="steps-title">The 1-on-1 experience</h2>
+    <h2 id="episode-steps" class="steps-title">How an episode comes together</h2>
     <ol class="steps">
       {ONE_ON_ONE_STEPS.map((s, i) => (
         <li>
