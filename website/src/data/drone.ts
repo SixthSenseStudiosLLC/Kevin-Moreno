@@ -20,5 +20,5 @@ export const DRONE_CLIPS: DroneClip[] = [
   { name: 'mahwah-aerial', title: 'Roofline from above', town: 'Mahwah', shape: 'tall' },
 ];
 
-// Still frame used across the top of the Drone page.
-export const DRONE_BANNER = '/videos/woodcliff-lake.jpg';
+// Clip that plays across the top of the Drone page (its .jpg is the still shown while it loads).
+export const DRONE_BANNER = 'woodcliff-lake';

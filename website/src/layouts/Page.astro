@@ -10,13 +10,14 @@ interface Props {
   description?: string;
   crumbs?: { href: string; label: string }[];
   image?: string;
+  video?: string;
   quote?: boolean;
 }
-const { title, description, crumbs, image, quote = true } = Astro.props;
+const { title, description, crumbs, image, video, quote = true } = Astro.props;
 ---
 
 <Base title={title} description={description}>
-  <PageBanner title={title} crumbs={crumbs} image={image} />
+  <PageBanner title={title} crumbs={crumbs} image={image} video={video} />
   <div class:list={['container', 'page', { 'with-quote': quote }]}>
     <article class="content">
       <slot />
