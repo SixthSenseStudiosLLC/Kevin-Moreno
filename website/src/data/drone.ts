@@ -21,4 +21,6 @@ export const DRONE_CLIPS: DroneClip[] = [
 ];
 
 // Clip that plays across the top of the Drone page (its .jpg is the still shown while it loads).
-export const DRONE_BANNER = 'woodcliff-lake-banner';
+// drone-banner is a 21s loop dissolving between Woodcliff Lake, Fair Lawn, Tenafly, Bloomfield
+// and New Milford; it ends on its own first frame so the loop is seamless.
+export const DRONE_BANNER = 'drone-banner';
