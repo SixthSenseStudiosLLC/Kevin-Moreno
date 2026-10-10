@@ -2,6 +2,7 @@
 // Leave a path empty and that spot simply goes without a photo.
 export const PODCAST_HERO_IMAGE = ''; // Wide shot: Kev across from a guest, mics and cameras in frame
 
+// Not shown right now (removed from the homepage for the moment); kept here to bring back later.
 export const ONE_ON_ONE_STEPS = [
   {
     title: 'We talk first',
