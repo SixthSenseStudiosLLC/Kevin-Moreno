@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import HeroSlider from '../components/HeroSlider.astro';
+import PodcastHero from '../components/PodcastHero.astro';
 import QuoteForm from '../components/QuoteForm.astro';
 import AreaMap from '../components/AreaMap.astro';
 import { SERVICES, SITE } from '../site';
@@ -45,7 +45,7 @@ const platforms = ['Instagram', 'TikTok', 'YouTube', 'Facebook', 'LinkedIn', 'Yo
 ---
 
 <Base>
-  <HeroSlider />
+  <PodcastHero />
 
   <div class="container home">
     <div class="content">

@@ -1,0 +1,69 @@
+---
+// Homepage opener: the Business Owner Podcast and the 1-on-1 experience.
+import { PODCAST_HERO_IMAGE, ONE_ON_ONE_STEPS } from '../data/home';
+---
+
+<section class:list={['hero', { 'has-photo': PODCAST_HERO_IMAGE }]} style={PODCAST_HERO_IMAGE ? `background-image: url(${PODCAST_HERO_IMAGE})` : undefined}>
+  <div class="container hero-inner">
+    <p class="kicker">The Business Owner Podcast</p>
+    <p class="headline">Your story,<br />one on one.</p>
+    <p class="sub">
+      I sit down across from you, ask the questions that matter and direct a conversation your customers will actually
+      watch. Filmed where you work, then cut into a full episode and clips for every platform.
+    </p>
+    <div class="actions">
+      <a href="/contact#quote" class="btn btn-primary">Book your episode</a>
+      <a href="/services#podcast" class="btn">How it works</a>
+    </div>
+  </div>
+</section>
+
+<section class="steps-band" aria-labelledby="one-on-one">
+  <div class="container">
+    <h2 id="one-on-one" class="steps-title">The 1-on-1 experience</h2>
+    <ol class="steps">
+      {ONE_ON_ONE_STEPS.map((s, i) => (
+        <li>
+          {s.image && <img src={s.image} alt="" loading="lazy" />}
+          <span class="num">0{i + 1}</span>
+          <h3>{s.title}</h3>
+          <p>{s.text}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative; display: flex; align-items: flex-end;
+    min-height: clamp(460px, 62vw, 680px); padding: clamp(48px, 8vw, 96px) 0;
+    background: radial-gradient(ellipse at 70% 20%, #262626, #050505 65%) center / cover no-repeat;
+  }
+  .hero.has-photo::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(to right, rgb(0 0 0 / 0.85), rgb(0 0 0 / 0.35) 70%), linear-gradient(to top, rgb(0 0 0 / 0.6), transparent 50%);
+  }
+  .hero-inner { position: relative; }
+  .kicker {
+    font-family: var(--font-label); font-size: 0.8rem; letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 18px; display: flex; align-items: center; gap: 12px;
+  }
+  .kicker::before { content: ''; width: 28px; height: 2px; background: var(--text); }
+  .headline {
+    font-family: var(--font-display);
+    font-size: clamp(2.6rem, 8vw, 5.6rem); line-height: 1; text-transform: uppercase; letter-spacing: 0.06em;
+    font-weight: 500; margin: 0 0 24px;
+  }
+  .sub { max-width: 52ch; font-size: clamp(1rem, 1.6vw, 1.15rem); color: #d4d4d4; margin-bottom: 28px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+  .steps-band { background: var(--bg-raised); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: clamp(48px, 7vw, 80px) 0; }
+  .steps-title { font-size: clamp(1.4rem, 2.6vw, 1.9rem); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin: 0 0 32px; }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(24px, 4vw, 48px); }
+  .steps img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; margin-bottom: 18px; border: 1px solid var(--line); }
+  .num { font-family: var(--font-label); letter-spacing: 0.2em; color: var(--text-muted); display: block; margin-bottom: 10px; }
+  .steps h3 { text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; margin: 0 0 10px; }
+  .steps p { color: #c9c9c9; margin: 0; }
+  @media (max-width: 860px) { .steps { grid-template-columns: 1fr; } }
+</style>
