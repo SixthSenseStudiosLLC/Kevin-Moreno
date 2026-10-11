@@ -15,11 +15,15 @@ export const FAQ = [
   },
   {
     q: 'How much does it cost?',
-    a: `Shoot rates are set: a half day (up to 4 hours) is ${half.price}, a full day (up to 8 hours) is ${full.price}, and adding drone footage is ${drone.price.replace("+", "")} more. Each includes filming and one edited video with music. Brand films, the podcast and monthly content get a custom quote.`,
+    a: `A half day (up to 4 hours) is ${half.price} and includes your choice of one long-form YouTube video or three short clips. A full day (up to 8 hours) is ${full.price} and includes a planning call, a sit-down Q&A with you, one long-form video and three short clips. Adding drone footage is ${drone.price.replace('+', '')} more. Brand films, the podcast and monthly content get a custom quote.`,
+  },
+  {
+    q: "What's the difference between a set rate and a custom quote?",
+    a: 'A set rate is for when you want me to come film: an event, a property, or your business and a few questions with you. A custom quote is for full storytelling projects like brand films, the podcast and monthly content, which take more planning, directing and editing.',
   },
   {
     q: 'Do I get the raw footage?',
-    a: 'Yes, on request. Your rate includes one edited video with music, and the raw footage is yours if you ask for it.',
+    a: 'Yes, on request. Your rate includes the edited videos listed, and the raw footage is yours if you ask for it.',
   },
   {
     q: 'Can I get my video faster?',
