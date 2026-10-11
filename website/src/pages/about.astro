@@ -1,13 +1,14 @@
 ---
 import Page from '../layouts/Page.astro';
 import { SITE } from '../site';
+import { FOUNDED, GEAR } from '../data/business';
 ---
 
 <Page title="About" description="Meet Reliable Kev, the person behind Sixth Sense Studios in North Jersey.">
   <h1>About Sixth Sense Studios</h1>
   <p>
     Sixth Sense Studios is the video studio of Reliable Kev, based in North Jersey and serving
-    <a href="/where-i-work">{SITE.area}</a>. I film monthly content, business owner podcasts, events and brand films for
+    <a href="/where-i-work">{SITE.area}</a> since {FOUNDED}. I film monthly content, business owner podcasts, events and brand films for
     towns, downtowns, local businesses and trade companies.
   </p>
 
@@ -38,6 +39,13 @@ import { SITE } from '../site';
     {/* TODO: replace with the community work you actually do. */}
     <span class="placeholder">Community involvement goes here</span>
   </p>
+
+  <h2>The gear</h2>
+  <ul class="checks">
+    <li>{GEAR.cameras}, so interviews and podcasts are covered from two angles</li>
+    <li>{GEAR.support}</li>
+    <li>{GEAR.drone} for aerial footage</li>
+  </ul>
 
   <h2>Our standards for quality</h2>
   <ul class="checks">

@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Page from '../layouts/Page.astro';
 import { SITE } from '../site';
 import { DRONE_BANNER, DRONE_CLIPS } from '../data/drone';
+import { GEAR } from '../data/business';
 
 const towns = (await getCollection('towns')).sort((a, b) => a.data.name.localeCompare(b.data.name));
 const uses = [
@@ -25,6 +26,7 @@ const uses = [
     project, the property, the street and the community around it. Every drone shoot can be its own piece or folded
     into your monthly content, a brand film or event coverage.
   </p>
+  <p>I fly a {GEAR.drone}: small enough to get in close, steady enough for smooth, cinematic shots.</p>
 
   <h2>Recent flights</h2>
   <div class="clips wide">

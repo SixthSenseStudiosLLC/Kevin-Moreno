@@ -47,10 +47,10 @@ export const SERVICES = [
     id: 'events',
     title: 'Events Coverage',
     slide: 'Events coverage your town will remember',
-    short: 'Openings, festivals, town events and ribbon cuttings. Captured and cut fast.',
+    short: 'Openings, festivals, town events and ribbon cuttings, captured from start to finish.',
     points: [
       'Grand openings, festivals, fundraisers and town events',
-      'Fast recap edits while people are still talking about it',
+      'A recap edit that captures the energy of the day',
       'Photos and clips for social, press and next year',
     ],
   },
