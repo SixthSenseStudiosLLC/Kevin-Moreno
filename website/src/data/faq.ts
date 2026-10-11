@@ -1,4 +1,7 @@
 import { FOUNDED, GEAR, TURNAROUND } from './business';
+import { SHOOT_RATES } from './pricing';
+
+const [half, full, drone] = SHOOT_RATES;
 
 // Questions people ask before booking. Shown on the Services page (/services#faq).
 export const FAQ = [
@@ -12,7 +15,19 @@ export const FAQ = [
   },
   {
     q: 'How much does it cost?',
-    a: 'Straightforward shoots are priced by the day. Bigger, more hands-on projects like brand films, podcast series and monthly content get a custom quote, so you only pay for what the project actually needs. Tell me what you have in mind and I will send a clear number.',
+    a: `Shoot rates are set: a half day (up to 4 hours) is ${half.price}, a full day (up to 8 hours) is ${full.price}, and adding drone footage is ${drone.price.replace("+", "")} more. Each includes filming and one edited video with music. Brand films, the podcast and monthly content get a custom quote.`,
+  },
+  {
+    q: 'Do I get the raw footage?',
+    a: 'Yes, on request. Your rate includes one edited video with music, and the raw footage is yours if you ask for it.',
+  },
+  {
+    q: 'Can I get my video faster?',
+    a: `Every project gets the same care, so edited videos are delivered in ${TURNAROUND}. Rush delivery is not offered.`,
+  },
+  {
+    q: 'Can I add more videos or hours?',
+    a: 'Yes. Anything beyond what is included, like extra videos, extra hours or extra revisions, is quoted before any work begins, so you always know the price up front.',
   },
   {
     q: 'What gear do you use?',

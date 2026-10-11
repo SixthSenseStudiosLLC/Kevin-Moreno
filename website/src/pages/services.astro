@@ -2,6 +2,7 @@
 import Page from '../layouts/Page.astro';
 import { SERVICES, SITE } from '../site';
 import { FAQ } from '../data/faq';
+import { RATE_INCLUDES, RATE_TERMS, SHOOT_RATES } from '../data/pricing';
 
 const faqSchema = {
   '@context': 'https://schema.org',
@@ -18,6 +19,8 @@ const faqSchema = {
   </p>
   <ul class="jump">
     {SERVICES.map((s) => <li><a href={`#${s.id}`}>{s.title}</a></li>)}
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#faq">FAQ</a></li>
   </ul>
 
   {SERVICES.map((s) => (
@@ -30,6 +33,38 @@ const faqSchema = {
       </ul>
     </section>
   ))}
+
+  <section id="pricing" class="pricing">
+    <h2>Pricing</h2>
+    <h3>Shoot rates</h3>
+    <p>
+      For events, real estate, property and quick content days: I come out, film with mics and the drone if you add it,
+      and deliver a finished video. Set prices, no surprises.
+    </p>
+    <div class="rates">
+      {SHOOT_RATES.map((r) => (
+        <div class="rate">
+          <p class="rate-name">{r.name}</p>
+          <p class="rate-price">{r.price}</p>
+          <p class="rate-time">{r.time}</p>
+          <p class="rate-inc">{r.includes}</p>
+        </div>
+      ))}
+    </div>
+    <p class="label">Every shoot includes:</p>
+    <ul class="checks">
+      {RATE_INCLUDES.map((i) => <li>{i}</li>)}
+    </ul>
+    <ul class="terms">
+      {RATE_TERMS.map((t) => <li>{t}</li>)}
+    </ul>
+
+    <h3>Storytelling projects</h3>
+    <p>
+      Brand films, the Business Owner Podcast and monthly content take more planning, directing and editing, so each one
+      gets a custom quote built around what your project actually needs.
+    </p>
+  </section>
 
   <h2>Not sure which one fits?</h2>
   <p>
@@ -57,7 +92,18 @@ const faqSchema = {
     font-family: var(--font-label); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
   }
   .jump a:hover { background: var(--text); color: var(--bg); }
-  .service, .faq { scroll-margin-top: 110px; }
+  .service, .faq, .pricing { scroll-margin-top: 110px; }
+  .pricing { margin-top: 56px; }
+  .rates { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 24px 0 28px; }
+  .rate { border: 1px solid var(--line); background: var(--bg-raised); padding: 20px; }
+  .rate p { margin: 0; }
+  .rate-name { font-family: var(--font-label); font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted) !important; }
+  .rate-price { font-size: 2rem; color: var(--text) !important; margin: 6px 0 4px !important; font-variant-numeric: tabular-nums; }
+  .rate-time { font-weight: 600; color: var(--text) !important; font-size: 0.92rem; }
+  .rate-inc { font-size: 0.9rem; margin-top: 8px !important; }
+  .terms { margin: 18px 0 0; padding-left: 1.1em; color: var(--text-muted); font-size: 0.92rem; }
+  .terms li { margin-bottom: 4px; }
+  @media (max-width: 700px) { .rates { grid-template-columns: 1fr; } }
   .faq { margin-top: 56px; }
   details { border-bottom: 1px solid var(--line); }
   details:first-of-type { border-top: 1px solid var(--line); }
