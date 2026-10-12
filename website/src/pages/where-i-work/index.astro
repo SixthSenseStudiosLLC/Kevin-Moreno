@@ -23,9 +23,7 @@ const towns = (await getCollection('towns')).sort((a, b) => a.data.name.localeCo
           <ul class="checks towns">
             {list.map((t) => <li><a href={`/where-i-work/${c.id}/${t.id}`}>{t.data.name}, NJ</a></li>)}
           </ul>
-        ) : (
-          <span class="placeholder">Towns coming soon</span>
-        )}
+        ) : null}
       </section>
     );
   })}

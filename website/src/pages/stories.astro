@@ -12,7 +12,7 @@ const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'n
 <Page title="Blog" description={`Stories from the towns and businesses of ${SITE.area}.`}>
   <h1>Local stories blog</h1>
   <p>
-    Stories from the towns and the businesses in them, plus tips on getting more out of video for your business.
+    Stories from the towns and the businesses in them, plus tips on getting more out of video for your business.{' '}
     <a href="/contact#quote">Contact me today</a> to schedule a free call.
   </p>
 
@@ -35,7 +35,6 @@ const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'n
   ) : (
     <div class="empty">
       <p>The first stories are being written now.</p>
-      <span class="placeholder">Add posts in src/content/stories/</span>
     </div>
   )}
 </Page>

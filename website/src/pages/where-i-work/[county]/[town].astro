@@ -2,6 +2,8 @@
 import { getCollection, getEntry } from 'astro:content';
 import Page from '../../../layouts/Page.astro';
 import { SERVICES } from '../../../site';
+import ClipCards from '../../../components/ClipCards.astro';
+import { DRONE_CLIPS } from '../../../data/drone';
 
 export async function getStaticPaths() {
   const towns = await getCollection('towns');
@@ -17,6 +19,7 @@ const stories = (await getCollection('stories', (s) => s.data.town.id === town.i
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
 );
 const name = town.data.name;
+const hasClips = DRONE_CLIPS.some((c) => c.shape === 'wide' && c.town === name);
 ---
 
 <Page
@@ -28,7 +31,10 @@ const name = town.data.name;
   ]}
 >
   <h1>Video production in {name}, NJ</h1>
-  {town.data.blurb ? <p>{town.data.blurb}</p> : <p><span class="placeholder">Town intro coming soon</span></p>}
+  <p>
+    {town.data.blurb ||
+      `I film towns, local businesses and trade companies in ${name} and across ${county.data.name}: the work, the people behind it and the town it belongs to.`}
+  </p>
 
   <h2>Why choose a local videographer in {name}?</h2>
   <ul class="checks">
@@ -48,14 +54,13 @@ const name = town.data.name;
     </>
   ))}
 
-  <h2>Work in {name}</h2>
-  {work.length ? (
+  {(work.length > 0 || hasClips) && <h2>Work in {name}</h2>}
+  {work.length > 0 && (
     <ul class="checks">
       {work.map((w) => <li><a href={`/work/${w.id}`}>{w.data.client}</a>: {w.data.businessType}</li>)}
     </ul>
-  ) : (
-    <p><span class="placeholder">Portfolio pieces coming soon</span></p>
   )}
+  <ClipCards town={name} />
 
   {stories.length > 0 && (
     <>

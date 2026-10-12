@@ -11,10 +11,9 @@ const stars = (n: number) => '★'.repeat(Math.round(n)) + '☆'.repeat(5 - Math
   <h1>Our reviews: video content, events and podcasts</h1>
   <div class="intro">
     <p>
-      The best proof is what clients say after the cameras are off. Here's what local businesses and organizations in
+      The best proof is what clients say after the cameras are off. Here's what local businesses and organizations in{' '}
       {SITE.area} say about working with {SITE.name}.
     </p>
-    <div class="photo"><span class="placeholder">Behind-the-scenes photo</span></div>
   </div>
 
   {REVIEWS.length > 0 ? (
@@ -35,7 +34,6 @@ const stars = (n: number) => '★'.repeat(Math.round(n)) + '☆'.repeat(5 - Math
   ) : (
     <div class="empty">
       <p>Reviews are on the way. Worked with me? I'd love to hear how it went.</p>
-      <span class="placeholder">Add reviews in src/data/reviews.ts</span>
     </div>
   )}
 

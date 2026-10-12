@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Page from '../layouts/Page.astro';
+import ClipCards from '../components/ClipCards.astro';
 
 const work = (await getCollection('work', (w) => !w.data.draft)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
@@ -19,12 +20,15 @@ const work = (await getCollection('work', (w) => !w.data.draft)).sort(
             <p>{w.data.businessType}</p>
           </a>
         ))
-      : [1, 2, 3, 4, 5, 6].map(() => (
-          <div class="item">
-            <div class="thumb"><span class="placeholder">Portfolio piece</span></div>
-          </div>
-        ))}
+      : null}
   </div>
+  {!work.length && (
+    <>
+      <h2>Recent drone work</h2>
+      <p>Finished homes and job sites across North Jersey, filmed from above. <a href="/drone">Watch the clips</a>.</p>
+      <ClipCards />
+    </>
+  )}
 </Page>
 
 <style>
