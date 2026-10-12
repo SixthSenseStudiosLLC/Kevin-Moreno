@@ -6,8 +6,12 @@ import { FOUNDED, GEAR } from '../data/business';
 
 <Page title="About" description="Meet Reliable Kev, the person behind Sixth Sense Studios in North Jersey.">
   <h1>About Sixth Sense Studios</h1>
+  <figure class="pull">
+    <blockquote>Kev is at his best with a camera and in the chair.</blockquote>
+    <figcaption>Vinny, owner of One Brick Media</figcaption>
+  </figure>
   <p>
-    Sixth Sense Studios is the video studio of Reliable Kev, based in North Jersey and serving
+    Sixth Sense Studios is the video studio of Reliable Kev, filming across{' '}
     <a href="/where-i-work">{SITE.area}</a> since {FOUNDED}. I film monthly content, business owner podcasts, events and brand films for
     towns, downtowns, local businesses and trade companies.
   </p>
@@ -52,5 +56,10 @@ import { FOUNDED, GEAR } from '../data/business';
 </Page>
 
 <style>
+  .pull { margin: 8px 0 32px; padding: 4px 0 4px 24px; border-left: 3px solid var(--text); }
+  .pull blockquote { margin: 0; font-family: var(--font-display); font-size: clamp(1.3rem, 2.6vw, 1.75rem); line-height: 1.35; letter-spacing: 0.01em; }
+  .pull blockquote::before { content: '\201C'; }
+  .pull blockquote::after { content: '\201D'; }
+  .pull figcaption { margin-top: 10px; font-family: var(--font-label); font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted); }
   .photo { aspect-ratio: 16 / 9; background: var(--bg-raised); border: 1px solid var(--line); display: grid; place-items: center; margin: 28px 0; }
 </style>
