@@ -39,7 +39,7 @@ export const FAQ = [
   },
   {
     q: 'Where do you film?',
-    a: 'All over North Jersey: Bergen, Passaic, Essex and Morris County. If you are a little outside that, ask.',
+    a: 'All over North Jersey: Bergen, Passaic, Essex, Morris and Hudson County. If you are a little outside that, ask.',
   },
   {
     q: 'Do I need to be comfortable on camera?',

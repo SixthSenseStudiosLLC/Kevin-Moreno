@@ -14,5 +14,6 @@
   {"id": "woodcliff-lake", "name": "Woodcliff Lake", "county": "bergen"},
   {"id": "paterson", "name": "Paterson", "county": "passaic"},
   {"id": "bloomfield", "name": "Bloomfield", "county": "essex"},
-  {"id": "kinnelon", "name": "Kinnelon", "county": "morris"}
+  {"id": "kinnelon", "name": "Kinnelon", "county": "morris"},
+  {"id": "jersey-city", "name": "Jersey City", "county": "hudson"}
 ]

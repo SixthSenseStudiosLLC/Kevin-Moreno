@@ -30,7 +30,26 @@ const uses = [
 
   <h2>Recent flights</h2>
   <div class="clips wide">
-    {DRONE_CLIPS.filter((c) => c.shape === 'wide').map((c) => (
+    {DRONE_CLIPS.filter((c) => c.section === 'homes').map((c) => (
+      <figure>
+        <video src={`/videos/${c.name}.mp4`} poster={`/videos/${c.name}.jpg`} muted loop playsinline preload="none" aria-label={`${c.title}, ${c.town}`}></video>
+        <figcaption>{c.title}<span> · {c.town}</span></figcaption>
+      </figure>
+    ))}
+  </div>
+
+  <h2>Cities and downtowns</h2>
+  <p>Streets, skylines and neighborhoods. The kind of footage towns, downtowns and developers use to show where it all happens.</p>
+  <div class="clips wide">
+    {DRONE_CLIPS.filter((c) => c.section === 'city' && c.shape === 'wide').map((c) => (
+      <figure>
+        <video src={`/videos/${c.name}.mp4`} poster={`/videos/${c.name}.jpg`} muted loop playsinline preload="none" aria-label={`${c.title}, ${c.town}`}></video>
+        <figcaption>{c.title}<span> · {c.town}</span></figcaption>
+      </figure>
+    ))}
+  </div>
+  <div class="clips tall pair">
+    {DRONE_CLIPS.filter((c) => c.section === 'city' && c.shape === 'tall').map((c) => (
       <figure>
         <video src={`/videos/${c.name}.mp4`} poster={`/videos/${c.name}.jpg`} muted loop playsinline preload="none" aria-label={`${c.title}, ${c.town}`}></video>
         <figcaption>{c.title}<span> · {c.town}</span></figcaption>
@@ -41,7 +60,7 @@ const uses = [
   <h2>On the job</h2>
   <p>The drone also covers the work while it happens: crews, materials and progress, from angles nobody else gets.</p>
   <div class="clips tall">
-    {DRONE_CLIPS.filter((c) => c.shape === 'tall').map((c) => (
+    {DRONE_CLIPS.filter((c) => c.section === 'job').map((c) => (
       <figure>
         <video src={`/videos/${c.name}.mp4`} poster={`/videos/${c.name}.jpg`} muted loop playsinline preload="none" aria-label={`${c.title}, ${c.town}`}></video>
         <figcaption>{c.title}<span> · {c.town}</span></figcaption>
@@ -88,6 +107,7 @@ const uses = [
   .clips { display: grid; gap: 16px; margin-top: 16px; }
   .clips.wide { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
   .clips.tall { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .clips.pair { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 420px; }
   figure { margin: 0; min-width: 0; }
   video { width: 100%; object-fit: cover; background: var(--bg-raised); border: 1px solid var(--line); display: block; }
   .wide video { aspect-ratio: 4 / 3; }

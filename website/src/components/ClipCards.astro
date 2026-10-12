@@ -6,7 +6,7 @@ interface Props {
   town?: string;
 }
 const { town } = Astro.props;
-const clips = DRONE_CLIPS.filter((c) => c.shape === 'wide' && (!town || c.town === town));
+const clips = DRONE_CLIPS.filter((c) => c.shape === 'wide' && (town ? c.town === town : c.section === 'homes'));
 ---
 
 {clips.length > 0 && (
