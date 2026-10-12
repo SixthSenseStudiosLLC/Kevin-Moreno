@@ -32,7 +32,7 @@ const hasSocials = Object.values(SITE.socials).some(Boolean);
         <div><dt>⚲ Service Area</dt><dd>{SITE.area}</dd></div>
         {SITE.phone && <div><dt>☎ Phone Number</dt><dd><a href={`tel:${SITE.phone}`}>{SITE.phone}</a></dd></div>}
         <div><dt>✉ Email</dt><dd><a href={`mailto:${SITE.email}`}>{SITE.email}</a></dd></div>
-        <div><dt>◷ Hours of Operation</dt><dd>{SITE.hours}</dd></div>
+        <div><dt>◷ Availability</dt><dd>{SITE.hours}</dd></div>
         {hasSocials && <div><dt>Follow Us</dt><dd><Socials /></dd></div>}
       </dl>
     </div>

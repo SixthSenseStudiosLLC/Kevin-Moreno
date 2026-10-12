@@ -11,7 +11,7 @@ export const ONE_ON_ONE_STEPS = [
   },
   {
     title: 'I direct the conversation',
-    text: 'On location, where you work. I set up the cameras and mics, ask the questions and keep it relaxed, so you can just talk. No script, no camera experience needed.',
+    text: 'On location, where you work or at a local spot I partner with. I set up the cameras and mics, ask the questions and keep it relaxed, so you can just talk. No script, no camera experience needed.',
     image: '', // Kev mid-interview, asking a question
   },
   {

@@ -6,15 +6,15 @@ export const SITE = {
     'Sixth Sense Studios films towns, local businesses and trade companies across North Jersey. Video that builds trust: the work, the people and the town around it.',
   email: 'sixthsensestudiosllc@gmail.com',
   phone: '(973) 820-5511',
-  hours: 'Monday - Saturday: 8:00 AM - 7:00 PM', // TODO: confirm
+  hours: 'By appointment. I come to you.', // no storefront
   area: 'North Jersey',
   // Leave a URL empty to hide that icon.
   socials: {
     instagram: 'https://www.instagram.com/reliable_kev/',
-    tiktok: '', // TODO
-    youtube: '', // TODO
-    facebook: '', // TODO
-    linkedin: '', // TODO
+    tiktok: '',
+    youtube: '', // coming: channel under One Brick Media
+    facebook: 'https://www.facebook.com/profile.php?id=61595018734943',
+    linkedin: 'https://www.linkedin.com/in/kevin-moreno-649294161/'
   },
 };
 
@@ -36,9 +36,9 @@ export const SERVICES = [
     id: 'podcast',
     title: 'Business Owner Podcast',
     slide: 'Your story, in your words',
-    short: 'A podcast episode filmed on location at your business, then cut into clips.',
+    short: 'A podcast episode filmed at your business or a local partner venue, then cut into clips.',
     points: [
-      'Filmed where you work, not in a studio',
+      'Filmed where you work, or at a local coffee and cocktail bar I partner with',
       'Full episode plus short clips from every recording',
       'Relaxed and conversational, no camera experience needed',
     ],
