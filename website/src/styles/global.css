@@ -1,4 +1,4 @@
-/* Design tokens, from the business card: black and white, Montserrat + Monda. */
+/* Design tokens, from the business card: black and white. Montserrat headings, DM Sans body, Monda labels. */
 :root {
   --bg: #000000;
   --bg-raised: #0f0f0f;
@@ -9,7 +9,7 @@
   --accent-ink: #000000;
 
   --font-display: 'Montserrat', system-ui, sans-serif;
-  --font-body: 'Montserrat', system-ui, -apple-system, sans-serif;
+  --font-body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-label: 'Monda', 'Montserrat', sans-serif;
 
   --max: 1180px;
