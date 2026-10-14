@@ -23,7 +23,7 @@ const towns = (await getCollection('towns', (t) => t.data.county.id === county.i
   <h1>Video production in {name}, NJ</h1>
   <p>{county.data.blurb || `Video content, events coverage, podcasts and drone work for towns, businesses and trades across ${name}.`}</p>
 
-  <h2>Towns I serve in {name}</h2>
+  <h2>Towns we serve in {name}</h2>
   {towns.length ? (
     <ul class="checks towns">
       {towns.map((t) => <li><a href={`/where-i-work/${county.id}/${t.id}`}>{t.data.name}, NJ</a></li>)}

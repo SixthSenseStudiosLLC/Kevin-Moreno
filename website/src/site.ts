@@ -6,7 +6,7 @@ export const SITE = {
     'Sixth Sense Studios films towns, local businesses and trade companies across North Jersey. Video that builds trust: the work, the people and the town around it.',
   email: 'sixthsensestudiosllc@gmail.com',
   phone: '(973) 820-5511',
-  hours: 'By appointment. I come to you.', // no storefront
+  hours: 'By appointment. We come to you.', // no storefront
   area: 'North Jersey',
   // Leave a URL empty to hide that icon.
   socials: {
@@ -38,7 +38,7 @@ export const SERVICES = [
     slide: 'Your story, in your words',
     short: 'A podcast episode filmed at your business or a local partner venue, then cut into clips.',
     points: [
-      'Filmed where you work, or at a local coffee and cocktail bar I partner with',
+      'Filmed where you work, or at a local coffee and cocktail bar we partner with',
       'Full episode plus short clips from every recording',
       'Relaxed and conversational, no camera experience needed',
     ],

@@ -22,11 +22,11 @@ const uses = [
 >
   <h1>Drone and aerial video in the Garden State</h1>
   <p>
-    Some stories only make sense from above. I fly over the towns of North Jersey to show the full picture: the
+    Some stories only make sense from above. We fly over the towns of North Jersey to show the full picture: the
     project, the property, the street and the community around it. Every drone shoot can be its own piece or folded
     into your monthly content, a brand film or event coverage.
   </p>
-  <p>I fly a {GEAR.drone}: small enough to get in close, steady enough for smooth, cinematic shots.</p>
+  <p>We fly a {GEAR.drone}: small enough to get in close, steady enough for smooth, cinematic shots.</p>
 
   <h2>Recent flights</h2>
   <div class="clips wide">
@@ -76,7 +76,7 @@ const uses = [
     </>
   ))}
 
-  <h2>Where I fly</h2>
+  <h2>Where we fly</h2>
   <p>
     {towns.map((t, i) => (
       <>{i ? (i === towns.length - 1 ? ' and ' : ', ') : ''}<a href={`/where-i-work/${t.data.county.id}/${t.id}`}>{t.data.name}</a></>

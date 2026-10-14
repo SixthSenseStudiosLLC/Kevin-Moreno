@@ -9,7 +9,7 @@ export const SHOOT_RATES = [
     name: 'Half day',
     price: '$500',
     time: 'Up to 4 hours on site',
-    summary: 'I come out and capture what is happening: your event, your property, your space, your work.',
+    summary: 'We come out and capture what is happening: your event, your property, your space, your work.',
     includes: ['Filming at one location'],
     choice: [EDITS.long, EDITS.clips], // the client picks one
   },
@@ -17,7 +17,7 @@ export const SHOOT_RATES = [
     name: 'Full day',
     price: '$1,100',
     time: 'Up to 8 hours on site',
-    summary: 'A little planning up front, then I film your business and sit down with you to ask a few questions.',
+    summary: 'A little planning up front, then we film your business and sit down with you to ask a few questions.',
     includes: ['A short planning call before the shoot', 'Filming your business at one location', 'A sit-down Q&A with the owner', EDITS.long, EDITS.clips],
   },
   {

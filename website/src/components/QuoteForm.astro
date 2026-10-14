@@ -52,9 +52,9 @@ const { title = 'Request a Quote', id } = Astro.props;
         });
         if (!res.ok) throw new Error(String(res.status));
         form.reset();
-        status.textContent = "Thanks! I'll get back to you within one business day.";
+        status.textContent = "Thanks! We'll get back to you within one business day.";
       } catch {
-        status.textContent = 'Something went wrong. Please call or email me instead.';
+        status.textContent = 'Something went wrong. Please call or email us instead.';
       } finally {
         button.disabled = false;
       }

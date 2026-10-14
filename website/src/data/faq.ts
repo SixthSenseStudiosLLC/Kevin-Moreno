@@ -7,7 +7,7 @@ const [half, full, drone] = SHOOT_RATES;
 export const FAQ = [
   {
     q: 'How long have you been doing this?',
-    a: `Since ${FOUNDED}. I've spent the last few years filming towns, local businesses and trade companies across North Jersey.`,
+    a: `Since ${FOUNDED}. Sixth Sense Studios has spent the last few years filming towns, local businesses and trade companies across North Jersey.`,
   },
   {
     q: 'How long until I get my video?',
@@ -19,7 +19,7 @@ export const FAQ = [
   },
   {
     q: "What's the difference between a set rate and a custom quote?",
-    a: 'A set rate is for when you want me to come film: an event, a property, or your business and a few questions with you. A custom quote is for full storytelling projects like brand films, the podcast and monthly content, which take more planning, directing and editing.',
+    a: 'A set rate is for when you want us to come film: an event, a property, or your business and a few questions with you. A custom quote is for full storytelling projects like brand films, the podcast and monthly content, which take more planning, directing and editing.',
   },
   {
     q: 'Do I get the raw footage?',
@@ -43,11 +43,11 @@ export const FAQ = [
   },
   {
     q: 'Do I need to be comfortable on camera?',
-    a: 'No. I direct the shoot and keep it relaxed, so you can just talk about what you know. No script and no camera experience needed.',
+    a: 'No. We direct the shoot and keep it relaxed, so you can just talk about what you know. No script and no camera experience needed.',
   },
   {
     q: 'What happens after I reach out?',
-    a: 'We start with a free planning call. I learn about your business and what you want people to know, then send you a plan and a price.',
+    a: 'We start with a free planning call. We learn about your business and what you want people to know, then send you a plan and a price.',
   },
   {
     q: 'Can I combine services?',

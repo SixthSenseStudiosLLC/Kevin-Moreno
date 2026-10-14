@@ -6,12 +6,12 @@ export const PODCAST_HERO_IMAGE = ''; // Wide shot: Kev across from a guest, mic
 export const ONE_ON_ONE_STEPS = [
   {
     title: 'We talk first',
-    text: 'Before a camera comes out, we sit down and talk. I learn your story, what you want people to know and what makes you different, so the interview has a direction.',
+    text: 'Before a camera comes out, we sit down and talk. We learn your story, what you want people to know and what makes you different, so the interview has a direction.',
     image: '', // Kev and the guest talking before the shoot
   },
   {
-    title: 'I direct the conversation',
-    text: 'On location, where you work or at a local spot I partner with. I set up the cameras and mics, ask the questions and keep it relaxed, so you can just talk. No script, no camera experience needed.',
+    title: 'We direct the conversation',
+    text: 'On location, where you work or at a local spot we partner with. We set up the cameras and mics, ask the questions and keep it relaxed, so you can just talk. No script, no camera experience needed.',
     image: '', // Kev mid-interview, asking a question
   },
   {

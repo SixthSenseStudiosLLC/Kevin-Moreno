@@ -14,12 +14,12 @@ const towns = (await getCollection('towns')).sort((a, b) => a.data.name.localeCo
 
 const why = [
   {
-    title: 'Every kind of video, one person',
-    text: 'Monthly content, podcasts, events and brand films. You work with me from the first call to the final cut, so nothing gets lost in a hand-off.',
+    title: 'Every kind of video, one studio',
+    text: 'Monthly content, podcasts, events and brand films. One team handles your project from the first call to the final cut, so nothing gets lost in a hand-off.',
   },
   {
     title: 'Local trust and full context',
-    text: 'I film the business, the owner and the town around them. Neighbors choose local, and they want to see who they are hiring before they call.',
+    text: 'We film the business, the owner and the town around them. Neighbors choose local, and they want to see who they are hiring before they call.',
   },
   {
     title: 'Built around your week',
@@ -29,7 +29,7 @@ const why = [
 
 const reasons = [
   'Based in North Jersey, filming in your town',
-  'One person from first call to final cut',
+  'One team from first call to final cut',
   'Free planning call before anything is filmed',
 ];
 
@@ -53,13 +53,13 @@ const platforms = ['Instagram', 'TikTok', 'YouTube', 'Facebook', 'LinkedIn', 'Yo
       <section>
         <h1>Sixth Sense Studios: North Jersey's video partner for content, events and podcasts</h1>
         <p>
-          Sixth Sense Studios is a North Jersey video production studio led by Reliable Kev. I produce
+          Sixth Sense Studios is a North Jersey video production studio led by Reliable Kev. We produce
           {SERVICES.map((s, i) => <>{i === SERVICES.length - 1 ? ' and ' : i ? ', ' : ' '}<a href={`/services#${s.id}`}>{s.title.toLowerCase()}</a></>)}{' '}
           for towns, downtowns, local businesses and trade companies throughout
           {counties.map((c, i) => <>{i === counties.length - 1 ? ' and ' : i ? ', ' : ' '}<a href={`/where-i-work/${c.id}`}>{c.data.name}</a></>)}.
         </p>
         <p>
-          My approach is full context storytelling. I invest the time, care and thought to understand your story, then
+          Our approach is full context storytelling. We invest the time, care and thought to understand your story, then
           direct and shape it on camera: the work, the people behind it and the community it belongs to. The result is
           video that earns trust before the first phone call.
         </p>
@@ -80,10 +80,10 @@ const platforms = ['Instagram', 'TikTok', 'YouTube', 'Facebook', 'LinkedIn', 'Yo
         <a href="/about" class="meet">
           <div class="meet-photo"><img src="/images/kev.jpg" alt="Kev, the filmmaker behind Sixth Sense Studios" loading="lazy" /></div>
           <div>
-            <h3>Meet Reliable Kev</h3>
+            <h3>Meet the studio</h3>
             <p>
-              The person behind the camera. When you book a call, you are talking to the same person who plans, films and
-              edits your project from start to finish. <span class="more">Continue reading</span>
+              Founded by Reliable Kev. The team that plans your project is the team that films and edits it, so your story
+              stays in the same hands from start to finish. <span class="more">Continue reading</span>
             </p>
           </div>
         </a>
@@ -104,7 +104,7 @@ const platforms = ['Instagram', 'TikTok', 'YouTube', 'Facebook', 'LinkedIn', 'Yo
       <section>
         <h2>Serving North Jersey</h2>
         <p>
-          Every piece of work is tied to the town it was made in. I currently work in
+          Every piece of work is tied to the town it was made in. We currently work in
           {towns.map((t, i) => <>{i === towns.length - 1 ? ' and ' : i ? ', ' : ' '}<a href={`/where-i-work/${t.data.county.id}/${t.id}`}>{t.data.name}</a></>)},
           with more towns coming. Nearby? <a href="/contact#quote">Reach out anyway.</a>
         </p>
