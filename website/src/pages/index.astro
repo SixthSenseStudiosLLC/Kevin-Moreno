@@ -54,7 +54,7 @@ const platforms = ['Instagram', 'TikTok', 'YouTube', 'Facebook', 'LinkedIn', 'Yo
         <h1>Sixth Sense Studios: North Jersey's video partner for content, events and podcasts</h1>
         <p>
           Sixth Sense Studios is a North Jersey video production studio led by Reliable Kev. We produce
-          {SERVICES.map((s, i) => <>{i === SERVICES.length - 1 ? ' and ' : i ? ', ' : ' '}<a href={`/services#${s.id}`}>{s.title.toLowerCase()}</a></>)}{' '}
+          {SERVICES.map((s, i) => <>{i === SERVICES.length - 1 ? ' and ' : i ? ', ' : ' '}<a href={`/services#${s.id}`}>{s.inline ?? s.title.toLowerCase()}</a></>)}{' '}
           for towns, downtowns, local businesses and trade companies throughout
           {counties.map((c, i) => <>{i === counties.length - 1 ? ' and ' : i ? ', ' : ' '}<a href={`/where-i-work/${c.id}`}>{c.data.name}</a></>)}.
         </p>

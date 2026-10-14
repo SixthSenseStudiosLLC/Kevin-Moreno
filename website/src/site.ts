@@ -34,9 +34,10 @@ export const SERVICES = [
   },
   {
     id: 'podcast',
-    title: 'Business Owner Podcast',
+    title: 'Podcast / Q&A',
+    inline: 'podcasts and Q&As', // how it reads mid-sentence
     slide: 'Your story, in your words',
-    short: 'A podcast episode filmed at your business or a local partner venue, then cut into clips.',
+    short: 'A podcast-style conversation or Q&A, filmed at your business or a local partner venue, then cut into clips.',
     points: [
       'Filmed where you work, or at a local coffee and cocktail bar we partner with',
       'Full episode plus short clips from every recording',
