@@ -18,7 +18,7 @@ const run = Array.from({ length: Math.max(2, Math.ceil(16 / items.length)) }, ()
 ---
 
 <nav class="ticker" aria-label="Towns I film in">
-  <div class="track" style={`animation-duration: ${run.length * 7}s`}>
+  <div class="track" style={`animation-duration: ${run.length * 9}s`}>
     {[0, 1].map((copy) => (
       <ul aria-hidden={copy ? 'true' : undefined}>
         {run.map((item) => (

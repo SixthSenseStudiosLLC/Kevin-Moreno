@@ -1,19 +1,21 @@
 ---
-// Homepage opener: the Business Owner Podcast.
-import { PODCAST_HERO_IMAGE } from '../data/home';
+// Homepage opener: the headline over the featured drone clip (Fair Lawn roof).
+const VIDEO = '/videos/fair-lawn-roof';
 ---
 
-<section class:list={['hero', { 'has-photo': PODCAST_HERO_IMAGE }]} style={PODCAST_HERO_IMAGE ? `background-image: url(${PODCAST_HERO_IMAGE})` : undefined}>
+<section class="hero">
+  <video class="bg" src={`${VIDEO}.mp4`} poster={`${VIDEO}.jpg`} muted loop playsinline autoplay preload="auto" data-autoplay aria-hidden="true"></video>
   <div class="container hero-inner">
-    <p class="kicker">The Business Owner Podcast</p>
-    <p class="headline">Your story,<br />in your words.</p>
+    <p class="kicker">Sixth Sense Studios · North Jersey</p>
+    <p class="headline">It's not remaining.<br />It's evolution.</p>
     <p class="sub">
-      I sit down across from you, ask the questions that matter and direct a conversation your customers will actually
-      watch. Filmed where you work or at a local spot I partner with, then cut into a full episode and clips for every platform.
+      Video production built on one discipline: telling people's stories with honesty and care. Every project is
+      planned, directed and edited to show the full picture of your business, the people behind it and the community
+      it serves.
     </p>
     <div class="actions">
-      <a href="/contact#quote" class="btn btn-primary">Book your episode</a>
-      <a href="/services#podcast" class="btn">How it works</a>
+      <a href="/contact#quote" class="btn btn-primary">Start a project</a>
+      <a href="/work" class="btn">See the work</a>
     </div>
   </div>
 </section>
@@ -24,11 +26,13 @@ import { PODCAST_HERO_IMAGE } from '../data/home';
     min-height: clamp(460px, 62vw, 680px); padding: clamp(48px, 8vw, 96px) 0;
     background: radial-gradient(ellipse at 70% 20%, #262626, #050505 65%) center / cover no-repeat;
   }
-  .hero.has-photo::before {
-    content: ''; position: absolute; inset: 0;
+  .bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .hero::before {
+    content: ''; position: absolute; inset: 0; z-index: 1;
     background: linear-gradient(to right, rgb(0 0 0 / 0.85), rgb(0 0 0 / 0.35) 70%), linear-gradient(to top, rgb(0 0 0 / 0.6), transparent 50%);
   }
-  .hero-inner { position: relative; }
+  .hero { overflow: hidden; }
+  .hero-inner { position: relative; z-index: 2; }
   .kicker {
     font-family: var(--font-label); font-size: 0.8rem; letter-spacing: 0.24em; text-transform: uppercase;
     color: var(--text-muted); margin-bottom: 18px; display: flex; align-items: center; gap: 12px;
