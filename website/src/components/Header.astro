@@ -1,6 +1,5 @@
 ---
 import { NAV, SITE } from '../site';
-import Socials from './Socials.astro';
 import TownTicker from './TownTicker.astro';
 
 const path = Astro.url.pathname;
@@ -10,7 +9,6 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
 <div class="topbar">
   <div class="container topbar-inner">
     <div class="topbar-left">
-      <Socials />
       <span class="area">{SITE.area}</span>
     </div>
     {SITE.phone
@@ -22,8 +20,8 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
 <header class="header">
   <div class="container bar">
     <a href="/" class="logo" aria-label={`${SITE.name} home`}>
-      <span class="logo-name">Reliable Kev</span>
-      <span class="logo-studio">SixthSenseStudios</span>
+      <span class="logo-name">Sixth Sense Studios</span>
+      <span class="logo-studio">Reliable Kev</span>
     </a>
 
     <nav id="site-nav" class="nav" aria-label="Main">
@@ -69,7 +67,8 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
   }
   .bar { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 84px; }
   .logo { text-decoration: none; display: grid; gap: 4px; }
-  .logo-name { font-size: 1.25rem; letter-spacing: 0.18em; text-transform: uppercase; line-height: 1; }
+  .logo-name { font-size: 1.15rem; letter-spacing: 0.14em; text-transform: uppercase; line-height: 1; white-space: nowrap; }
+  @media (max-width: 420px) { .logo-name { font-size: 1rem; letter-spacing: 0.1em; } }
   .logo-studio {
     display: flex; align-items: center; gap: 8px;
     font-size: 0.6rem; letter-spacing: 0.26em; color: var(--text-muted);

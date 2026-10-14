@@ -1,5 +1,5 @@
 ---
-// Stills from the drone clips as a portfolio grid; each card opens the Drone page.
+// Drone clips as a portfolio grid that plays as you scroll; each card opens the Drone page.
 import { DRONE_CLIPS } from '../data/drone';
 
 interface Props {
@@ -13,7 +13,7 @@ const clips = DRONE_CLIPS.filter((c) => c.shape === 'wide' && (town ? c.town ===
   <div class="cards">
     {clips.map((c) => (
       <a href="/drone" class="clip-card">
-        <img src={`/videos/${c.name}.jpg`} alt={`${c.title}, ${c.town}`} loading="lazy" />
+        <video src={`/videos/${c.name}.mp4`} poster={`/videos/${c.name}.jpg`} muted loop playsinline autoplay preload="metadata" data-autoplay aria-label={`${c.title}, ${c.town}`}></video>
         <span class="cap">{c.title}<span> · {c.town}</span></span>
       </a>
     ))}
@@ -23,8 +23,8 @@ const clips = DRONE_CLIPS.filter((c) => c.shape === 'wide' && (town ? c.town ===
 <style>
   .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-top: 20px; }
   .clip-card { text-decoration: none; display: block; }
-  .clip-card img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line); display: block; transition: opacity 0.15s; }
-  .clip-card:hover img { opacity: 0.85; }
+  .clip-card video { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line); display: block; transition: opacity 0.15s; }
+  .clip-card:hover video { opacity: 0.85; }
   .cap { display: block; font-size: 0.9rem; margin-top: 8px; }
   .cap span { color: var(--text-muted); }
 </style>

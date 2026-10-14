@@ -32,7 +32,7 @@ const uses = [
   <div class="clips wide">
     {DRONE_CLIPS.filter((c) => c.section === 'homes').map((c) => (
       <figure>
-        <video src={`/videos/${c.name}.mp4`} poster={`/videos/${c.name}.jpg`} muted loop playsinline preload="none" aria-label={`${c.title}, ${c.town}`}></video>
+        <video src={`/videos/${c.name}.mp4`} poster={`/videos/${c.name}.jpg`} muted loop playsinline autoplay preload="metadata" data-autoplay aria-label={`${c.title}, ${c.town}`}></video>
         <figcaption>{c.title}<span> · {c.town}</span></figcaption>
       </figure>
     ))}
@@ -43,7 +43,7 @@ const uses = [
   <div class="clips wide">
     {DRONE_CLIPS.filter((c) => c.section === 'city' && c.shape === 'wide').map((c) => (
       <figure>
-        <video src={`/videos/${c.name}.mp4`} poster={`/videos/${c.name}.jpg`} muted loop playsinline preload="none" aria-label={`${c.title}, ${c.town}`}></video>
+        <video src={`/videos/${c.name}.mp4`} poster={`/videos/${c.name}.jpg`} muted loop playsinline autoplay preload="metadata" data-autoplay aria-label={`${c.title}, ${c.town}`}></video>
         <figcaption>{c.title}<span> · {c.town}</span></figcaption>
       </figure>
     ))}
@@ -51,7 +51,7 @@ const uses = [
   <div class="clips tall pair">
     {DRONE_CLIPS.filter((c) => c.section === 'city' && c.shape === 'tall').map((c) => (
       <figure>
-        <video src={`/videos/${c.name}.mp4`} poster={`/videos/${c.name}.jpg`} muted loop playsinline preload="none" aria-label={`${c.title}, ${c.town}`}></video>
+        <video src={`/videos/${c.name}.mp4`} poster={`/videos/${c.name}.jpg`} muted loop playsinline autoplay preload="metadata" data-autoplay aria-label={`${c.title}, ${c.town}`}></video>
         <figcaption>{c.title}<span> · {c.town}</span></figcaption>
       </figure>
     ))}
@@ -62,7 +62,7 @@ const uses = [
   <div class="clips tall">
     {DRONE_CLIPS.filter((c) => c.section === 'job').map((c) => (
       <figure>
-        <video src={`/videos/${c.name}.mp4`} poster={`/videos/${c.name}.jpg`} muted loop playsinline preload="none" aria-label={`${c.title}, ${c.town}`}></video>
+        <video src={`/videos/${c.name}.mp4`} poster={`/videos/${c.name}.jpg`} muted loop playsinline autoplay preload="metadata" data-autoplay aria-label={`${c.title}, ${c.town}`}></video>
         <figcaption>{c.title}<span> · {c.town}</span></figcaption>
       </figure>
     ))}
@@ -85,23 +85,6 @@ const uses = [
   <a href="/contact#quote" class="btn btn-primary">Get a drone quote</a>
 </Page>
 
-<script>
-  // Clips play silently while on screen and pause when scrolled away.
-  const videos = document.querySelectorAll<HTMLVideoElement>('.clips video');
-  if (videos.length && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const seen = new IntersectionObserver((entries) => {
-      for (const e of entries) {
-        const v = e.target as HTMLVideoElement;
-        if (e.isIntersecting) v.play().catch(() => {});
-        else v.pause();
-      }
-    }, { threshold: 0.5 });
-    videos.forEach((v) => {
-      seen.observe(v);
-      v.addEventListener('click', () => (v.paused ? v.play() : v.pause()));
-    });
-  }
-</script>
 
 <style>
   .clips { display: grid; gap: 16px; margin-top: 16px; }

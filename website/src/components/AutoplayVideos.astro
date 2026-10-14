@@ -1,0 +1,22 @@
+---
+// Plays every <video data-autoplay> silently while it is on screen and pauses it when scrolled away.
+---
+
+<script>
+  const videos = [...document.querySelectorAll<HTMLVideoElement>('video[data-autoplay]')];
+  if (videos.length && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const seen = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          const v = e.target as HTMLVideoElement;
+          if (e.isIntersecting) {
+            v.muted = true;
+            v.play().catch(() => {});
+          } else v.pause();
+        }
+      },
+      { threshold: 0.25 },
+    );
+    videos.forEach((v) => seen.observe(v));
+  }
+</script>
