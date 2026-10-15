@@ -4,22 +4,30 @@ import { SERVICES, SITE } from '../site';
 interface Props {
   title?: string;
   id?: string;
+  /** The full intake version (Start a Project page): adds business, town, timeline and source. */
+  full?: boolean;
 }
-const { title = 'Request a Quote', id } = Astro.props;
+const { title = 'Request a Quote', id, full = false } = Astro.props;
 ---
 
 <!-- Submissions are emailed to SITE.email by FormSubmit. The very first one triggers
      an activation email from FormSubmit; click its link once and every lead after that comes through. -->
-<form class="quote" action={`https://formsubmit.co/${SITE.email}`} method="post" id={id} data-quote>
+<form class:list={['quote', { full }]} action={`https://formsubmit.co/${SITE.email}`} method="post" id={id} data-quote data-phone={SITE.phone} data-email={SITE.email}>
   <h2>{title}</h2>
   <div class="fields">
-    <input type="hidden" name="_subject" value="New quote request from the website" />
+    <input type="hidden" name="_subject" value={full ? 'New project inquiry (intake form)' : 'New quote request from the website'} />
     <input type="hidden" name="_template" value="table" />
     <input type="hidden" name="_captcha" value="false" />
     <input type="text" name="_honey" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true" />
     <label><span class="sr-only">Name</span><input name="name" placeholder="Name *" autocomplete="name" required /></label>
     <label><span class="sr-only">Phone</span><input type="tel" name="phone" placeholder="Phone *" autocomplete="tel" required /></label>
     <label><span class="sr-only">Email</span><input type="email" name="email" placeholder="Email *" autocomplete="email" required /></label>
+    {full && (
+      <>
+        <label><span class="sr-only">Business name</span><input name="business" placeholder="Business name" autocomplete="organization" /></label>
+        <label><span class="sr-only">Town</span><input name="town" placeholder="Town" /></label>
+      </>
+    )}
     <label>
       <span class="sr-only">Interested in</span>
       <select name="service">
@@ -29,15 +37,47 @@ const { title = 'Request a Quote', id } = Astro.props;
         <option>Not sure yet</option>
       </select>
     </label>
-    <label><span class="sr-only">Message</span><textarea name="message" rows="4" placeholder="Message"></textarea></label>
+    {full && (
+      <label>
+        <span class="sr-only">Timeline</span>
+        <select name="timeline">
+          <option value="">When do you want to start?</option>
+          <option>As soon as possible</option>
+          <option>Within a month</option>
+          <option>In 1 to 3 months</option>
+          <option>Just exploring</option>
+        </select>
+      </label>
+    )}
+    <label><span class="sr-only">Message</span><textarea name="message" rows={full ? 5 : 4} placeholder={full ? 'Tell us about your business and what you want people to know' : 'Message'}></textarea></label>
+    {full && (
+      <label>
+        <span class="sr-only">How did you hear about us?</span>
+        <select name="source">
+          <option value="">How did you hear about us?</option>
+          <option>Business card</option>
+          <option>Google</option>
+          <option>Instagram</option>
+          <option>Facebook or LinkedIn</option>
+          <option>Referral</option>
+          <option>Other</option>
+        </select>
+      </label>
+    )}
     <button class="submit" type="submit">Get My Free Quote</button>
     <p class="status" role="status" aria-live="polite"></p>
   </div>
 </form>
 
 <script>
+  // Links like /start/?src=card (the business card QR code) preselect "How did you hear about us?".
+  const SOURCES: Record<string, string> = { card: 'Business card', google: 'Google', ig: 'Instagram' };
+  const src = SOURCES[new URLSearchParams(location.search).get('src') ?? ''];
+
   // Send without leaving the page. Without JavaScript the form still posts normally.
   for (const form of document.querySelectorAll<HTMLFormElement>('form[data-quote]')) {
+    const source = form.querySelector<HTMLSelectElement>('select[name="source"]');
+    if (source && src) source.value = src;
     const status = form.querySelector<HTMLElement>('.status')!;
     const button = form.querySelector<HTMLButtonElement>('.submit')!;
     form.addEventListener('submit', async (event) => {
@@ -50,11 +90,14 @@ const { title = 'Request a Quote', id } = Astro.props;
           body: new FormData(form),
           headers: { Accept: 'application/json' },
         });
-        if (!res.ok) throw new Error(String(res.status));
+        // FormSubmit answers 200 even when it refuses a message (for example before the inbox is
+        // activated), so check what it says, not just the status code.
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || String(data.success) !== 'true') throw new Error(data.message || String(res.status));
         form.reset();
         status.textContent = "Thanks! We'll get back to you within one business day.";
       } catch {
-        status.textContent = 'Something went wrong. Please call or email us instead.';
+        status.textContent = `Something went wrong and your message was not sent. Please call ${form.dataset.phone} or email ${form.dataset.email}.`;
       } finally {
         button.disabled = false;
       }

@@ -1,16 +1,24 @@
 ---
 import Page from '../layouts/Page.astro';
+import QuoteForm from '../components/QuoteForm.astro';
 import { SITE } from '../site';
 ---
 
-<Page title="Start a Project" description="Tell us about your business and what you want to make.">
+<Page title="Start a Project" description="Tell us about your business and what you want to make." quote={false}>
   <h1>Start a project</h1>
   <p>
     Tell us about your business, your town and what you want people to know. We'll get back to you within one business
     day with a simple plan and a straight number.
   </p>
-  <p>
-    Prefer email? Write to <a href={`mailto:${SITE.email}`}>{SITE.email}</a>{SITE.phone && <> or call <a href={`tel:${SITE.phone}`}>{SITE.phone}</a></>}.
+  <div class="intake">
+    <QuoteForm title="Project intake" full />
+  </div>
+  <p class="alt">
+    Prefer to talk? Call <a href={`tel:${SITE.phone}`}>{SITE.phone}</a> or email <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
   </p>
-  <p>Fill out the quote form and it comes straight to the studio.</p>
 </Page>
+
+<style>
+  .intake { max-width: 560px; margin: 28px 0; }
+  .alt { color: var(--text-muted) !important; }
+</style>
