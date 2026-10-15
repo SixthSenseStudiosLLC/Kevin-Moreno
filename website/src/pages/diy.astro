@@ -1,0 +1,167 @@
+---
+import Page from '../layouts/Page.astro';
+import { SETUP, BASICS, STRUCTURE, IDEAS, PLAN, ROUTINE, EDITING, CHECKLIST } from '../data/diy';
+
+const sections = [
+  ['setup', 'Set up your phone'],
+  ['basics', 'Light, sound, steady'],
+  ['structure', 'How to structure a clip'],
+  ['ideas', 'What to film'],
+  ['plan', 'Your 30-day plan'],
+  ['editing', 'Editing'],
+  ['checklist', 'Checklist'],
+];
+---
+
+<Page
+  title="DIY Content Guide"
+  description="How to film your own business content with your phone, plus a simple 30-day posting plan. A free guide from Sixth Sense Studios."
+  quote={false}
+>
+  <h1>Film your own content</h1>
+  <p class="lede">
+    You do not need a production budget to start showing up. The phone in your pocket is enough to build trust with
+    your customers. This free guide covers how to set it up, what to film and a simple 30-day plan to follow. When you
+    are ready for more, we are here.
+  </p>
+
+  <nav class="toc" aria-label="On this page">
+    {sections.map(([id, label], i) => <a href={`#${id}`}><span>0{i + 1}</span>{label}</a>)}
+  </nav>
+
+  <section id="setup">
+    <h2>Set up your phone</h2>
+    <p>Five minutes before you hit record makes the biggest difference.</p>
+    <div class="cards">
+      {SETUP.map((s) => (
+        <div class="tile">
+          <h3>{s.title}</h3>
+          <p>{s.text}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section id="basics">
+    <h2>Light, sound, steady</h2>
+    <div class="cards two">
+      {BASICS.map((b) => (
+        <div class="tile">
+          <h3>{b.title}</h3>
+          <ul class="checks">{b.points.map((p) => <li>{p}</li>)}</ul>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section id="structure">
+    <h2>How to structure a clip</h2>
+    <p>Most good short videos follow the same four steps. Plan them before you film.</p>
+    <ol class="steps">
+      {STRUCTURE.map((s) => (
+        <li>
+          <strong>{s.step}</strong>
+          <span>{s.text}</span>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section id="ideas">
+    <h2>What to film</h2>
+    <p>Never run out of ideas. Every one of these works for almost any business.</p>
+    <ul class="checks ideas">{IDEAS.map((i) => <li>{i}</li>)}</ul>
+  </section>
+
+  <section id="plan">
+    <h2>Your 30-day plan</h2>
+    <p>Three posts a week for four weeks. Each week has one theme, so you always know what to film next.</p>
+    <div class="weeks">
+      {PLAN.map((w) => (
+        <div class="week">
+          <p class="wk">{w.week}</p>
+          <h3>{w.theme}</h3>
+          <ol>{w.posts.map((p) => <li>{p}</li>)}</ol>
+        </div>
+      ))}
+    </div>
+    <h3 class="sub">The weekly routine</h3>
+    <div class="cards">
+      {ROUTINE.map((r) => (
+        <div class="tile">
+          <h3>{r.day}</h3>
+          <p>{r.text}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section id="editing">
+    <h2>Editing</h2>
+    <ul class="checks">{EDITING.map((e) => <li>{e}</li>)}</ul>
+  </section>
+
+  <section id="checklist">
+    <h2>Before you hit record</h2>
+    <ul class="boxes">{CHECKLIST.map((c) => <li>{c}</li>)}</ul>
+  </section>
+
+  <section class="cta">
+    <h2>Want it done for you?</h2>
+    <p>
+      When you are ready to hand it off, the studio plans, films and edits your content so it looks and sounds
+      professional, and you can get back to running your business.
+    </p>
+    <div class="actions">
+      <a href="/start" class="btn btn-primary">Start a project</a>
+      <a href="/services" class="btn">See services</a>
+    </div>
+  </section>
+</Page>
+
+<style>
+  .lede { font-size: 1.1rem; max-width: 62ch; }
+  .toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 28px 0 8px; }
+  .toc a {
+    display: inline-flex; gap: 8px; align-items: baseline; padding: 8px 12px; border: 1px solid var(--line); text-decoration: none;
+    font-family: var(--font-label); font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .toc a span { color: var(--text-muted); }
+  .toc a:hover { border-color: var(--text); }
+  section { scroll-margin-top: 110px; margin-top: 56px; }
+  section > h2 { margin-top: 0 !important; }
+  .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+  .cards.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 860px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 560px) { .cards, .cards.two { grid-template-columns: 1fr; } }
+  .tile { border: 1px solid var(--line); background: rgb(255 255 255 / 0.03); padding: 18px 20px; }
+  .tile h3 { margin: 0 0 8px !important; font-size: 1rem; }
+  .tile p { margin: 0; font-size: 0.95rem; }
+  .tile ul { margin: 0; }
+  .steps { list-style: none; counter-reset: s; padding: 0; margin: 18px 0 0; display: grid; gap: 10px; }
+  .steps li { counter-increment: s; display: grid; grid-template-columns: 44px 120px 1fr; gap: 12px; align-items: baseline; padding: 14px 0; border-top: 1px solid var(--line); }
+  .steps li::before { content: '0' counter(s); font-family: var(--font-label); color: var(--text-muted); letter-spacing: 0.12em; }
+  .steps strong { text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.95rem; }
+  .steps span { color: #d4d4d4; }
+  .ideas { columns: 2; column-gap: 32px; }
+  .ideas li { break-inside: avoid; }
+  .weeks { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+  .week { background: #fff; color: #111; padding: 18px 20px; }
+  .week .wk { font-family: var(--font-label); font-size: 0.74rem; letter-spacing: 0.18em; text-transform: uppercase; color: #777 !important; margin: 0 0 6px; }
+  .week h3 { margin: 0 0 10px !important; color: #111; font-size: 1.05rem; }
+  .week ol { margin: 0; padding-left: 1.1em; font-size: 0.92rem; }
+  .week li { margin-bottom: 6px; }
+  .sub { margin-top: 32px !important; }
+  .boxes { list-style: none; padding: 0; margin: 18px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+  .boxes li { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); }
+  .boxes li::before { content: ''; width: 16px; height: 16px; border: 2px solid var(--text); flex: none; }
+  .cta { border-top: 1px solid var(--line); padding-top: 40px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+  @media (max-width: 960px) { .weeks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 600px) {
+    .weeks { grid-template-columns: 1fr; }
+    .ideas { columns: 1; }
+    .steps li { grid-template-columns: 36px 1fr; }
+    .steps span { grid-column: 2; }
+  }
+</style>
