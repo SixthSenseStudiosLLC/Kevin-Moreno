@@ -4,6 +4,8 @@ import Base from '../layouts/Base.astro';
 import HomeHero from '../components/HomeHero.astro';
 import QuoteForm from '../components/QuoteForm.astro';
 import AreaMap from '../components/AreaMap.astro';
+import FeaturedVideo from '../components/FeaturedVideo.astro';
+import { FEATURED } from '../data/featured';
 import { SERVICES, SITE } from '../site';
 
 // Layout follows gardenstatehomeexteriors.com: hero slider → intro → why choose →
@@ -64,6 +66,14 @@ const platforms = ['Instagram', 'TikTok', 'YouTube', 'Facebook', 'LinkedIn', 'Yo
           video that earns trust before the first phone call.
         </p>
       </section>
+
+      {FEATURED.length > 0 && (
+        <section>
+          <h2>Featured work</h2>
+          <FeaturedVideo item={FEATURED[0]} heading="h3" />
+          <p class="more-work"><a href="/work">See more of our work</a></p>
+        </section>
+      )}
 
       <section>
         <h2>Why choose Sixth Sense Studios for your video?</h2>
@@ -172,6 +182,7 @@ const platforms = ['Instagram', 'TikTok', 'YouTube', 'Facebook', 'LinkedIn', 'Yo
   .meet-photo { aspect-ratio: 4 / 3; background: #1a1a1a; display: grid; place-items: center; overflow: hidden; }
   .meet-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
   .more { text-decoration: underline; }
+  .more-work { margin-top: 14px; }
 
   .services-band { background: var(--bg-raised); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: clamp(56px, 8vw, 96px) 0; }
   .band-title { text-align: center; text-transform: uppercase; font-weight: 600; margin-bottom: 48px; }
