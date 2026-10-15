@@ -70,39 +70,7 @@ const { title = 'Request a Quote', id, full = false } = Astro.props;
 </form>
 
 <script>
-  // Links like /start/?src=card (the business card QR code) preselect "How did you hear about us?".
-  const SOURCES: Record<string, string> = { card: 'Business card', google: 'Google', ig: 'Instagram' };
-  const src = SOURCES[new URLSearchParams(location.search).get('src') ?? ''];
-
-  // Send without leaving the page. Without JavaScript the form still posts normally.
-  for (const form of document.querySelectorAll<HTMLFormElement>('form[data-quote]')) {
-    const source = form.querySelector<HTMLSelectElement>('select[name="source"]');
-    if (source && src) source.value = src;
-    const status = form.querySelector<HTMLElement>('.status')!;
-    const button = form.querySelector<HTMLButtonElement>('.submit')!;
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      button.disabled = true;
-      status.textContent = 'Sending…';
-      try {
-        const res = await fetch(form.action.replace('formsubmit.co/', 'formsubmit.co/ajax/'), {
-          method: 'POST',
-          body: new FormData(form),
-          headers: { Accept: 'application/json' },
-        });
-        // FormSubmit answers 200 even when it refuses a message (for example before the inbox is
-        // activated), so check what it says, not just the status code.
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok || String(data.success) !== 'true') throw new Error(data.message || String(res.status));
-        form.reset();
-        status.textContent = "Thanks! We'll get back to you within one business day.";
-      } catch {
-        status.textContent = `Something went wrong and your message was not sent. Please call ${form.dataset.phone} or email ${form.dataset.email}.`;
-      } finally {
-        button.disabled = false;
-      }
-    });
-  }
+  import '../scripts/formsubmit';
 </script>
 
 <style>

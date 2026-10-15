@@ -1,0 +1,119 @@
+---
+// Business card landing page (the QR code points here). No site menu, just the brand and a quick form.
+// Leads arrive with the subject "Business card lead". Kept out of Google and the sitemap.
+import Base from '../layouts/Base.astro';
+import { SITE } from '../site';
+
+const interests = ['Monthly content', 'Podcast / Q&A', 'Events', 'Brand film', 'Drone', 'Not sure yet'];
+const contactBy = ['Call', 'Text', 'Email'];
+---
+
+<Base title="Great meeting you" description="Leave your details and Sixth Sense Studios will reach out." bare noindex>
+  <div class="card-page">
+    <a href="/" class="lockup" aria-label={`${SITE.name} home`}>
+      <span class="name">Sixth Sense Studios</span>
+      <span class="sub">Reliable Kev</span>
+    </a>
+
+    <h1>Great meeting you.</h1>
+    <p class="intro">Leave your details and we'll reach out within one business day to talk about your project.</p>
+
+    <form
+      class="form"
+      action={`https://formsubmit.co/${SITE.email}`}
+      method="post"
+      data-quote
+      data-phone={SITE.phone}
+      data-email={SITE.email}
+      data-thanks="Thanks! We'll be in touch within one business day."
+    >
+      <input type="hidden" name="_subject" value="Business card lead" />
+      <input type="hidden" name="_template" value="table" />
+      <input type="hidden" name="_captcha" value="false" />
+      <input type="hidden" name="source" value="Business card" />
+      <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+      <label class="field"><span>Name *</span><input name="name" autocomplete="name" required /></label>
+      <label class="field"><span>Phone *</span><input type="tel" name="phone" autocomplete="tel" required /></label>
+      <label class="field"><span>Email *</span><input type="email" name="email" autocomplete="email" required /></label>
+      <label class="field"><span>Business name</span><input name="business" autocomplete="organization" /></label>
+
+      <fieldset>
+        <legend>What are you interested in?</legend>
+        <div class="chips">
+          {interests.map((i) => (
+            <label class="chip"><input type="checkbox" name="interest[]" value={i} /><span>{i}</span></label>
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Best way to reach you</legend>
+        <div class="chips">
+          {contactBy.map((c, n) => (
+            <label class="chip"><input type="radio" name="contact_by" value={c} checked={n === 0} /><span>{c}</span></label>
+          ))}
+        </div>
+      </fieldset>
+
+      <label class="field"><span>Where did we meet?</span><input name="met_at" placeholder="e.g. an event, a shop, a job site" /></label>
+      <label class="field"><span>Anything else?</span><textarea name="message" rows="3"></textarea></label>
+
+      <button class="submit" type="submit">Send</button>
+      <p class="status" role="status" aria-live="polite"></p>
+    </form>
+
+    <nav class="more" aria-label="Explore the studio">
+      <a href="/work">See our work</a>
+      <a href="/drone">Drone</a>
+      <a href="/services">Services</a>
+    </nav>
+    <p class="direct">
+      <a href={`tel:${SITE.phone}`}>{SITE.phone}</a><br />
+      <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+    </p>
+  </div>
+</Base>
+
+<script>
+  import '../scripts/formsubmit';
+</script>
+
+<style>
+  .card-page { max-width: 480px; margin: 0 auto; padding: 40px 16px 56px; }
+  .lockup { display: grid; gap: 6px; width: fit-content; margin: 0 auto 36px; text-decoration: none; text-align: center; }
+  .name { font-family: var(--font-display); font-size: 1.25rem; letter-spacing: 0.16em; text-transform: uppercase; }
+  .sub { display: flex; align-items: center; gap: 10px; font-size: 0.7rem; letter-spacing: 0.26em; color: var(--text-muted); }
+  .sub::before, .sub::after { content: ''; height: 2px; flex: 1; min-width: 24px; background: var(--text); }
+  h1 { font-size: clamp(1.9rem, 8vw, 2.4rem); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 500; text-align: center; margin: 0 0 10px; }
+  .intro { text-align: center; color: #cfcfcf; margin: 0 0 28px; }
+
+  .form { background: #fff; color: #111; padding: 20px; display: grid; gap: 14px; box-shadow: 0 6px 24px rgb(0 0 0 / 0.35); }
+  .field { display: grid; gap: 6px; }
+  .field span, legend { font-size: 0.82rem; font-weight: 600; letter-spacing: 0.02em; }
+  input:not([type='checkbox']):not([type='radio']), textarea {
+    font: inherit; font-size: 1rem; color: #111; background: #fff; border: 1px solid #cfcfcf; border-radius: 2px; padding: 12px; width: 100%;
+  }
+  input:focus, textarea:focus { outline: 2px solid #111; outline-offset: 0; }
+  fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip input { position: absolute; opacity: 0; pointer-events: none; }
+  .chip span {
+    display: inline-block; padding: 9px 14px; border: 1px solid #cfcfcf; border-radius: 999px; font-size: 0.9rem; cursor: pointer;
+  }
+  .chip input:checked + span { background: #111; color: #fff; border-color: #111; }
+  .chip input:focus-visible + span { outline: 2px solid #111; outline-offset: 2px; }
+  .submit {
+    font: inherit; font-weight: 600; font-size: 1rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
+    background: #111; color: #fff; border: 0; border-radius: 2px; padding: 15px;
+  }
+  .submit:disabled { opacity: 0.5; cursor: wait; }
+  .status { margin: 0; font-size: 0.9rem; text-align: center; }
+  .status:empty { display: none; }
+  .hp { position: absolute; left: -9999px; }
+
+  .more { display: flex; justify-content: center; gap: 22px; margin-top: 28px; }
+  .more a { font-family: var(--font-label); font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase; }
+  .direct { text-align: center; margin-top: 18px; color: var(--text-muted); font-size: 0.92rem; }
+  .direct a { text-decoration: none; }
+</style>
