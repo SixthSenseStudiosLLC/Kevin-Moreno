@@ -4,12 +4,7 @@
 import Base from '../layouts/Base.astro';
 import { SITE, SERVICES } from '../site';
 
-const businessTypes = ['Local business', 'Contractor or trade', 'Real estate', 'Town or municipality', 'Downtown or chamber of commerce', 'Nonprofit', 'Other'];
 const interests = [...SERVICES.map((s) => s.title), 'Drone & Aerial'];
-const scopes = ['Set rate: half day', 'Set rate: full day', 'Custom project', 'Not sure yet'];
-const timelines = ['As soon as possible', 'Within a month', 'In 1 to 3 months', 'Just planning ahead'];
-const budgets = ['Under $500', '$500 to $1,100', '$1,100 to $2,500', '$2,500 to $5,000', '$5,000 or more', 'Not sure yet'];
-const contactBy = ['Phone call', 'Text', 'Email'];
 ---
 
 <Base title="Project Intake" description="Start a project with Sixth Sense Studios." bare noindex>
@@ -23,8 +18,8 @@ const contactBy = ['Phone call', 'Text', 'Email'];
       <p class="kicker">Project intake</p>
       <h1>Tell us about your project</h1>
       <p class="intro">
-        This takes about two minutes. Once we receive it, the studio will follow up within one business day to schedule
-        a free planning call.
+        This takes about 2 minutes. Once we receive your intake form, our creative director will reach out to book a call
+        and review your project needs.
       </p>
     </header>
 
@@ -35,7 +30,7 @@ const contactBy = ['Phone call', 'Text', 'Email'];
       data-quote
       data-phone={SITE.phone}
       data-email={SITE.email}
-      data-thanks="Thank you. Your inquiry has been received, and we will follow up within one business day."
+      data-thanks="Thank you. Your intake form has been received, and our creative director will reach out to book a call."
     >
       <input type="hidden" name="_subject" value="Project intake (business card)" />
       <input type="hidden" name="_template" value="table" />
@@ -51,75 +46,21 @@ const contactBy = ['Phone call', 'Text', 'Email'];
           <label class="field"><span>Email *</span><input type="email" name="email" autocomplete="email" required /></label>
           <label class="field"><span>Phone *</span><input type="tel" name="phone" autocomplete="tel" required /></label>
         </div>
-        <fieldset>
-          <legend>Preferred contact method</legend>
-          <div class="chips">
-            {contactBy.map((c, n) => <label class="chip"><input type="radio" name="contact_method" value={c} checked={n === 0} /><span>{c}</span></label>)}
-          </div>
-        </fieldset>
       </section>
 
       <section>
-        <h2><span>02</span> About your business</h2>
-        <label class="field">
-          <span>Type of business</span>
-          <select name="business_type">
-            <option value="">Select one</option>
-            {businessTypes.map((t) => <option>{t}</option>)}
-          </select>
-        </label>
-        <div class="row">
-          <label class="field"><span>Town</span><input name="town" autocomplete="address-level2" /></label>
-          <label class="field"><span>Website or social media</span><input name="website" inputmode="url" placeholder="@handle or link" /></label>
-        </div>
-      </section>
-
-      <section>
-        <h2><span>03</span> Project details</h2>
+        <h2><span>02</span> What are you looking for?</h2>
         <fieldset>
-          <legend>Services of interest</legend>
+          <legend class="sr-only">Services</legend>
           <div class="chips">
             {interests.map((i) => <label class="chip"><input type="checkbox" name="services[]" value={i} /><span>{i}</span></label>)}
           </div>
         </fieldset>
-        <label class="field">
-          <span>Project scope</span>
-          <select name="scope">
-            <option value="">Select one</option>
-            {scopes.map((s) => <option>{s}</option>)}
-          </select>
-          <small><a href="/services#pricing" target="_blank" rel="noopener">See set rates and what each includes</a></small>
-        </label>
-        <label class="field">
-          <span>What should this video accomplish?</span>
-          <textarea name="goals" rows="4" placeholder="For example: introduce the owner, promote an event, show finished work"></textarea>
-        </label>
       </section>
 
       <section>
-        <h2><span>04</span> Timeline and budget</h2>
-        <div class="row">
-          <label class="field">
-            <span>Timeline</span>
-            <select name="timeline">
-              <option value="">Select one</option>
-              {timelines.map((t) => <option>{t}</option>)}
-            </select>
-          </label>
-          <label class="field">
-            <span>Budget</span>
-            <select name="budget">
-              <option value="">Select one</option>
-              {budgets.map((b) => <option>{b}</option>)}
-            </select>
-          </label>
-        </div>
-        <label class="field"><span>Shoot or event date, if known</span><input type="date" name="date" /></label>
-      </section>
-
-      <section>
-        <h2><span>05</span> Anything else</h2>
-        <label class="field"><span>Additional notes</span><textarea name="message" rows="3" placeholder="Anything else we should know about you or the project"></textarea></label>
+        <h2><span>03</span> Additional information</h2>
+        <label class="field"><span class="sr-only">Additional information</span><textarea name="message" rows="4" placeholder="Anything we should know about you or your project"></textarea></label>
       </section>
 
       <button class="submit" type="submit">Submit inquiry</button>
@@ -185,6 +126,7 @@ const contactBy = ['Phone call', 'Text', 'Email'];
   .status:empty { display: none; }
   .fine { margin: -14px 0 0; font-size: 0.78rem; color: #777; text-align: center; }
   .hp { position: absolute; left: -9999px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
   .foot { text-align: center; margin-top: 28px; color: var(--text-muted); font-size: 0.9rem; }
   .foot nav { display: flex; justify-content: center; gap: 22px; margin-bottom: 12px; }
