@@ -1,22 +1,32 @@
 ---
-// Business card landing page (the QR code points here). No site menu, just the brand and a quick form.
-// Leads arrive with the subject "Business card lead". Kept out of Google and the sitemap.
+// Business card QR landing page: the studio's formal project intake. No site menu.
+// Leads arrive with the subject "Project intake (business card)". Kept out of Google and the sitemap.
 import Base from '../layouts/Base.astro';
-import { SITE } from '../site';
+import { SITE, SERVICES } from '../site';
 
-const interests = ['Monthly content', 'Podcast / Q&A', 'Events', 'Brand film', 'Drone', 'Not sure yet'];
-const contactBy = ['Call', 'Text', 'Email'];
+const businessTypes = ['Local business', 'Contractor or trade', 'Real estate', 'Town or municipality', 'Downtown or chamber of commerce', 'Nonprofit', 'Other'];
+const interests = [...SERVICES.map((s) => s.title), 'Drone & Aerial'];
+const scopes = ['Set rate: half day', 'Set rate: full day', 'Custom project', 'Not sure yet'];
+const timelines = ['As soon as possible', 'Within a month', 'In 1 to 3 months', 'Just planning ahead'];
+const budgets = ['Under $500', '$500 to $1,100', '$1,100 to $2,500', '$2,500 to $5,000', '$5,000 or more', 'Not sure yet'];
+const contactBy = ['Phone call', 'Text', 'Email'];
 ---
 
-<Base title="Great meeting you" description="Leave your details and Sixth Sense Studios will reach out." bare noindex>
-  <div class="card-page">
+<Base title="Project Intake" description="Start a project with Sixth Sense Studios." bare noindex>
+  <div class="intake-page">
     <a href="/" class="lockup" aria-label={`${SITE.name} home`}>
       <span class="name">Sixth Sense Studios</span>
       <span class="sub">Reliable Kev</span>
     </a>
 
-    <h1>Great meeting you.</h1>
-    <p class="intro">Leave your details and we'll reach out within one business day to talk about your project.</p>
+    <header class="head">
+      <p class="kicker">Project intake</p>
+      <h1>Tell us about your project</h1>
+      <p class="intro">
+        This takes about two minutes. Once we receive it, the studio will follow up within one business day to schedule
+        a free planning call.
+      </p>
+    </header>
 
     <form
       class="form"
@@ -25,53 +35,109 @@ const contactBy = ['Call', 'Text', 'Email'];
       data-quote
       data-phone={SITE.phone}
       data-email={SITE.email}
-      data-thanks="Thanks! We'll be in touch within one business day."
+      data-thanks="Thank you. Your inquiry has been received, and we will follow up within one business day."
     >
-      <input type="hidden" name="_subject" value="Business card lead" />
+      <input type="hidden" name="_subject" value="Project intake (business card)" />
       <input type="hidden" name="_template" value="table" />
       <input type="hidden" name="_captcha" value="false" />
       <input type="hidden" name="source" value="Business card" />
       <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
-      <label class="field"><span>Name *</span><input name="name" autocomplete="name" required /></label>
-      <label class="field"><span>Phone *</span><input type="tel" name="phone" autocomplete="tel" required /></label>
-      <label class="field"><span>Email *</span><input type="email" name="email" autocomplete="email" required /></label>
-      <label class="field"><span>Business name</span><input name="business" autocomplete="organization" /></label>
-
-      <fieldset>
-        <legend>What are you interested in?</legend>
-        <div class="chips">
-          {interests.map((i) => (
-            <label class="chip"><input type="checkbox" name="interest[]" value={i} /><span>{i}</span></label>
-          ))}
+      <section>
+        <h2><span>01</span> Contact information</h2>
+        <label class="field"><span>Full name *</span><input name="name" autocomplete="name" required /></label>
+        <label class="field"><span>Business or organization *</span><input name="business" autocomplete="organization" required /></label>
+        <div class="row">
+          <label class="field"><span>Email *</span><input type="email" name="email" autocomplete="email" required /></label>
+          <label class="field"><span>Phone *</span><input type="tel" name="phone" autocomplete="tel" required /></label>
         </div>
-      </fieldset>
+        <fieldset>
+          <legend>Preferred contact method</legend>
+          <div class="chips">
+            {contactBy.map((c, n) => <label class="chip"><input type="radio" name="contact_method" value={c} checked={n === 0} /><span>{c}</span></label>)}
+          </div>
+        </fieldset>
+      </section>
 
-      <fieldset>
-        <legend>Best way to reach you</legend>
-        <div class="chips">
-          {contactBy.map((c, n) => (
-            <label class="chip"><input type="radio" name="contact_by" value={c} checked={n === 0} /><span>{c}</span></label>
-          ))}
+      <section>
+        <h2><span>02</span> About your business</h2>
+        <label class="field">
+          <span>Type of business</span>
+          <select name="business_type">
+            <option value="">Select one</option>
+            {businessTypes.map((t) => <option>{t}</option>)}
+          </select>
+        </label>
+        <div class="row">
+          <label class="field"><span>Town</span><input name="town" autocomplete="address-level2" /></label>
+          <label class="field"><span>Website or social media</span><input name="website" inputmode="url" placeholder="@handle or link" /></label>
         </div>
-      </fieldset>
+      </section>
 
-      <label class="field"><span>Where did we meet?</span><input name="met_at" placeholder="e.g. an event, a shop, a job site" /></label>
-      <label class="field"><span>Anything else?</span><textarea name="message" rows="3"></textarea></label>
+      <section>
+        <h2><span>03</span> Project details</h2>
+        <fieldset>
+          <legend>Services of interest</legend>
+          <div class="chips">
+            {interests.map((i) => <label class="chip"><input type="checkbox" name="services[]" value={i} /><span>{i}</span></label>)}
+          </div>
+        </fieldset>
+        <label class="field">
+          <span>Project scope</span>
+          <select name="scope">
+            <option value="">Select one</option>
+            {scopes.map((s) => <option>{s}</option>)}
+          </select>
+          <small><a href="/services#pricing" target="_blank" rel="noopener">See set rates and what each includes</a></small>
+        </label>
+        <label class="field">
+          <span>What should this video accomplish?</span>
+          <textarea name="goals" rows="4" placeholder="For example: introduce the owner, promote an event, show finished work"></textarea>
+        </label>
+      </section>
 
-      <button class="submit" type="submit">Send</button>
+      <section>
+        <h2><span>04</span> Timeline and budget</h2>
+        <div class="row">
+          <label class="field">
+            <span>Timeline</span>
+            <select name="timeline">
+              <option value="">Select one</option>
+              {timelines.map((t) => <option>{t}</option>)}
+            </select>
+          </label>
+          <label class="field">
+            <span>Budget</span>
+            <select name="budget">
+              <option value="">Select one</option>
+              {budgets.map((b) => <option>{b}</option>)}
+            </select>
+          </label>
+        </div>
+        <label class="field"><span>Shoot or event date, if known</span><input type="date" name="date" /></label>
+      </section>
+
+      <section>
+        <h2><span>05</span> Anything else</h2>
+        <label class="field"><span>Where did we meet?</span><input name="met_at" placeholder="Event, location or referral" /></label>
+        <label class="field"><span>Additional notes</span><textarea name="message" rows="3"></textarea></label>
+      </section>
+
+      <button class="submit" type="submit">Submit inquiry</button>
       <p class="status" role="status" aria-live="polite"></p>
+      <p class="fine">Your information is used only to respond to your inquiry.</p>
     </form>
 
-    <nav class="more" aria-label="Explore the studio">
-      <a href="/work">See our work</a>
-      <a href="/drone">Drone</a>
-      <a href="/services">Services</a>
-    </nav>
-    <p class="direct">
-      <a href={`tel:${SITE.phone}`}>{SITE.phone}</a><br />
-      <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
-    </p>
+    <footer class="foot">
+      <nav aria-label="Explore the studio">
+        <a href="/work">Work</a>
+        <a href="/services">Services</a>
+        <a href="/about">About</a>
+      </nav>
+      <p>
+        <a href={`tel:${SITE.phone}`}>{SITE.phone}</a> · <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      </p>
+    </footer>
   </div>
 </Base>
 
@@ -80,40 +146,50 @@ const contactBy = ['Call', 'Text', 'Email'];
 </script>
 
 <style>
-  .card-page { max-width: 480px; margin: 0 auto; padding: 40px 16px 56px; }
-  .lockup { display: grid; gap: 6px; width: fit-content; margin: 0 auto 36px; text-decoration: none; text-align: center; }
+  .intake-page { max-width: 640px; margin: 0 auto; padding: 36px 16px 56px; }
+  .lockup { display: grid; gap: 6px; width: fit-content; margin: 0 auto 40px; text-decoration: none; text-align: center; }
   .name { font-family: var(--font-display); font-size: 1.25rem; letter-spacing: 0.16em; text-transform: uppercase; }
   .sub { display: flex; align-items: center; gap: 10px; font-size: 0.7rem; letter-spacing: 0.26em; color: var(--text-muted); }
   .sub::before, .sub::after { content: ''; height: 2px; flex: 1; min-width: 24px; background: var(--text); }
-  h1 { font-size: clamp(1.9rem, 8vw, 2.4rem); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 500; text-align: center; margin: 0 0 10px; }
-  .intro { text-align: center; color: #cfcfcf; margin: 0 0 28px; }
 
-  .form { background: #fff; color: #111; padding: 20px; display: grid; gap: 14px; box-shadow: 0 6px 24px rgb(0 0 0 / 0.35); }
-  .field { display: grid; gap: 6px; }
-  .field span, legend { font-size: 0.82rem; font-weight: 600; letter-spacing: 0.02em; }
-  input:not([type='checkbox']):not([type='radio']), textarea {
-    font: inherit; font-size: 1rem; color: #111; background: #fff; border: 1px solid #cfcfcf; border-radius: 2px; padding: 12px; width: 100%;
+  .head { margin-bottom: 28px; }
+  .kicker { font-family: var(--font-label); font-size: 0.78rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 10px; }
+  h1 { font-size: clamp(1.7rem, 6vw, 2.4rem); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 500; margin: 0 0 14px; }
+  .intro { color: #cfcfcf; margin: 0; max-width: 54ch; }
+
+  .form { background: #fff; color: #111; padding: clamp(20px, 4vw, 32px); display: grid; gap: 28px; box-shadow: 0 6px 24px rgb(0 0 0 / 0.35); }
+  section { display: grid; gap: 14px; }
+  section + section { border-top: 1px solid #e3e3e3; padding-top: 24px; }
+  h2 { display: flex; align-items: baseline; gap: 12px; margin: 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+  h2 span { font-family: var(--font-label); font-size: 0.78rem; color: #888; letter-spacing: 0.16em; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field { display: grid; gap: 6px; min-width: 0; }
+  .field > span, legend { font-size: 0.82rem; font-weight: 600; color: #333; }
+  .field small { font-size: 0.8rem; }
+  .field small a { color: #111; }
+  input:not([type='checkbox']):not([type='radio']), textarea, select {
+    font: inherit; font-size: 1rem; color: #111; background: #fff; border: 1px solid #cfcfcf; border-radius: 2px; padding: 11px 12px; width: 100%;
   }
-  input:focus, textarea:focus { outline: 2px solid #111; outline-offset: 0; }
+  input:focus, textarea:focus, select:focus { outline: 2px solid #111; outline-offset: 0; }
   fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 8px; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip input { position: absolute; opacity: 0; pointer-events: none; }
-  .chip span {
-    display: inline-block; padding: 9px 14px; border: 1px solid #cfcfcf; border-radius: 999px; font-size: 0.9rem; cursor: pointer;
-  }
+  .chip span { display: inline-block; padding: 8px 14px; border: 1px solid #cfcfcf; border-radius: 2px; font-size: 0.9rem; cursor: pointer; }
   .chip input:checked + span { background: #111; color: #fff; border-color: #111; }
   .chip input:focus-visible + span { outline: 2px solid #111; outline-offset: 2px; }
   .submit {
-    font: inherit; font-weight: 600; font-size: 1rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
-    background: #111; color: #fff; border: 0; border-radius: 2px; padding: 15px;
+    font: inherit; font-weight: 600; font-size: 0.95rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
+    background: #111; color: #fff; border: 0; border-radius: 2px; padding: 16px;
   }
   .submit:disabled { opacity: 0.5; cursor: wait; }
-  .status { margin: 0; font-size: 0.9rem; text-align: center; }
+  .status { margin: -12px 0 0; font-size: 0.92rem; text-align: center; }
   .status:empty { display: none; }
+  .fine { margin: -14px 0 0; font-size: 0.78rem; color: #777; text-align: center; }
   .hp { position: absolute; left: -9999px; }
 
-  .more { display: flex; justify-content: center; gap: 22px; margin-top: 28px; }
-  .more a { font-family: var(--font-label); font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase; }
-  .direct { text-align: center; margin-top: 18px; color: var(--text-muted); font-size: 0.92rem; }
-  .direct a { text-decoration: none; }
+  .foot { text-align: center; margin-top: 28px; color: var(--text-muted); font-size: 0.9rem; }
+  .foot nav { display: flex; justify-content: center; gap: 22px; margin-bottom: 12px; }
+  .foot nav a { font-family: var(--font-label); font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text); }
+  .foot p a { text-decoration: none; }
+  @media (max-width: 520px) { .row { grid-template-columns: 1fr; } }
 </style>
