@@ -2,10 +2,9 @@
 // Business card QR landing page: the studio's formal project intake. No site menu.
 // Leads arrive with the subject "Project intake (business card)". Kept out of Google and the sitemap.
 import Base from '../layouts/Base.astro';
-import { SITE, SERVICES } from '../site';
+import IntakeForm from '../components/IntakeForm.astro';
+import { SITE } from '../site';
 
-const interests = [...SERVICES.map((s) => s.title), 'Drone & Aerial'];
-const foundUs = ['Business card', 'Instagram', 'Google', 'Facebook or LinkedIn', 'Referral', 'Other'];
 ---
 
 <Base title="Project Intake" description="Start a project with Sixth Sense Studios." bare noindex>
@@ -24,60 +23,7 @@ const foundUs = ['Business card', 'Instagram', 'Google', 'Facebook or LinkedIn',
       </p>
     </header>
 
-    <form
-      class="form"
-      action={`https://formsubmit.co/${SITE.email}`}
-      method="post"
-      data-quote
-      data-phone={SITE.phone}
-      data-email={SITE.email}
-      data-thanks="Thank you. Your intake form has been received, and our creative director will reach out to book a call."
-    >
-      <input type="hidden" name="_subject" value="Project intake (business card)" />
-      <input type="hidden" name="_template" value="table" />
-      <input type="hidden" name="_captcha" value="false" />
-      <input type="hidden" name="page" value="Business card QR intake" />
-      <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
-
-      <section>
-        <h2><span>01</span> Contact information</h2>
-        <label class="field"><span>Full name *</span><input name="name" autocomplete="name" required /></label>
-        <label class="field"><span>Business or organization *</span><input name="business" autocomplete="organization" required /></label>
-        <div class="row">
-          <label class="field"><span>Email *</span><input type="email" name="email" autocomplete="email" required /></label>
-          <label class="field"><span>Phone *</span><input type="tel" name="phone" autocomplete="tel" required /></label>
-        </div>
-      </section>
-
-      <section>
-        <h2><span>02</span> What are you looking for?</h2>
-        <fieldset>
-          <legend class="sr-only">Services</legend>
-          <div class="chips">
-            {interests.map((i) => <label class="chip"><input type="checkbox" name="services[]" value={i} /><span>{i}</span></label>)}
-          </div>
-        </fieldset>
-      </section>
-
-      <section>
-        <h2><span>03</span> How did you find us?</h2>
-        <fieldset>
-          <legend class="sr-only">How did you find us?</legend>
-          <div class="chips">
-            {foundUs.map((f) => <label class="chip"><input type="radio" name="found_us" value={f} /><span>{f}</span></label>)}
-          </div>
-        </fieldset>
-      </section>
-
-      <section>
-        <h2><span>04</span> Additional information</h2>
-        <label class="field"><span class="sr-only">Additional information</span><textarea name="message" rows="4" placeholder="Anything we should know about you or your project"></textarea></label>
-      </section>
-
-      <button class="submit" type="submit">Submit inquiry</button>
-      <p class="status" role="status" aria-live="polite"></p>
-      <p class="fine">Your information is used only to respond to your inquiry.</p>
-    </form>
+    <IntakeForm subject="Project intake (business card)" page="Business card QR intake" />
 
     <footer class="foot">
       <nav aria-label="Explore the studio">
@@ -92,10 +38,6 @@ const foundUs = ['Business card', 'Instagram', 'Google', 'Facebook or LinkedIn',
   </div>
 </Base>
 
-<script>
-  import '../scripts/formsubmit';
-</script>
-
 <style>
   .intake-page { max-width: 640px; margin: 0 auto; padding: 36px 16px 56px; }
   .lockup { display: grid; gap: 6px; width: fit-content; margin: 0 auto 40px; text-decoration: none; text-align: center; }
@@ -108,40 +50,12 @@ const foundUs = ['Business card', 'Instagram', 'Google', 'Facebook or LinkedIn',
   h1 { font-size: clamp(1.7rem, 6vw, 2.4rem); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 500; margin: 0 0 14px; }
   .intro { color: #cfcfcf; margin: 0; max-width: 54ch; }
 
-  .form { background: #fff; color: #111; padding: clamp(20px, 4vw, 32px); display: grid; gap: 28px; box-shadow: 0 6px 24px rgb(0 0 0 / 0.35); }
-  section { display: grid; gap: 14px; }
-  section + section { border-top: 1px solid #e3e3e3; padding-top: 24px; }
-  h2 { display: flex; align-items: baseline; gap: 12px; margin: 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
-  h2 span { font-family: var(--font-label); font-size: 0.78rem; color: #888; letter-spacing: 0.16em; }
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .field { display: grid; gap: 6px; min-width: 0; }
-  .field > span, legend { font-size: 0.82rem; font-weight: 600; color: #333; }
-  .field small { font-size: 0.8rem; }
-  .field small a { color: #111; }
-  input:not([type='checkbox']):not([type='radio']), textarea, select {
-    font: inherit; font-size: 1rem; color: #111; background: #fff; border: 1px solid #cfcfcf; border-radius: 2px; padding: 11px 12px; width: 100%;
-  }
-  input:focus, textarea:focus, select:focus { outline: 2px solid #111; outline-offset: 0; }
-  fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 8px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip input { position: absolute; opacity: 0; pointer-events: none; }
-  .chip span { display: inline-block; padding: 8px 14px; border: 1px solid #cfcfcf; border-radius: 2px; font-size: 0.9rem; cursor: pointer; }
-  .chip input:checked + span { background: #111; color: #fff; border-color: #111; }
-  .chip input:focus-visible + span { outline: 2px solid #111; outline-offset: 2px; }
   .submit {
-    font: inherit; font-weight: 600; font-size: 0.95rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
-    background: #111; color: #fff; border: 0; border-radius: 2px; padding: 16px;
-  }
   .submit:disabled { opacity: 0.5; cursor: wait; }
-  .status { margin: -12px 0 0; font-size: 0.92rem; text-align: center; }
-  .status:empty { display: none; }
-  .fine { margin: -14px 0 0; font-size: 0.78rem; color: #777; text-align: center; }
-  .hp { position: absolute; left: -9999px; }
-  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
   .foot { text-align: center; margin-top: 28px; color: var(--text-muted); font-size: 0.9rem; }
   .foot nav { display: flex; justify-content: center; gap: 22px; margin-bottom: 12px; }
   .foot nav a { font-family: var(--font-label); font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text); }
   .foot p a { text-decoration: none; }
-  @media (max-width: 520px) { .row { grid-template-columns: 1fr; } }
+
 </style>

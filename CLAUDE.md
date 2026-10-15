@@ -19,3 +19,10 @@ Kev uploads raw footage as assets on a GitHub Release in this repo (github.com i
 file-sharing hosts are not). Download it, then run `website/scripts/add-video.sh <raw> <name> [start] [length]`
 to write a small 1080p `public/videos/<name>.mp4` plus a `<name>.jpg` poster still, and list the clip in
 `website/src/data/drone.ts` (`DRONE_CLIPS`). Never commit raw footage; keep each clip a few MB.
+
+## Business card QR code (do not break)
+
+Printed business cards point at `/card/` (the project intake, `src/pages/card.astro`). Never rename,
+move or remove that page. `/card/` and the website's `/start/` share one form, `src/components/IntakeForm.astro`.
+The build fails on purpose (`integrations/guard-qr-page.mjs`) if `/card/` or its form is missing.
+QR artwork lives in `brand/business-card/`.
