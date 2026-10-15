@@ -5,6 +5,7 @@ import Base from '../layouts/Base.astro';
 import { SITE, SERVICES } from '../site';
 
 const interests = [...SERVICES.map((s) => s.title), 'Drone & Aerial'];
+const foundUs = ['Business card', 'Instagram', 'Google', 'Facebook or LinkedIn', 'Referral', 'Other'];
 ---
 
 <Base title="Project Intake" description="Start a project with Sixth Sense Studios." bare noindex>
@@ -35,7 +36,7 @@ const interests = [...SERVICES.map((s) => s.title), 'Drone & Aerial'];
       <input type="hidden" name="_subject" value="Project intake (business card)" />
       <input type="hidden" name="_template" value="table" />
       <input type="hidden" name="_captcha" value="false" />
-      <input type="hidden" name="source" value="Business card" />
+      <input type="hidden" name="page" value="Business card QR intake" />
       <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
       <section>
@@ -59,7 +60,17 @@ const interests = [...SERVICES.map((s) => s.title), 'Drone & Aerial'];
       </section>
 
       <section>
-        <h2><span>03</span> Additional information</h2>
+        <h2><span>03</span> How did you find us?</h2>
+        <fieldset>
+          <legend class="sr-only">How did you find us?</legend>
+          <div class="chips">
+            {foundUs.map((f) => <label class="chip"><input type="radio" name="found_us" value={f} /><span>{f}</span></label>)}
+          </div>
+        </fieldset>
+      </section>
+
+      <section>
+        <h2><span>04</span> Additional information</h2>
         <label class="field"><span class="sr-only">Additional information</span><textarea name="message" rows="4" placeholder="Anything we should know about you or your project"></textarea></label>
       </section>
 
