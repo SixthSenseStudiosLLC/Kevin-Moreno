@@ -18,5 +18,19 @@
       { threshold: 0.25 },
     );
     videos.forEach((v) => seen.observe(v));
+
+    // Some phones (iPhone Low Power Mode, data saver) block autoplay until the visitor touches the page.
+    // Start whatever is on screen at the first tap, click, scroll touch or key press.
+    const onScreen = (v: HTMLVideoElement) => {
+      const r = v.getBoundingClientRect();
+      return r.bottom > 0 && r.top < innerHeight;
+    };
+    const kick = () => {
+      videos.filter((v) => v.paused && onScreen(v)).forEach((v) => {
+        v.muted = true;
+        v.play().catch(() => {});
+      });
+    };
+    for (const type of ['touchstart', 'pointerdown', 'keydown']) addEventListener(type, kick, { once: true, passive: true });
   }
 </script>
