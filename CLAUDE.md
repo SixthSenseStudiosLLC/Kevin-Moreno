@@ -20,6 +20,13 @@ file-sharing hosts are not). Download it, then run `website/scripts/add-video.sh
 to write a small 1080p `public/videos/<name>.mp4` plus a `<name>.jpg` poster still, and list the clip in
 `website/src/data/drone.ts` (`DRONE_CLIPS`). Never commit raw footage; keep each clip a few MB.
 
+## Homepage hero reel
+
+The video behind the homepage headline is a montage. Its shots are listed in `website/scripts/hero-reel.txt`
+(file, start, length; raw footage paths give the best quality). Kev wants it to mix his latest content, so when
+new footage comes in, add a shot or two there and run `website/scripts/build-hero-reel.sh`. Keep it about 30s
+and under ~8 MB so it autoplays quickly. It opens on the bar-carry shot (Kev's request).
+
 ## Business card QR code (do not break)
 
 Printed business cards point at `/card/` (the project intake, `src/pages/card.astro`). Never rename,

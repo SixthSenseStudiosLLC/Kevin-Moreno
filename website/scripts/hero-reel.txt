@@ -1,0 +1,11 @@
+# Shots for the homepage hero reel, played top to bottom, then looped.
+# One shot per line: <video> <start-seconds> <length-seconds>
+# <video> is a file in public/videos (e.g. jc-skyline.mp4) or a path to raw footage (best quality).
+# Every shot is center-cropped to 16:9. Rebuild with: scripts/build-hero-reel.sh
+event-bar-carry.mp4   0    6.9
+event-rise-up.mp4     2    4.5
+jc-skyline.mp4        3    4.5
+fair-lawn-roof.mp4    1    4.5
+event-pan-around.mp4  3    4.5
+jc-waterfront.mp4     2    4.5
+event-bar-overhead.mp4 4   4.5
