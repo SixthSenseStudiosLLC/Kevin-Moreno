@@ -31,6 +31,13 @@
         v.play().catch(() => {});
       });
     };
-    for (const type of ['touchstart', 'pointerdown', 'keydown']) addEventListener(type, kick, { once: true, passive: true });
+    for (const type of ['touchstart', 'pointerdown', 'keydown', 'wheel']) addEventListener(type, kick, { once: true, passive: true });
   }
 </script>
+
+<style is:global>
+  /* If a browser refuses to autoplay, show the poster still instead of its own play button. */
+  video[data-autoplay]::-webkit-media-controls,
+  video[data-autoplay]::-webkit-media-controls-start-playback-button,
+  video[data-autoplay]::-webkit-media-controls-overlay-play-button { display: none !important; -webkit-appearance: none; }
+</style>
