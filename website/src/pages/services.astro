@@ -4,6 +4,14 @@ import { SERVICES, SITE } from '../site';
 import { FAQ } from '../data/faq';
 import { NOT_INCLUDED, RATE_INCLUDES, RATE_TERMS, SHOOT_RATES } from '../data/pricing';
 
+// Example clips shown under a service (public/videos/<name>.mp4 + .jpg).
+const clips: Record<string, { name: string; caption: string }> = {
+  events: {
+    name: 'event-brand-image',
+    caption: 'Vendor brand shot at a Kentucky Derby garden party, Park Ridge. Event coverage that also gives every vendor a piece of content of their own.',
+  },
+};
+
 const faqSchema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
@@ -31,6 +39,12 @@ const faqSchema = {
       <ul class="checks">
         {s.points.map((p) => <li>{p}</li>)}
       </ul>
+      {clips[s.id] && (
+        <figure class="clip">
+          <video src={`/videos/${clips[s.id].name}.mp4`} poster={`/videos/${clips[s.id].name}.jpg`} muted loop playsinline autoplay preload="metadata" data-autoplay aria-label={clips[s.id].caption}></video>
+          <figcaption>{clips[s.id].caption}</figcaption>
+        </figure>
+      )}
     </section>
   ))}
 
@@ -109,6 +123,9 @@ const faqSchema = {
 </Page>
 
 <style>
+  .clip { margin: 20px 0 0; max-width: 640px; }
+  .clip video { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; background: var(--bg-raised); border: 1px solid var(--line); }
+  .clip figcaption { font-size: 0.88rem; color: var(--text-muted); margin-top: 8px; }
   .jump { list-style: none; padding: 0; margin: 24px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
   .jump a {
     display: block; padding: 8px 12px; border: 1px solid var(--line); text-decoration: none;

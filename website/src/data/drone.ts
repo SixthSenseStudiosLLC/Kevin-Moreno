@@ -6,7 +6,7 @@ export type DroneClip = {
   title: string;
   town: string;
   shape: 'wide' | 'tall';
-  section: 'homes' | 'city' | 'job';
+  section: 'homes' | 'city' | 'job' | 'event';
 };
 
 export const DRONE_CLIPS: DroneClip[] = [
@@ -30,6 +30,12 @@ export const DRONE_CLIPS: DroneClip[] = [
   { name: 'shingle-install', title: 'Shingles going down', town: 'North Jersey', shape: 'tall', section: 'job' },
   { name: 'ridge-install', title: 'On the ridge', town: 'North Jersey', shape: 'tall', section: 'job' },
   { name: 'mahwah-aerial', title: 'Roofline from above', town: 'Mahwah', shape: 'tall', section: 'job' },
+  { name: 'event-rise-up', title: 'Rising over the party', town: 'Park Ridge', shape: 'wide', section: 'event' },
+  { name: 'event-pan-down', title: 'The full patio', town: 'Park Ridge', shape: 'wide', section: 'event' },
+  { name: 'event-pan-around', title: 'Circling the guests', town: 'Park Ridge', shape: 'wide', section: 'event' },
+  { name: 'event-low-angle', title: 'Low across the lawn', town: 'Park Ridge', shape: 'wide', section: 'event' },
+  { name: 'event-bar-overhead', title: 'Bar setup from overhead', town: 'Park Ridge', shape: 'wide', section: 'event' },
+  { name: 'event-brand-image', title: 'Vendor brand shot', town: 'Park Ridge', shape: 'wide', section: 'event' },
 ];
 
 // Clip that plays across the top of the Drone page (its .jpg is the still shown while it loads).

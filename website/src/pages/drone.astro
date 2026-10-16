@@ -68,6 +68,20 @@ const uses = [
     ))}
   </div>
 
+  <h2>Events</h2>
+  <p>
+    A Kentucky Derby garden party, covered from setup to the last guest. The drone shows the size of the crowd, the
+    layout of the day and the vendors who made it happen.
+  </p>
+  <div class="clips wide">
+    {DRONE_CLIPS.filter((c) => c.section === 'event').map((c) => (
+      <figure>
+        <video src={`/videos/${c.name}.mp4`} poster={`/videos/${c.name}.jpg`} muted loop playsinline autoplay preload="metadata" data-autoplay aria-label={`${c.title}, ${c.town}`}></video>
+        <figcaption>{c.title}<span> · {c.town}</span></figcaption>
+      </figure>
+    ))}
+  </div>
+
   <h2>What drone footage is good for</h2>
   {uses.map((u) => (
     <>

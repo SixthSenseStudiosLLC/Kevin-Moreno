@@ -61,6 +61,10 @@ import { FOUNDED, GEAR } from '../data/business';
     <li>{GEAR.support}</li>
     <li>{GEAR.drone} for aerial footage</li>
   </ul>
+  <figure class="clip">
+    <video src="/videos/about-flying.mp4" poster="/videos/about-flying.jpg" muted loop playsinline autoplay preload="metadata" data-autoplay aria-label="Flying the drone at an event in Park Ridge"></video>
+    <figcaption>On location: aerial coverage at an event in Park Ridge.</figcaption>
+  </figure>
 
   <h2>Our standards for quality</h2>
   <ul class="checks">
@@ -72,6 +76,9 @@ import { FOUNDED, GEAR } from '../data/business';
 </Page>
 
 <style>
+  .clip { margin: 20px 0 0; max-width: 640px; }
+  .clip video { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; background: var(--bg-raised); border: 1px solid var(--line); }
+  .clip figcaption { font-size: 0.88rem; color: var(--text-muted); margin-top: 8px; }
   .motto { font-family: var(--font-display); font-size: clamp(1.3rem, 2.6vw, 1.8rem); text-transform: uppercase; letter-spacing: 0.06em; color: var(--text) !important; margin: 28px 0 !important; }
   .pull { margin: 0 0 36px; padding: 4px 0 4px 24px; border-left: 3px solid var(--text); }
   .pull blockquote { margin: 0; font-family: var(--font-display); font-size: clamp(1.3rem, 2.6vw, 1.75rem); line-height: 1.35; letter-spacing: 0.01em; }
