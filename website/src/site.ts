@@ -1,9 +1,9 @@
 // One place for business details. Anything marked TODO still needs real info.
 export const SITE = {
-  name: 'Sixth Sense Studios',
+  name: 'Reliable Kev Media',
   tagline: 'Video content, events coverage and podcasts. Full context storytelling for North Jersey.',
   description:
-    'Sixth Sense Studios films towns, local businesses and trade companies across North Jersey. Video that builds trust: the work, the people and the town around it.',
+    'Reliable Kev Media films towns, local businesses and trade companies across North Jersey. Video that builds trust: the work, the people and the town around it.',
   email: 'sixthsensestudiosllc@gmail.com',
   phone: '(973) 820-5511',
   hours: 'By appointment. We come to you.', // no storefront

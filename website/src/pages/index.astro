@@ -53,9 +53,9 @@ const platforms = ['Instagram', 'TikTok', 'YouTube', 'Facebook', 'LinkedIn', 'Yo
   <div class="container home">
     <div class="content">
       <section>
-        <h1>Sixth Sense Studios: North Jersey's video partner for content, events and podcasts</h1>
+        <h1>Reliable Kev Media: North Jersey's video partner for content, events and podcasts</h1>
         <p>
-          Sixth Sense Studios is a North Jersey video production studio led by Reliable Kev. We produce
+          Reliable Kev Media is a North Jersey video production studio. We produce
           {SERVICES.map((s, i) => <>{i === SERVICES.length - 1 ? ' and ' : i ? ', ' : ' '}<a href={`/services#${s.id}`}>{s.inline ?? s.title.toLowerCase()}</a></>)}{' '}
           for towns, downtowns, local businesses and trade companies throughout
           {counties.map((c, i) => <>{i === counties.length - 1 ? ' and ' : i ? ', ' : ' '}<a href={`/where-i-work/${c.id}`}>{c.data.name}</a></>)}.
@@ -76,7 +76,7 @@ const platforms = ['Instagram', 'TikTok', 'YouTube', 'Facebook', 'LinkedIn', 'Yo
       )}
 
       <section>
-        <h2>Why choose Sixth Sense Studios for your video?</h2>
+        <h2>Why choose Reliable Kev Media for your video?</h2>
         {why.map((w) => (
           <>
             <h3>{w.title}</h3>
@@ -88,11 +88,11 @@ const platforms = ['Instagram', 'TikTok', 'YouTube', 'Facebook', 'LinkedIn', 'Yo
         </ul>
 
         <a href="/about" class="meet">
-          <div class="meet-photo"><img src="/images/kev.jpg" alt="Kev, the filmmaker behind Sixth Sense Studios" loading="lazy" /></div>
+          <div class="meet-photo"><img src="/images/kev.jpg" alt="Kev, the filmmaker behind Reliable Kev Media" loading="lazy" /></div>
           <div>
             <h3>Meet the studio</h3>
             <p>
-              Founded by Reliable Kev. The team that plans your project is the team that films and edits it, so your story
+              Founded by Kev. The team that plans your project is the team that films and edits it, so your story
               stays in the same hands from start to finish. <span class="more">Continue reading</span>
             </p>
           </div>

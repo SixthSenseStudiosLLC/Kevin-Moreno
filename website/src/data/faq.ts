@@ -7,7 +7,7 @@ const [half, full, drone] = SHOOT_RATES;
 export const FAQ = [
   {
     q: 'How long have you been doing this?',
-    a: `Since ${FOUNDED}. Sixth Sense Studios has spent the last few years filming towns, local businesses and trade companies across North Jersey.`,
+    a: `Since ${FOUNDED}. Reliable Kev Media has spent the last few years filming towns, local businesses and trade companies across North Jersey.`,
   },
   {
     q: 'How long until I get my video?',

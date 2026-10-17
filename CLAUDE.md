@@ -1,5 +1,6 @@
-# Sixth Sense Studios / Reliable Kev
+# Reliable Kev Media (formerly Sixth Sense Studios)
 
+The business is Reliable Kev Media (renamed from Sixth Sense Studios; the Gmail and repo URL keep the old name).
 The business website lives in `website/` (Astro). It is live at https://sixthsensestudiosllc.github.io/Kevin-Moreno/,
 served by GitHub Pages from the `docs/` folder on the `main` branch.
 
