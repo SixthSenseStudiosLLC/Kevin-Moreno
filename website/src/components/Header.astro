@@ -55,7 +55,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
 
 <style>
   /* Top bar, header and town ticker share one black so the top of the page reads as one piece. */
-  .topbar { background: var(--bg-raised); color: var(--text-muted); font-size: 0.8rem; }
+  .topbar { background: var(--bg); color: var(--text-muted); font-size: 0.8rem; }
   .topbar .contact { color: var(--text); }
   .topbar-inner { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 38px; }
   .topbar-left { display: flex; align-items: center; gap: 20px; }
@@ -64,7 +64,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
 
   .header {
     position: sticky; top: 0; z-index: 10;
-    background: var(--bg-raised);
+    background: var(--bg);
   }
   .bar { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 84px; }
   .logo { text-decoration: none; display: grid; gap: 4px; }

@@ -2,6 +2,7 @@
 :root {
   --bg: #000000;
   --bg-raised: #0f0f0f;
+  --charcoal: #2b2a28; /* warm charcoal the page fades to, toward the bottom */
   --line: #262626;
   --cream: #f1eada; /* colonial white: every "white" surface and the main text */
   --field: #faf7f0; /* form inputs on cream */
@@ -26,13 +27,9 @@ html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  /* Black with soft light falloff, so dark areas have depth instead of flat black. */
-  background:
-    radial-gradient(1100px 700px at 12% -8%, rgb(255 255 255 / 0.075), transparent 62%),
-    radial-gradient(900px 650px at 100% 38%, rgb(255 255 255 / 0.05), transparent 60%),
-    radial-gradient(1000px 800px at 0% 100%, rgb(255 255 255 / 0.045), transparent 60%),
-    var(--bg);
-  background-attachment: fixed;
+  /* Black at the top of the page (so the header, hero and banners blend in) easing down to charcoal. */
+  background: linear-gradient(to bottom, var(--bg) 0, var(--bg) 640px, var(--charcoal) 100%);
+  min-height: 100vh;
   color: var(--text);
   font-family: var(--font-body);
   font-size: 17px;
