@@ -30,12 +30,13 @@ const run = Array.from({ length: Math.max(2, Math.ceil(16 / items.length)) }, ()
 </nav>
 
 <style>
-  .ticker { background: var(--cream); color: #111; border-bottom: 1px solid #d8cfbd; overflow: hidden; }
+  /* Same black as the header above it (no band), fading softly into the page below. */
+  .ticker { background: linear-gradient(to bottom, var(--bg-raised), var(--bg)); color: var(--text); overflow: hidden; }
   .track { display: flex; width: max-content; animation: scroll 60s linear infinite; }
   .ticker:hover .track, .ticker:focus-within .track { animation-play-state: paused; }
   ul { list-style: none; margin: 0; padding: 0; display: flex; }
   li { display: flex; align-items: center; }
-  li::after { content: '•'; color: #9a9a9a; padding: 0 22px; }
+  li::after { content: '•'; color: var(--text-muted); padding: 0 22px; }
   a {
     display: block; padding: 11px 0; text-decoration: none; white-space: nowrap;
     font-family: var(--font-label); font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase;
