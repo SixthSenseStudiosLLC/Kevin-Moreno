@@ -9,8 +9,10 @@ interface Props {
 const { title, crumbs = [], image, video } = Astro.props;
 ---
 
-<section class:list={['banner', { 'has-video': video }]} style={image ? `background-image: url(${image})` : undefined}>
-  {video && <video class="bg" src={video} poster={image} autoplay muted loop playsinline aria-hidden="true"></video>}
+<section class:list={['banner', { 'has-video': video || image }]}>
+  {video
+    ? <video class="bg edge-fade" src={video} poster={image} autoplay muted loop playsinline aria-hidden="true"></video>
+    : image && <img class="bg edge-fade" src={image} alt="" />}
   <div class="container">
     <p class="banner-title">{title}</p>
     <nav aria-label="Breadcrumb" class="crumbs">
@@ -32,7 +34,7 @@ const { title, crumbs = [], image, video } = Astro.props;
   .banner.has-video { min-height: clamp(220px, 34vw, 400px); overflow: hidden; }
   .bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .banner::before { content: ''; position: absolute; inset: 0; z-index: 1; }
-  .has-video::before { background: linear-gradient(to bottom, var(--bg), transparent 22%), linear-gradient(to top, var(--bg), rgb(0 0 0 / 0.6) 22%, rgb(0 0 0 / 0.15) 60%); }
+  .has-video::before { background: linear-gradient(to top, rgb(0 0 0 / 0.6), rgb(0 0 0 / 0.15) 60%); -webkit-mask-image: var(--edge-mask); mask-image: var(--edge-mask); }
   .banner .container { position: relative; z-index: 2; }
   @media (prefers-reduced-motion: reduce) { .bg { display: none; } }
   .banner-title { font-size: clamp(1.6rem, 3.4vw, 2.2rem); text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 6px; font-weight: 500; }

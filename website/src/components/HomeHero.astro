@@ -5,7 +5,7 @@ const VIDEO = '/videos/hero-reel';
 ---
 
 <section class="hero">
-  <video class="bg" src={`${VIDEO}.mp4`} poster={`${VIDEO}.jpg`} muted loop playsinline autoplay preload="auto" data-autoplay aria-hidden="true"></video>
+  <video class="bg edge-fade" src={`${VIDEO}.mp4`} poster={`${VIDEO}.jpg`} muted loop playsinline autoplay preload="auto" data-autoplay aria-hidden="true"></video>
   <div class="container hero-inner">
     <p class="kicker">Proudly serving New Jersey</p>
     <p class="headline">It's not reimagining.<br />It's evolution.</p>
@@ -25,12 +25,12 @@ const VIDEO = '/videos/hero-reel';
   .hero {
     position: relative; display: flex; align-items: flex-end;
     min-height: clamp(460px, 62vw, 680px); padding: clamp(48px, 8vw, 96px) 0;
-    background: radial-gradient(ellipse at 70% 20%, #262626, #050505 65%) center / cover no-repeat;
   }
   .bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .hero::before {
     content: ''; position: absolute; inset: 0; z-index: 1;
-    background: linear-gradient(to bottom, var(--bg), transparent 16%), linear-gradient(to right, rgb(0 0 0 / 0.85), rgb(0 0 0 / 0.35) 70%), linear-gradient(to top, var(--bg), rgb(0 0 0 / 0.5) 18%, transparent 50%);
+    background: linear-gradient(to right, rgb(0 0 0 / 0.85), rgb(0 0 0 / 0.35) 70%), linear-gradient(to top, rgb(0 0 0 / 0.5), transparent 50%);
+    -webkit-mask-image: var(--edge-mask); mask-image: var(--edge-mask);
   }
   .hero { overflow: hidden; }
   .hero-inner { position: relative; z-index: 2; }

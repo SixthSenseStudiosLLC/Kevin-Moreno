@@ -1,6 +1,6 @@
 /* Design tokens, from the business card: black and colonial cream (no pure white). Montserrat headings, DM Sans body, Monda labels. */
 :root {
-  --bg: #000000;
+  --bg: #0b0b0b; /* soft black: the top of the page gradient */
   --bg-raised: #0f0f0f;
   --charcoal: #2b2a28; /* warm charcoal the page fades to, toward the bottom */
   --line: #262626;
@@ -27,9 +27,9 @@ html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  /* Black at the top of the page (so the header, hero and banners blend in) easing down to charcoal. */
-  background: linear-gradient(to bottom, var(--bg) 0, var(--bg) 640px, var(--charcoal) 100%);
-  min-height: 100vh;
+  /* No pattern: one smooth gradient, soft black at the top of the screen to charcoal at the bottom.
+     It is pinned to the screen (body::before), so every scroll position shows the same soft fade. */
+  background: var(--bg);
   color: var(--text);
   font-family: var(--font-body);
   font-size: 17px;
@@ -142,8 +142,12 @@ p { margin: 0 0 1em; }
   display: grid; place-items: center; font-size: 0.68rem; font-weight: 700;
 }
 
-/* Fine film grain over the whole page for texture. */
-body::after {
-  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 50; opacity: 0.07; mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(to bottom, var(--bg) 0%, #151514 35%, var(--charcoal) 100%);
 }
+
+/* Videos that sit on the page fade out at their top and bottom edges into the gradient behind them. */
+:root { --edge-mask: linear-gradient(to bottom, transparent 0, #000 14%, #000 80%, transparent 100%); }
+.edge-fade { -webkit-mask-image: var(--edge-mask); mask-image: var(--edge-mask); }
