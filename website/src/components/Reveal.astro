@@ -1,0 +1,27 @@
+---
+// Photos, videos and other figures dissolve into view as they scroll on screen.
+// Anything with class "reveal" (plus every <figure> inside <main>) starts hidden and fades in once.
+// Without JavaScript, or with reduced motion turned on, everything simply shows (js-reveal is set in Base.astro's <head>).
+---
+
+<script>
+  const items = [...document.querySelectorAll<HTMLElement>('.reveal, main figure')];
+  if (document.documentElement.classList.contains('js-reveal') && items.length) {
+    const seen = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          e.target.classList.add('is-in');
+          seen.unobserve(e.target);
+        }
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -6% 0px' },
+    );
+    items.forEach((el) => seen.observe(el));
+  }
+</script>
+
+<style is:global>
+  .js-reveal .reveal, .js-reveal main figure { opacity: 0; transform: translateY(18px); transition: opacity 1.1s ease, transform 1.1s ease; }
+  .js-reveal .reveal.is-in, .js-reveal main figure.is-in { opacity: 1; transform: none; }
+</style>
