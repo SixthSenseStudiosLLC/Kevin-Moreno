@@ -1,11 +1,13 @@
-/* Design tokens, from the business card: black and white. Montserrat headings, DM Sans body, Monda labels. */
+/* Design tokens, from the business card: black and colonial cream (no pure white). Montserrat headings, DM Sans body, Monda labels. */
 :root {
   --bg: #000000;
   --bg-raised: #0f0f0f;
   --line: #262626;
-  --text: #ffffff;
-  --text-muted: #9a9a9a;
-  --accent: #ffffff;
+  --cream: #f1eada; /* colonial white: every "white" surface and the main text */
+  --field: #faf7f0; /* form inputs on cream */
+  --text: var(--cream);
+  --text-muted: #a49d90;
+  --accent: var(--cream);
   --accent-ink: #000000;
 
   --font-display: 'Montserrat', system-ui, sans-serif;
@@ -135,7 +137,7 @@ p { margin: 0 0 1em; }
 
 /* Checklist with filled check circles, used across content pages. */
 .checks { list-style: none; padding: 0; margin: 0.6em 0 1.2em; display: grid; gap: 8px; }
-.checks li { position: relative; padding-left: 30px; color: #d4d4d4; }
+.checks li { position: relative; padding-left: 30px; color: #d9d2c4; }
 .checks li::before {
   content: '✓'; position: absolute; left: 0; top: 0.2em;
   width: 18px; height: 18px; border-radius: 50%;
