@@ -7,3 +7,12 @@ export const SERVICE_PHOTOS: Record<string, { src: string; alt: string }> = {
   events: { src: '/images/photo-events.jpg', alt: 'Guests gathered on a patio at a garden party, seen from the drone' },
   projects: { src: '/images/photo-projects.jpg', alt: 'Flying the drone on location at an event' },
 };
+
+// Photos that sit behind the gray page background, dimmed, and dissolve from one to the next
+// as the visitor scrolls down the page (public/images/<file>).
+export const BG_PHOTOS = [
+  '/images/bg-andrew-van.jpg',
+  '/images/bg-sewer-silhouette.jpg',
+  '/images/bg-realestate-sign.jpg',
+  '/images/bg-andrew-portrait.jpg',
+];
