@@ -1,9 +1,9 @@
 /* Design tokens, from the business card: black and colonial cream (no pure white). Montserrat headings, DM Sans body, Monda labels. */
 :root {
-  --bg: #0b0b0b; /* soft black: the top of the page gradient */
-  --bg-raised: #0f0f0f;
-  --charcoal: #2b2a28; /* warm charcoal the page fades to, toward the bottom */
-  --line: #262626;
+  --bg: #1b1b1a; /* dark gray: the top of the page gradient */
+  --bg-raised: rgb(255 255 255 / 0.045); /* cards and panels: a touch lighter than the page */
+  --charcoal: #3a3936; /* warm charcoal the page fades to, toward the bottom */
+  --line: rgb(241 234 218 / 0.12);
   --cream: #f1eada; /* colonial white: every "white" surface and the main text */
   --field: #faf7f0; /* form inputs on cream */
   --text: var(--cream);
@@ -145,7 +145,13 @@ p { margin: 0 0 1em; }
 
 body::before {
   content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background: linear-gradient(to bottom, var(--bg) 0%, #151514 35%, var(--charcoal) 100%);
+  background: linear-gradient(to bottom, var(--bg) 0%, #252524 40%, var(--charcoal) 100%);
+}
+
+/* Soft film-grain texture over the gradient (fine noise, no visible pattern). */
+body::after {
+  content: ''; position: fixed; inset: 0; z-index: 50; pointer-events: none; opacity: 0.09; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* Videos that sit on the page fade out at their top and bottom edges into the gradient behind them. */

@@ -93,7 +93,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
   .dropdown {
     list-style: none; margin: 0; padding: 6px 0; min-width: 240px;
     position: absolute; top: 100%; left: 0;
-    background: var(--bg-raised); border: 1px solid var(--line); box-shadow: 0 8px 24px rgb(0 0 0 / 0.4);
+    background: var(--bg); border: 1px solid var(--line); box-shadow: 0 8px 24px rgb(0 0 0 / 0.4);
     opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity 0.15s, transform 0.15s;
   }
   .has-menu:hover .dropdown, .has-menu:focus-within .dropdown { opacity: 1; visibility: visible; transform: none; }
