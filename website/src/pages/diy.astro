@@ -1,5 +1,6 @@
 ---
 import Page from '../layouts/Page.astro';
+import DiyDiagram from '../components/DiyDiagram.astro';
 import { SETUP, BASICS, STRUCTURE, IDEAS, PLAN, ROUTINE, EDITING, CHECKLIST } from '../data/diy';
 
 const sections = [
@@ -40,6 +41,7 @@ const sections = [
         </div>
       ))}
     </div>
+    <DiyDiagram name="phone" />
   </section>
 
   <section id="basics">
@@ -52,6 +54,11 @@ const sections = [
         </div>
       ))}
     </div>
+    <div class="diagrams">
+      <DiyDiagram name="light" />
+      <DiyDiagram name="setup" />
+    </div>
+    <DiyDiagram name="shots" />
   </section>
 
   <section id="structure">
@@ -65,6 +72,7 @@ const sections = [
         </li>
       ))}
     </ol>
+    <DiyDiagram name="timeline" />
   </section>
 
   <section id="ideas">
@@ -164,4 +172,5 @@ const sections = [
     .steps li { grid-template-columns: 36px 1fr; }
     .steps span { grid-column: 2; }
   }
+  .diagrams { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0 28px; }
 </style>

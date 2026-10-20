@@ -1,0 +1,179 @@
+---
+// Line-drawing schematics for the DIY guide. Pick one with `name`; each comes with its own caption.
+interface Props {
+  name: 'phone' | 'light' | 'setup' | 'timeline' | 'shots';
+}
+const { name } = Astro.props;
+
+const captions: Record<Props['name'], string> = {
+  phone: 'Phone set up for a vertical clip: grid on, subject on a third, focus locked, main 1x lens.',
+  light: 'Top view. Face the window so the light falls on the face. With the window behind, you get a silhouette.',
+  setup: 'Side view of a talking-head shot: phone on a tripod at eye level, about an arm and a half away, mic clipped to the shirt.',
+  timeline: 'A 30-second clip, start to finish.',
+  shots: 'Film every moment three ways. These are the clips you cut between.',
+};
+---
+
+<figure class="diagram">
+  {name === 'phone' && (
+    <svg viewBox="-50 0 470 304" role="img" aria-label={captions.phone}>
+      <rect x="130" y="16" width="140" height="268" rx="20" class="line" />
+      <rect x="140" y="34" width="120" height="232" rx="4" class="screen" />
+      <line x1="180" y1="34" x2="180" y2="266" class="grid" />
+      <line x1="220" y1="34" x2="220" y2="266" class="grid" />
+      <line x1="140" y1="111" x2="260" y2="111" class="grid" />
+      <line x1="140" y1="189" x2="260" y2="189" class="grid" />
+      <circle cx="220" cy="118" r="17" class="line fill" />
+      <path d="M188 266v-74c0-28 14-46 32-46s32 18 32 46v74" class="line fill" />
+      <rect x="203" y="101" width="34" height="34" class="focus" />
+      <text x="220" y="96" class="tiny" text-anchor="middle">AE/AF LOCK</text>
+      <rect x="185" y="246" width="30" height="14" rx="7" class="pill" />
+      <text x="200" y="256.5" class="tiny dark" text-anchor="middle">1x</text>
+      <line x1="126" y1="70" x2="96" y2="70" class="lead" /><line x1="180" y1="70" x2="140" y2="70" class="lead" />
+      <text x="92" y="66" class="label" text-anchor="end">Grid on</text>
+      <text x="92" y="81" class="note" text-anchor="end">keep lines straight</text>
+      <line x1="270" y1="118" x2="300" y2="118" class="lead" />
+      <text x="304" y="114" class="label">Subject on</text>
+      <text x="304" y="129" class="label">a third</text>
+      <line x1="185" y1="253" x2="96" y2="253" class="lead" />
+      <text x="92" y="249" class="label" text-anchor="end">Stay on 1x</text>
+      <text x="92" y="264" class="note" text-anchor="end">walk closer, don't zoom</text>
+      <line x1="237" y1="135" x2="300" y2="190" class="lead" />
+      <text x="304" y="194" class="label">Tap &amp; hold</text>
+      <text x="304" y="209" class="note">to lock focus</text>
+      <text x="200" y="298" class="note" text-anchor="middle">9:16 vertical</text>
+    </svg>
+  )}
+
+  {name === 'light' && (
+    <svg viewBox="0 0 400 230" role="img" aria-label={captions.light}>
+      <g>
+        <text x="100" y="18" class="label" text-anchor="middle">Do</text>
+        <rect x="14" y="30" width="172" height="170" class="room" />
+        <rect x="10" y="70" width="8" height="90" class="window" />
+        <path d="M22 80l70 16M22 115h76M22 150l70-16" class="rays" />
+        <ellipse cx="128" cy="115" rx="14" ry="26" class="line fill" />
+        <circle cx="120" cy="115" r="11" class="line fill" />
+        <path d="M108 115h-10" class="line" />
+        <rect x="64" y="146" width="10" height="20" rx="2" class="line phone" transform="rotate(-35 69 156)" />
+        <path d="M74 150l36-24" class="lead" />
+        <text x="100" y="220" class="note" text-anchor="middle">light on the face</text>
+      </g>
+      <g>
+        <text x="300" y="18" class="label" text-anchor="middle">Don't</text>
+        <rect x="214" y="30" width="172" height="170" class="room" />
+        <rect x="210" y="70" width="8" height="90" class="window" />
+        <path d="M222 80l40 16M222 115h40M222 150l40-16" class="rays" />
+        <ellipse cx="262" cy="115" rx="14" ry="26" class="line solid" />
+        <circle cx="270" cy="115" r="11" class="line solid" />
+        <rect x="330" y="105" width="10" height="20" rx="2" class="line phone" />
+        <path d="M330 115h-46" class="lead" />
+        <path d="M352 44l22 22M374 44l-22 22" class="cross" />
+        <text x="300" y="220" class="note" text-anchor="middle">window behind = silhouette</text>
+      </g>
+    </svg>
+  )}
+
+  {name === 'setup' && (
+    <svg viewBox="0 0 400 250" role="img" aria-label={captions.setup}>
+      <line x1="10" y1="226" x2="390" y2="226" class="floor" />
+      <circle cx="300" cy="78" r="18" class="line fill" />
+      <path d="M284 100h32l6 70h-44z" class="line fill" />
+      <path d="M278 170h50v8h-50zM284 178v48M322 178v48M328 120v58" class="line" />
+      <path d="M284 112l-18 34 16 6" class="line" />
+      <circle cx="292" cy="116" r="4" class="mic" />
+      <path d="M288 118l-40 30" class="lead" />
+      <text x="244" y="164" class="label" text-anchor="end">Clip-on mic</text>
+      <rect x="92" y="62" width="12" height="30" rx="2" class="line phone" />
+      <path d="M98 92v14M98 106l-26 120M98 106l26 120M98 106v120" class="line" />
+      <line x1="104" y1="76" x2="284" y2="76" class="eyeline" />
+      <text x="190" y="96" class="note" text-anchor="middle">lens at eye level</text>
+      <path d="M104 206h176" class="dim" />
+      <path d="M104 201v10M280 201v10" class="dim" />
+      <text x="192" y="200" class="label" text-anchor="middle">3–4 ft</text>
+      <text x="98" y="48" class="label" text-anchor="middle">Tripod</text>
+    </svg>
+  )}
+
+  {name === 'timeline' && (
+    <svg viewBox="0 0 400 130" role="img" aria-label={captions.timeline}>
+      <rect x="10" y="40" width="20" height="34" class="seg strong" />
+      <rect x="30" y="40" width="240" height="34" class="seg" />
+      <rect x="270" y="40" width="66" height="34" class="seg mid" />
+      <rect x="336" y="40" width="54" height="34" class="seg strong" />
+      <text x="20" y="28" class="label" text-anchor="middle">Hook</text>
+      <text x="150" y="62" class="label" text-anchor="middle">Show it</text>
+      <text x="303" y="62" class="label" text-anchor="middle">Why</text>
+      <text x="363" y="28" class="label" text-anchor="middle">Next step</text>
+      <path d="M20 32v8M363 32v8" class="lead" />
+      <text x="10" y="94" class="note">0s</text>
+      <text x="30" y="94" class="note">2s</text>
+      <text x="270" y="94" class="note" text-anchor="middle">20s</text>
+      <text x="336" y="94" class="note" text-anchor="middle">25s</text>
+      <text x="390" y="94" class="note" text-anchor="end">30s</text>
+      <text x="200" y="120" class="note" text-anchor="middle">Grab attention in 2 seconds. Most of the clip is showing, not telling.</text>
+    </svg>
+  )}
+
+  {name === 'shots' && (
+    <svg viewBox="0 0 400 200" role="img" aria-label={captions.shots}>
+      <g>
+        <rect x="10" y="20" width="116" height="150" class="frame" />
+        <path d="M10 140h116" class="floor" />
+        <rect x="24" y="78" width="34" height="62" class="line" />
+        <path d="M24 78l17-14 17 14" class="line" />
+        <circle cx="92" cy="104" r="7" class="line fill" />
+        <path d="M84 140v-24h16v24" class="line fill" />
+        <text x="68" y="190" class="label" text-anchor="middle">Wide</text>
+      </g>
+      <g>
+        <rect x="142" y="20" width="116" height="150" class="frame" />
+        <circle cx="200" cy="70" r="20" class="line fill" />
+        <path d="M164 170c4-50 18-70 36-70s32 20 36 70" class="line fill" />
+        <text x="200" y="190" class="label" text-anchor="middle">Medium</text>
+      </g>
+      <g>
+        <rect x="274" y="20" width="116" height="150" class="frame" />
+        <path d="M284 120c20-6 40-6 56 4l36-6v22l-40 10c-20 4-40 0-52-10z" class="line fill" />
+        <path d="M300 112l40-50 10 8-38 46" class="line" />
+        <text x="332" y="190" class="label" text-anchor="middle">Close-up</text>
+      </g>
+    </svg>
+  )}
+
+  <figcaption>{captions[name]}</figcaption>
+</figure>
+
+<style>
+  .diagram { margin: 24px 0 8px; max-width: 560px; color: var(--text); }
+  svg { width: 100%; height: auto; display: block; overflow: visible; }
+  figcaption { font-size: 0.85rem; color: var(--text-muted); margin-top: 10px; }
+
+  .line { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+  .fill { fill: rgb(241 234 218 / 0.08); }
+  .solid { fill: rgb(0 0 0 / 0.55); }
+  .screen { fill: rgb(241 234 218 / 0.04); stroke: rgb(241 234 218 / 0.25); }
+  .grid { stroke: rgb(241 234 218 / 0.35); stroke-width: 1; stroke-dasharray: 3 3; }
+  .focus { fill: none; stroke: #f5c451; stroke-width: 1.6; }
+  .pill { fill: var(--text); }
+  .lead { stroke: var(--text-muted); stroke-width: 1; fill: none; }
+  .room { fill: none; stroke: rgb(241 234 218 / 0.3); stroke-width: 1.2; }
+  .window { fill: #f5c451; opacity: 0.85; }
+  .rays { stroke: #f5c451; stroke-width: 1.2; stroke-dasharray: 4 4; fill: none; opacity: 0.8; }
+  .phone { fill: rgb(241 234 218 / 0.15); }
+  .cross { stroke: #e0715c; stroke-width: 2.4; stroke-linecap: round; }
+  .floor { stroke: rgb(241 234 218 / 0.3); stroke-width: 1.2; }
+  .eyeline { stroke: #f5c451; stroke-width: 1.2; stroke-dasharray: 5 4; }
+  .mic { fill: #f5c451; }
+  .dim { stroke: var(--text-muted); stroke-width: 1; fill: none; }
+  .seg { fill: rgb(241 234 218 / 0.1); stroke: currentColor; stroke-width: 1.2; }
+  .seg.mid { fill: rgb(241 234 218 / 0.22); }
+  .seg.strong { fill: #f5c451; stroke: #f5c451; }
+  .frame { fill: rgb(241 234 218 / 0.04); stroke: currentColor; stroke-width: 1.4; }
+
+  text { fill: currentColor; font-family: var(--font-body); }
+  .label { font-size: 13px; font-weight: 600; }
+  .note { font-size: 11.5px; fill: var(--text-muted); }
+  .tiny { font-size: 9px; font-family: var(--font-label); letter-spacing: 0.08em; fill: #f5c451; }
+  .tiny.dark { fill: var(--bg); font-weight: 700; }
+</style>

@@ -5,7 +5,9 @@ import { BG_PHOTOS } from '../data/photos';
 ---
 
 <div class="bg-photos" aria-hidden="true">
-  {BG_PHOTOS.map((src, i) => <div class:list={['bg-photo', { on: i === 0 }]} style={`background-image: url(${src})`}></div>)}
+  {BG_PHOTOS.map((p, i) => (
+    <div class:list={['bg-photo', { on: i === 0 }]} style={`background-image: url(${p.src}); background-position: ${p.focus}`}></div>
+  ))}
 </div>
 
 <script>
@@ -30,9 +32,9 @@ import { BG_PHOTOS } from '../data/photos';
 <style>
   .bg-photos { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
   .bg-photo {
-    position: absolute; inset: 0; background: center / cover no-repeat;
-    filter: grayscale(0.35) blur(10px); transform: scale(1.06); opacity: 0; transition: opacity 1.6s ease;
+    position: absolute; inset: 0; background-size: cover; background-repeat: no-repeat;
+    filter: grayscale(0.35); opacity: 0; transition: opacity 1.6s ease;
   }
-  .bg-photo.on { opacity: 0.2; }
+  .bg-photo.on { opacity: 0.22; }
   @media (prefers-reduced-motion: reduce) { .bg-photo { transition: none; } }
 </style>
