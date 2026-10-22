@@ -43,13 +43,6 @@ export const IDEAS = [
   'Your favorite spot in town',
 ];
 
-export const PLAN = [
-  { week: 'Week 1', theme: 'Say hello', posts: ['Who you are and why you started', 'A tour of your space', 'What makes you different'] },
-  { week: 'Week 2', theme: 'Show your work', posts: ['A job or product from start to finish', 'A before and after', 'A day in your life'] },
-  { week: 'Week 3', theme: 'Answer questions', posts: ['The question you hear most', 'A mistake people often make', 'What a first visit looks like'] },
-  { week: 'Week 4', theme: 'Your people and your town', posts: ['Meet your team', 'A happy customer (ask them first)', 'A local spot or event you love'] },
-];
-
 export const EDITING = [
   'Use a free app like CapCut or InShot, or the editor already on your phone.',
   'Cut out the quiet parts at the start and the end.',

@@ -1,7 +1,7 @@
 ---
 import Page from '../layouts/Page.astro';
 import DiyDiagram from '../components/DiyDiagram.astro';
-import { PHONE, SPOT, SAY, EXTRA, IDEAS, PLAN, EDITING, CHECKLIST } from '../data/diy';
+import { PHONE, SPOT, SAY, EXTRA, IDEAS, EDITING, CHECKLIST } from '../data/diy';
 
 const sections = [
   ['phone', 'Get your phone ready'],
@@ -9,7 +9,6 @@ const sections = [
   ['say', 'What to say'],
   ['extra', 'Film a few extra shots'],
   ['ideas', 'Ideas to film'],
-  ['plan', 'Your first 30 days'],
   ['editing', 'Put it together'],
   ['checklist', 'Quick check'],
 ];
@@ -83,22 +82,6 @@ const sections = [
     <ul class="checks ideas">{IDEAS.map((i) => <li>{i}</li>)}</ul>
   </section>
 
-  <section id="plan">
-    <h2>Your first 30 days</h2>
-    <p>
-      Three videos a week for four weeks. Film all three on one day, then post them across the week. Each week has one
-      idea, so you always know what to make next.
-    </p>
-    <div class="weeks">
-      {PLAN.map((w) => (
-        <div class="week">
-          <p class="wk">{w.week}</p>
-          <h3>{w.theme}</h3>
-          <ul>{w.posts.map((p) => <li>{p}</li>)}</ul>
-        </div>
-      ))}
-    </div>
-  </section>
 
   <section id="editing">
     <h2>Put it together</h2>
@@ -197,12 +180,6 @@ const sections = [
   .steps span { color: #d9d2c4; }
   .ideas { columns: 2; column-gap: 32px; }
   .ideas li { break-inside: avoid; }
-  .weeks { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
-  .week { background: var(--cream); color: #111; padding: 18px 20px; }
-  .week .wk { font-family: var(--font-label); font-size: 0.74rem; letter-spacing: 0.18em; text-transform: uppercase; color: #777 !important; margin: 0 0 6px; }
-  .week h3 { margin: 0 0 10px !important; color: #111; font-size: 1.05rem; }
-  .week ul { margin: 0; padding-left: 1.1em; font-size: 0.92rem; }
-  .week li { margin-bottom: 6px; }
   .boxes { list-style: none; padding: 0; margin: 18px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
   .boxes li { border: 1px solid var(--line); transition: background 0.25s ease, border-color 0.25s ease; }
   .boxes label { display: flex; gap: 12px; align-items: center; padding: 12px 14px; cursor: pointer; user-select: none; }
@@ -229,9 +206,7 @@ const sections = [
   .cta { border-top: 1px solid var(--line); padding-top: 40px; }
   .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
   .diagrams { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0 28px; }
-  @media (max-width: 960px) { .weeks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 600px) {
-    .weeks { grid-template-columns: 1fr; }
     .ideas { columns: 1; }
     .steps li { grid-template-columns: 1fr; gap: 4px; }
   }
