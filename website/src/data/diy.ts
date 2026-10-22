@@ -1,13 +1,11 @@
 // The DIY page: free, plain-language steps for filming your own business content with a phone.
 // Written so someone who has never filmed anything can start today.
 
+// Optional small tips under "Just aim and press record."
 export const PHONE = [
-  { title: 'Wipe the lens', text: 'Use your shirt or a soft cloth. A smudge makes everything look blurry.' },
-  { title: 'Hold it tall', text: 'Turn your phone up and down, not sideways. That is the shape Instagram, TikTok and Facebook use.' },
-  { title: 'Don’t zoom', text: 'Zooming makes the picture fuzzy. Walk closer instead.' },
-  { title: 'Tap to focus', text: 'Tap and hold on the face on your screen. Now the picture stays sharp.' },
-  { title: 'Turn on the grid', text: 'It draws lines on your screen. Use them to keep things straight.' },
-  { title: 'Silence it', text: 'Turn on Do Not Disturb so a call doesn’t stop your video.' },
+  'Wipe the lens with your shirt.',
+  'Hold your phone tall, not sideways.',
+  'Don’t zoom. Walk closer instead.',
 ];
 
 export const SPOT = [
@@ -62,7 +60,6 @@ export const EDITING = [
 export const CHECKLIST = [
   'Lens wiped',
   'Phone held tall',
-  'Do Not Disturb on',
   'Facing the window',
   'Quiet room',
   'Phone at eye level',
