@@ -1,40 +1,45 @@
 ---
 import Page from '../layouts/Page.astro';
 import DiyDiagram from '../components/DiyDiagram.astro';
-import { SETUP, BASICS, STRUCTURE, IDEAS, PLAN, ROUTINE, EDITING, CHECKLIST } from '../data/diy';
+import { PHONE, SPOT, SAY, EXTRA, IDEAS, PLAN, EDITING, CHECKLIST } from '../data/diy';
 
 const sections = [
-  ['setup', 'Set up your phone'],
-  ['basics', 'Light, sound, steady'],
-  ['structure', 'How to structure a clip'],
-  ['ideas', 'What to film'],
-  ['plan', 'Your 30-day plan'],
-  ['editing', 'Editing'],
-  ['checklist', 'Checklist'],
+  ['phone', 'Get your phone ready'],
+  ['spot', 'Pick your spot'],
+  ['say', 'What to say'],
+  ['extra', 'Film a few extra shots'],
+  ['ideas', 'Ideas to film'],
+  ['plan', 'Your first 30 days'],
+  ['editing', 'Put it together'],
+  ['checklist', 'Quick check'],
 ];
 ---
 
 <Page
   title="DIY Content Guide"
-  description="How to film your own business content with your phone, plus a simple 30-day posting plan. A free guide from Reliable Kev Media."
+  description="Film your own business content with your phone, starting today. Free, simple steps from Reliable Kev Media."
   quote={false}
 >
-  <h1>Film your own content</h1>
+  <h1>Film your own content, right now, today.</h1>
   <p class="lede">
-    You do not need a production budget to start showing up. The phone in your pocket is enough to build trust with
-    your customers. This free guide covers how to set it up, what to film and a simple 30-day plan to follow. When you
-    are ready for more, we are here.
+    Maybe you're not ready to bring in a content team. Maybe you're not sure what it would look like to have someone
+    help you plan, shoot or edit. That's okay. You can start on your own, today, for free, with the phone already in
+    your pocket.
+  </p>
+  <p class="lede">
+    Everything we know about getting started is on this page, in simple steps. Nothing to buy and no experience
+    needed. Take what helps you, skip what doesn't, and just begin.
   </p>
 
   <nav class="toc" aria-label="On this page">
-    {sections.map(([id, label], i) => <a href={`#${id}`}><span>0{i + 1}</span>{label}</a>)}
+    {sections.map(([id, label]) => <a href={`#${id}`}>{label}</a>)}
   </nav>
 
-  <section id="setup">
-    <h2>Set up your phone</h2>
-    <p>Five minutes before you hit record makes the biggest difference.</p>
+  <section id="phone">
+    <h2>Get your phone ready</h2>
+    <p>This takes five minutes, and it makes the biggest difference.</p>
     <div class="cards">
-      {SETUP.map((s) => (
+      {PHONE.map((s) => (
         <div class="tile">
           <h3>{s.title}</h3>
           <p>{s.text}</p>
@@ -44,85 +49,77 @@ const sections = [
     <DiyDiagram name="phone" />
   </section>
 
-  <section id="basics">
-    <h2>Light, sound, steady</h2>
-    <div class="cards two">
-      {BASICS.map((b) => (
-        <div class="tile">
-          <h3>{b.title}</h3>
-          <ul class="checks">{b.points.map((p) => <li>{p}</li>)}</ul>
-        </div>
-      ))}
-    </div>
+  <section id="spot">
+    <h2>Pick your spot</h2>
+    <ul class="checks">{SPOT.map((s) => <li>{s}</li>)}</ul>
     <div class="diagrams">
       <DiyDiagram name="light" />
       <DiyDiagram name="setup" />
     </div>
-    <DiyDiagram name="shots" />
   </section>
 
-  <section id="structure">
-    <h2>How to structure a clip</h2>
-    <p>Most good short videos follow the same four steps. Plan them before you film.</p>
-    <ol class="steps">
-      {STRUCTURE.map((s) => (
+  <section id="say">
+    <h2>What to say</h2>
+    <p>Short videos work best when they follow this order. Think about it before you press record.</p>
+    <ul class="steps">
+      {SAY.map((s) => (
         <li>
           <strong>{s.step}</strong>
           <span>{s.text}</span>
         </li>
       ))}
-    </ol>
+    </ul>
     <DiyDiagram name="timeline" />
   </section>
 
+  <section id="extra">
+    <h2>Film a few extra shots</h2>
+    <p>These are little clips you can drop into your video so it isn't just you talking the whole time.</p>
+    <ul class="checks">{EXTRA.map((e) => <li>{e}</li>)}</ul>
+    <DiyDiagram name="shots" />
+  </section>
+
   <section id="ideas">
-    <h2>What to film</h2>
-    <p>Never run out of ideas. Every one of these works for almost any business.</p>
+    <h2>Ideas to film</h2>
+    <p>Not sure what to make? Any of these work for almost any business.</p>
     <ul class="checks ideas">{IDEAS.map((i) => <li>{i}</li>)}</ul>
   </section>
 
   <section id="plan">
-    <h2>Your 30-day plan</h2>
-    <p>Three posts a week for four weeks. Each week has one theme, so you always know what to film next.</p>
+    <h2>Your first 30 days</h2>
+    <p>
+      Three videos a week for four weeks. Film all three on one day, then post them across the week. Each week has one
+      idea, so you always know what to make next.
+    </p>
     <div class="weeks">
       {PLAN.map((w) => (
         <div class="week">
           <p class="wk">{w.week}</p>
           <h3>{w.theme}</h3>
-          <ol>{w.posts.map((p) => <li>{p}</li>)}</ol>
-        </div>
-      ))}
-    </div>
-    <h3 class="sub">The weekly routine</h3>
-    <div class="cards">
-      {ROUTINE.map((r) => (
-        <div class="tile">
-          <h3>{r.day}</h3>
-          <p>{r.text}</p>
+          <ul>{w.posts.map((p) => <li>{p}</li>)}</ul>
         </div>
       ))}
     </div>
   </section>
 
   <section id="editing">
-    <h2>Editing</h2>
+    <h2>Put it together</h2>
     <ul class="checks">{EDITING.map((e) => <li>{e}</li>)}</ul>
   </section>
 
   <section id="checklist">
-    <h2>Before you hit record</h2>
+    <h2>Quick check before you record</h2>
     <ul class="boxes">{CHECKLIST.map((c) => <li>{c}</li>)}</ul>
   </section>
 
   <section class="cta">
-    <h2>Want it done for you?</h2>
+    <h2>If you ever want a hand</h2>
     <p>
-      When you are ready to hand it off, the studio plans, films and edits your content so it looks and sounds
-      professional, and you can get back to running your business.
+      Start here, and come back anytime. If one day you'd rather have help planning, filming or editing, we'd be glad
+      to talk it through with you. No pressure either way.
     </p>
     <div class="actions">
-      <a href="/start" class="btn btn-primary">Start a project</a>
-      <a href="/services" class="btn">See services</a>
+      <a href="/start" class="btn">Talk with us</a>
     </div>
   </section>
 </Page>
@@ -131,24 +128,20 @@ const sections = [
   .lede { font-size: 1.1rem; max-width: 62ch; }
   .toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 28px 0 8px; }
   .toc a {
-    display: inline-flex; gap: 8px; align-items: baseline; padding: 8px 12px; border: 1px solid var(--line); text-decoration: none;
+    padding: 8px 12px; border: 1px solid var(--line); text-decoration: none;
     font-family: var(--font-label); font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase;
   }
-  .toc a span { color: var(--text-muted); }
   .toc a:hover { border-color: var(--text); }
   section { scroll-margin-top: 110px; margin-top: 56px; }
   section > h2 { margin-top: 0 !important; }
   .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
-  .cards.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   @media (max-width: 860px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 560px) { .cards, .cards.two { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .cards { grid-template-columns: 1fr; } }
   .tile { border: 1px solid var(--line); background: rgb(255 255 255 / 0.03); padding: 18px 20px; }
   .tile h3 { margin: 0 0 8px !important; font-size: 1rem; }
   .tile p { margin: 0; font-size: 0.95rem; }
-  .tile ul { margin: 0; }
-  .steps { list-style: none; counter-reset: s; padding: 0; margin: 18px 0 0; display: grid; gap: 10px; }
-  .steps li { counter-increment: s; display: grid; grid-template-columns: 44px 120px 1fr; gap: 12px; align-items: baseline; padding: 14px 0; border-top: 1px solid var(--line); }
-  .steps li::before { content: '0' counter(s); font-family: var(--font-label); color: var(--text-muted); letter-spacing: 0.12em; }
+  .steps { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 10px; }
+  .steps li { display: grid; grid-template-columns: 170px 1fr; gap: 12px; align-items: baseline; padding: 14px 0; border-top: 1px solid var(--line); }
   .steps strong { text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.95rem; }
   .steps span { color: #d9d2c4; }
   .ideas { columns: 2; column-gap: 32px; }
@@ -157,20 +150,18 @@ const sections = [
   .week { background: var(--cream); color: #111; padding: 18px 20px; }
   .week .wk { font-family: var(--font-label); font-size: 0.74rem; letter-spacing: 0.18em; text-transform: uppercase; color: #777 !important; margin: 0 0 6px; }
   .week h3 { margin: 0 0 10px !important; color: #111; font-size: 1.05rem; }
-  .week ol { margin: 0; padding-left: 1.1em; font-size: 0.92rem; }
+  .week ul { margin: 0; padding-left: 1.1em; font-size: 0.92rem; }
   .week li { margin-bottom: 6px; }
-  .sub { margin-top: 32px !important; }
   .boxes { list-style: none; padding: 0; margin: 18px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
   .boxes li { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); }
   .boxes li::before { content: ''; width: 16px; height: 16px; border: 2px solid var(--text); flex: none; }
   .cta { border-top: 1px solid var(--line); padding-top: 40px; }
   .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+  .diagrams { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0 28px; }
   @media (max-width: 960px) { .weeks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 600px) {
     .weeks { grid-template-columns: 1fr; }
     .ideas { columns: 1; }
-    .steps li { grid-template-columns: 36px 1fr; }
-    .steps span { grid-column: 2; }
+    .steps li { grid-template-columns: 1fr; gap: 4px; }
   }
-  .diagrams { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0 28px; }
 </style>

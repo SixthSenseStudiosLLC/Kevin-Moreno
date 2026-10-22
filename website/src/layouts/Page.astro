@@ -1,5 +1,5 @@
 ---
-// Inner-page layout: title banner + breadcrumb, content on the left,
+// Inner-page layout: optional video/photo banner (no title; the page's own h1 is the title), content on the left,
 // sticky "Request a Quote" form on the right.
 import Base from './Base.astro';
 import PageBanner from '../components/PageBanner.astro';
@@ -17,7 +17,7 @@ const { title, description, crumbs, image, video, quote = true } = Astro.props;
 ---
 
 <Base title={title} description={description}>
-  <PageBanner title={title} crumbs={crumbs} image={image} video={video} />
+  {(video || image) && <PageBanner image={image} video={video} />}
   <div class:list={['container', 'page', { 'with-quote': quote }]}>
     <article class="content">
       <slot />

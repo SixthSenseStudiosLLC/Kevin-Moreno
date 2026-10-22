@@ -1,97 +1,71 @@
-// The DIY page: how a business owner can film their own content with a phone, plus a 30-day plan.
+// The DIY page: free, plain-language steps for filming your own business content with a phone.
+// Written so someone who has never filmed anything can start today.
 
-export const SETUP = [
-  { title: 'Clean the lens', text: 'Wipe it with a soft cloth before every shoot. A smudged lens is the most common reason phone video looks soft or hazy.' },
-  { title: 'Film vertical', text: 'Hold the phone upright (9:16) for Reels, TikTok and Shorts. Turn it sideways only for YouTube or your website.' },
-  { title: 'Use the main lens', text: 'Stay on the 1x camera. It has the best sensor on the phone. Walk closer instead of zooming in.' },
-  { title: 'Lock focus and exposure', text: 'Tap and hold on your subject until the lock appears, so the picture does not shift or flicker while you film.' },
-  { title: 'Turn on the grid', text: 'Use it to keep lines straight and to place your subject a third of the way into the frame, not dead center.' },
-  { title: 'Silence the phone', text: 'Turn on Do Not Disturb so a call or notification does not interrupt a good take.' },
+export const PHONE = [
+  { title: 'Wipe the lens', text: 'Use your shirt or a soft cloth. A smudge makes everything look blurry.' },
+  { title: 'Hold it tall', text: 'Turn your phone up and down, not sideways. That is the shape Instagram, TikTok and Facebook use.' },
+  { title: 'Don’t zoom', text: 'Zooming makes the picture fuzzy. Walk closer instead.' },
+  { title: 'Tap to focus', text: 'Tap and hold on the face on your screen. Now the picture stays sharp.' },
+  { title: 'Turn on the grid', text: 'It draws lines on your screen. Use them to keep things straight.' },
+  { title: 'Silence it', text: 'Turn on Do Not Disturb so a call doesn’t stop your video.' },
 ];
 
-export const BASICS = [
-  {
-    title: 'Light',
-    points: [
-      'Face a window. Soft daylight on the face is the most flattering light there is.',
-      'Never film with a bright window behind someone. They will turn into a silhouette.',
-      'Avoid harsh overhead lights. Outdoors, early morning and late afternoon look best.',
-    ],
-  },
-  {
-    title: 'Sound',
-    points: [
-      'People will forgive average video. They will not sit through bad audio.',
-      'Film in a quiet room with soft surfaces (rugs, curtains, furniture) to cut echo.',
-      'An inexpensive clip-on microphone that plugs into or pairs with your phone is the best upgrade you can make.',
-    ],
-  },
-  {
-    title: 'Steady shots',
-    points: [
-      'Rest the phone on something or use a small tripod. Shaky footage reads as amateur.',
-      'Keep the camera at eye level when someone is talking.',
-      'Hold every shot for at least five seconds and move slowly. You can always cut it shorter.',
-    ],
-  },
-  {
-    title: 'Extra footage',
-    points: [
-      'Film the details: hands at work, tools, products, the sign out front, the street.',
-      'These short clips (called b-roll) cover cuts and keep viewers watching.',
-      'Grab ten of them every time you film. They are the easiest thing to reuse.',
-    ],
-  },
+export const SPOT = [
+  'Stand facing a window. The light makes you look your best.',
+  'Don’t stand with a window behind you. You will look like a dark shadow.',
+  'Pick a quiet room. Turn off fans and music.',
+  'Prop your phone up so the camera is at the same height as your eyes.',
+  'Stand about one big step away, so people can see your face and shoulders.',
 ];
 
-export const STRUCTURE = [
-  { step: 'Hook', text: 'The first two seconds. Start with the result, a bold line or a question. No logos, no "hey guys".' },
-  { step: 'Show', text: 'Let people see it: the work, the product, the process, the people.' },
-  { step: 'Say why', text: 'One or two sentences on why it matters to the customer.' },
-  { step: 'Next step', text: 'Tell them what to do: call, visit, book, or follow for more.' },
+export const SAY = [
+  { step: 'Start strong', text: 'Say something interesting right away, like the best part or a question.' },
+  { step: 'Show it', text: 'Let people see what you do: your work, your space, your product.' },
+  { step: 'Say why', text: 'Tell them in one sentence how it helps them.' },
+  { step: 'What to do next', text: 'Tell them how to reach you, or to follow for more.' },
+];
+
+export const EXTRA = [
+  'Film your hands at work, your tools and your products.',
+  'Film your sign, your door and your street.',
+  'Hold each shot still for five seconds.',
+  'Get ten of these every time. They make your videos more fun to watch.',
 ];
 
 export const IDEAS = [
-  'Meet the owner: who you are and why you started',
+  'Who you are and why you started',
   'A tour of your space',
-  'How it is made, start to finish',
-  'Before and after',
-  'Answer a question customers always ask',
-  'A day in the life',
-  'A quick tip from your expertise',
-  'Meet the team',
-  'A customer shares their experience (with permission)',
+  'How you make it, start to finish',
+  'A before and after',
+  'A question customers always ask',
+  'A day in your life',
+  'A quick tip only you would know',
+  'Meet your team',
+  'A happy customer (ask them first)',
   'Your favorite spot in town',
 ];
 
 export const PLAN = [
-  { week: 'Week 1', theme: 'Introduce yourself', posts: ['Who you are and why you started', 'A tour of your space', 'What makes you different'] },
-  { week: 'Week 2', theme: 'Show the work', posts: ['A job or product from start to finish', 'A before and after', 'A day in the life'] },
-  { week: 'Week 3', theme: 'Answer questions', posts: ['The question you hear most', 'A common mistake people make', 'What a first visit or first job looks like'] },
-  { week: 'Week 4', theme: 'Your people and your town', posts: ['Meet the team', 'A customer story (with permission)', 'A neighbor, a local spot or a community event'] },
-];
-
-export const ROUTINE = [
-  { day: 'Shoot day', text: 'Set aside one hour a week. Film all three posts for the week at once, plus extra b-roll.' },
-  { day: 'Edit day', text: 'Spend another hour trimming, adding captions and writing a short description for each post.' },
-  { day: 'Post days', text: 'Schedule the three posts across the week. Reply to every comment in the first hour.' },
+  { week: 'Week 1', theme: 'Say hello', posts: ['Who you are and why you started', 'A tour of your space', 'What makes you different'] },
+  { week: 'Week 2', theme: 'Show your work', posts: ['A job or product from start to finish', 'A before and after', 'A day in your life'] },
+  { week: 'Week 3', theme: 'Answer questions', posts: ['The question you hear most', 'A mistake people often make', 'What a first visit looks like'] },
+  { week: 'Week 4', theme: 'Your people and your town', posts: ['Meet your team', 'A happy customer (ask them first)', 'A local spot or event you love'] },
 ];
 
 export const EDITING = [
-  'Use a free app: CapCut, InShot, or the editor built into your phone.',
-  'Cut the dead air at the start and end. Get to the point fast.',
-  'Add captions. Many people scroll with the sound off.',
-  'Keep most clips between 15 and 60 seconds.',
-  'Pick a clear cover frame and a short title so your profile looks organized.',
+  'Use a free app like CapCut or InShot, or the editor already on your phone.',
+  'Cut out the quiet parts at the start and the end.',
+  'Add words on the screen. Lots of people watch with the sound off.',
+  'Keep it short: under one minute is great.',
 ];
 
 export const CHECKLIST = [
-  'Lens cleaned',
-  'Phone vertical, main lens, grid on',
-  'Do Not Disturb on, storage space free',
-  'Facing the light, nothing bright behind you',
-  'Quiet room, microphone on',
-  'Phone steady at eye level',
-  'Hook planned for the first two seconds',
-  'Ten pieces of b-roll filmed',
+  'Lens wiped',
+  'Phone held tall',
+  'Do Not Disturb on',
+  'Facing the window',
+  'Quiet room',
+  'Phone at eye level',
+  'You know your first line',
+  'Extra shots filmed',
 ];
