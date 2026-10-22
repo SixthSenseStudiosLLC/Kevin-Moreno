@@ -60,6 +60,16 @@ const business = {
     {Astro.url.pathname === '/' && <script type="application/ld+json" set:html={JSON.stringify(business)} />}
     <script is:inline>
       if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('js-reveal');
+      // Preview looks: add ?look=black to any page to try the black-and-cream look (?look=gray to go back).
+      // The choice carries across pages until the browser tab is closed. Visitors see the gray look.
+      (function () {
+        try {
+          var q = new URLSearchParams(location.search).get('look');
+          if (q) sessionStorage.setItem('look', q);
+          var look = sessionStorage.getItem('look');
+          if (look && look !== 'gray') document.documentElement.dataset.look = look;
+        } catch (e) {}
+      })();
     </script>
   </head>
   <body id="top">
@@ -68,6 +78,17 @@ const business = {
     <main>
       <slot />
     </main>
+    <script is:inline>
+      // Height of everything above <main> (top bar, menu, town ticker), so full-screen videos fill exactly the rest.
+      (function () {
+        var set = function () {
+          var m = document.querySelector('main');
+          if (m) document.documentElement.style.setProperty('--top-h', m.getBoundingClientRect().top + scrollY + 'px');
+        };
+        set();
+        addEventListener('resize', set);
+      })();
+    </script>
     {!bare && <Footer />}
     <AutoplayVideos />
     <Reveal />

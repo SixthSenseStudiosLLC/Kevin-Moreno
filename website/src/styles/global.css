@@ -154,6 +154,16 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* Videos that sit on the page fade out at their top and bottom edges into the gradient behind them. */
-:root { --edge-mask: linear-gradient(to bottom, transparent 0, #000 14%, #000 80%, transparent 100%); }
-.edge-fade { -webkit-mask-image: var(--edge-mask); mask-image: var(--edge-mask); }
+/* Preview look (?look=black): pure black with cream trim lines. Not shown to visitors unless chosen. */
+html[data-look="black"] {
+  --bg: #000;
+  --charcoal: #000;
+  --bg-raised: #000;
+  --line: rgb(241 234 218 / 0.55);
+}
+html[data-look="black"] body::before { background: #000; }
+html[data-look="black"] body::after, html[data-look="black"] .bg-photos { display: none; }
+html[data-look="black"] .header { border-bottom: 1px solid var(--cream); }
+html[data-look="black"] .ticker { border-bottom: 1px solid var(--cream); }
+html[data-look="black"] .footer { border-top-color: var(--cream); }
+html[data-look="black"] .content h2 { padding-bottom: 10px; border-bottom: 1px solid var(--line); }
