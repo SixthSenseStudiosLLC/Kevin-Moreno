@@ -74,7 +74,12 @@ const sections = [
 
   <section id="ideas">
     <h2>Ideas to film</h2>
-    <p>Not sure what to make? Any of these work for almost any business.</p>
+    <p>Not sure what to make? Tap the button and we'll pick one for you.</p>
+    <div class="picker" data-ideas={JSON.stringify(IDEAS)}>
+      <p class="picked" aria-live="polite"><span class="picked-label">Today, film:</span> <span class="picked-idea">Tap the button to get an idea</span></p>
+      <button type="button" class="btn btn-primary pick">What should I film today?</button>
+    </div>
+    <p class="muted-sm">Or pick any of these. They work for almost any business.</p>
     <ul class="checks ideas">{IDEAS.map((i) => <li>{i}</li>)}</ul>
   </section>
 
@@ -102,7 +107,22 @@ const sections = [
 
   <section id="checklist">
     <h2>Quick check before you record</h2>
-    <ul class="boxes">{CHECKLIST.map((c) => <li>{c}</li>)}</ul>
+    <p>Tap each one as you do it.</p>
+    <ul class="boxes" data-checklist>
+      {CHECKLIST.map((c, i) => (
+        <li>
+          <label>
+            <input type="checkbox" value={i} />
+            <span class="box" aria-hidden="true"></span>
+            <span>{c}</span>
+          </label>
+        </li>
+      ))}
+    </ul>
+    <div class="ready" hidden>
+      <p class="ready-text">You're ready. Press record!</p>
+      <button type="button" class="btn reset">Start over</button>
+    </div>
   </section>
 
   <section class="cta">
@@ -116,6 +136,49 @@ const sections = [
     </div>
   </section>
 </Page>
+
+<script>
+  // "What should I film today?": shows a random idea, never the same one twice in a row.
+  const picker = document.querySelector<HTMLElement>('.picker');
+  if (picker) {
+    const ideas: string[] = JSON.parse(picker.dataset.ideas || '[]');
+    const out = picker.querySelector<HTMLElement>('.picked-idea')!;
+    let last = -1;
+    picker.querySelector('.pick')?.addEventListener('click', () => {
+      let n = Math.floor(Math.random() * ideas.length);
+      if (ideas.length > 1 && n === last) n = (n + 1) % ideas.length;
+      last = n;
+      out.textContent = ideas[n];
+      out.classList.remove('swap');
+      void out.offsetWidth; // restart the animation
+      out.classList.add('swap');
+    });
+  }
+
+  // Tap-to-check list. Ticks are remembered on this device; when every box is ticked, show the "ready" message.
+  const list = document.querySelector<HTMLElement>('[data-checklist]');
+  if (list) {
+    const KEY = 'diy-checklist';
+    const boxes = [...list.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')];
+    const ready = document.querySelector<HTMLElement>('.ready')!;
+    const save = () => {
+      try { localStorage.setItem(KEY, JSON.stringify(boxes.filter((b) => b.checked).map((b) => b.value))); } catch {}
+    };
+    const update = () => { ready.hidden = !boxes.every((b) => b.checked); };
+    try {
+      const saved: string[] = JSON.parse(localStorage.getItem(KEY) || '[]');
+      boxes.forEach((b) => (b.checked = saved.includes(b.value)));
+    } catch {}
+    update();
+    boxes.forEach((b) => b.addEventListener('change', () => { save(); update(); }));
+    ready.querySelector('.reset')?.addEventListener('click', () => {
+      boxes.forEach((b) => (b.checked = false));
+      save();
+      update();
+      list.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
+</script>
 
 <style>
   .lede { font-size: 1.1rem; max-width: 62ch; }
@@ -141,8 +204,28 @@ const sections = [
   .week ul { margin: 0; padding-left: 1.1em; font-size: 0.92rem; }
   .week li { margin-bottom: 6px; }
   .boxes { list-style: none; padding: 0; margin: 18px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
-  .boxes li { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); }
-  .boxes li::before { content: ''; width: 16px; height: 16px; border: 2px solid var(--text); flex: none; }
+  .boxes li { border: 1px solid var(--line); transition: background 0.25s ease, border-color 0.25s ease; }
+  .boxes label { display: flex; gap: 12px; align-items: center; padding: 12px 14px; cursor: pointer; user-select: none; }
+  .boxes input { position: absolute; opacity: 0; pointer-events: none; }
+  .box { width: 20px; height: 20px; border: 2px solid var(--text); flex: none; display: grid; place-items: center; transition: background 0.2s ease, transform 0.2s ease; }
+  .box::after { content: ''; width: 6px; height: 11px; border: solid var(--bg); border-width: 0 2.5px 2.5px 0; transform: rotate(45deg) scale(0); margin-top: -3px; transition: transform 0.2s ease; }
+  .boxes input:checked + .box { background: var(--text); transform: scale(1.08); }
+  .boxes input:checked + .box::after { transform: rotate(45deg) scale(1); }
+  .boxes input:checked ~ span:last-child { color: var(--text-muted); text-decoration: line-through; }
+  .boxes input:focus-visible + .box { outline: 2px solid var(--text); outline-offset: 3px; }
+  .boxes li:has(input:checked) { border-color: rgb(241 234 218 / 0.35); background: rgb(241 234 218 / 0.05); }
+  .ready { margin-top: 18px; padding: 22px; border: 1px solid var(--text); text-align: center; animation: pop 0.4s ease; }
+  .ready-text { font-family: var(--font-display); font-size: clamp(1.3rem, 3vw, 1.7rem); color: var(--text) !important; margin: 0 0 14px; }
+  @keyframes pop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: none; } }
+
+  .picker { margin: 18px 0 22px; padding: 22px; border: 1px solid var(--line); background: rgb(255 255 255 / 0.03); }
+  .picked { margin: 0 0 16px; font-size: clamp(1.15rem, 2.6vw, 1.45rem); color: var(--text) !important; min-height: 2.6em; }
+  .picked-label { display: block; font-family: var(--font-label); font-size: 0.74rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+  .picked-idea { display: inline-block; font-family: var(--font-display); }
+  .picked-idea.swap { animation: swap 0.35s ease; }
+  @keyframes swap { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .muted-sm { font-size: 0.9rem; color: var(--text-muted) !important; }
+  @media (prefers-reduced-motion: reduce) { .picked-idea.swap, .ready { animation: none; } }
   .cta { border-top: 1px solid var(--line); padding-top: 40px; }
   .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
   .diagrams { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0 28px; }
