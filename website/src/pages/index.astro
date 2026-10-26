@@ -1,4 +1,5 @@
 ---
+import BrandMark from '../components/BrandMark.astro';
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import HomeHero from '../components/HomeHero.astro';
@@ -54,7 +55,7 @@ const platforms = ['Instagram', 'TikTok', 'YouTube', 'Facebook', 'LinkedIn', 'Yo
   <div class="container home">
     <div class="content">
       <section>
-        <h1>Serving all of New Jersey</h1>
+        <h1>Serving all of New Jersey<BrandMark /></h1>
         <p>
           Reliable Kev Media is a North Jersey video production studio. We produce
           {SERVICES.map((s, i) => <>{i === SERVICES.length - 1 ? ' and ' : i ? ', ' : ' '}<a href={`/services#${s.id}`}>{s.inline ?? s.title.toLowerCase()}</a></>)}{' '}

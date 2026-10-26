@@ -1,4 +1,5 @@
 ---
+import BrandMark from './BrandMark.astro';
 import { NAV, SITE } from '../site';
 import Socials from './Socials.astro';
 
@@ -44,7 +45,7 @@ const hasSocials = Object.values(SITE.socials).some(Boolean);
     </div>
   </div>
   <div class="legal">
-    <div class="container">{SITE.name} © All Rights Reserved - {new Date().getFullYear()}</div>
+    <div class="container legal-row"><BrandMark size="1.6em" /><span>{SITE.name} © All Rights Reserved - {new Date().getFullYear()}</span></div>
   </div>
 </footer>
 
@@ -91,4 +92,6 @@ const hasSocials = Object.values(SITE.socials).some(Boolean);
     .about { grid-column: 1 / -1; }
   }
   @media (min-width: 861px) { .to-top { bottom: 24px; } }
+  .legal-row { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .legal-row :global(.brand-mark) { vertical-align: middle; margin: 0; color: var(--text); }
 </style>

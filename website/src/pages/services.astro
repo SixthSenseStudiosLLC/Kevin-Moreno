@@ -1,4 +1,5 @@
 ---
+import BrandMark from '../components/BrandMark.astro';
 import Page from '../layouts/Page.astro';
 import { SERVICES, SITE } from '../site';
 import { FAQ } from '../data/faq';
@@ -20,7 +21,7 @@ const faqSchema = {
 ---
 
 <Page title="Services" description={`Monthly content, podcasts, events coverage and brand films in ${SITE.area}.`}>
-  <h1>Video services in North Jersey</h1>
+  <h1>Video services in North Jersey<BrandMark /></h1>
   <p>
     Everything we make is built to do one thing: help people trust you before they ever call. Pick one service or
     combine them. Every project starts with a free planning call.
