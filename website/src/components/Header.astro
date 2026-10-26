@@ -40,6 +40,13 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
         ))}
         <li><a href="/start" class="nav-cta" aria-current={isActive('/start') ? 'page' : undefined}>Start a Project</a></li>
       </ul>
+      <div class="nav-lens" aria-hidden="true">
+        <span class="lens-mount"></span>
+        <span class="lens-ring"></span>
+        <span class="lens-barrel"></span>
+        <span class="lens-front"></span>
+        <span class="lens-mm">24mm</span>
+      </div>
     </nav>
   </div>
 </header>
@@ -52,6 +59,35 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
   <a href="/start" class="primary">Free quote</a>
 </div>
 
+
+<script>
+  // Drives the zoom lens under the menu.
+  const nav = document.querySelector<HTMLElement>('#site-nav');
+  const lens = nav?.querySelector<HTMLElement>('.nav-lens');
+  if (nav && lens) {
+    const tabs = [...nav.querySelectorAll<HTMLAnchorElement>(':scope > ul > li > a:not(.nav-cta)')];
+    const mm = lens.querySelector<HTMLElement>('.lens-mm')!;
+    const home = tabs.find((t) => t.getAttribute('aria-current') === 'page') ?? tabs[0];
+    const aimAt = (tab: HTMLElement) => {
+      const i = tabs.indexOf(tab as HTMLAnchorElement);
+      const navBox = nav.getBoundingClientRect();
+      const box = tab.getBoundingClientRect();
+      lens.style.setProperty('--lens-w', `${Math.max(52, box.left + box.width / 2 - navBox.left)}px`);
+      const focal = 24 + (i / Math.max(1, tabs.length - 1)) * (200 - 24);
+      mm.textContent = `${i <= 0 ? 24 : Math.round(focal / 5) * 5}mm`;
+    };
+    tabs.forEach((t) => {
+      t.addEventListener('mouseenter', () => aimAt(t));
+      t.addEventListener('focus', () => aimAt(t));
+    });
+    nav.addEventListener('mouseleave', () => aimAt(home));
+    nav.addEventListener('focusout', (e) => { if (!nav.contains(e.relatedTarget as Node)) aimAt(home); });
+    addEventListener('resize', () => aimAt(home));
+    document.fonts?.ready.then(() => aimAt(home));
+    aimAt(home);
+    requestAnimationFrame(() => lens.classList.add('is-ready'));
+  }
+</script>
 
 <style>
   /* Top bar, header and town ticker share one black so the top of the page reads as one piece. */
@@ -75,6 +111,36 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
     font-size: 0.6rem; letter-spacing: 0.26em; color: var(--text-muted);
   }
   .logo-studio::before, .logo-studio::after { content: ''; height: 2px; background: var(--text); flex: 1; min-width: 10px; }
+
+  /* Zoom lens under the menu: the barrel reaches toward the tab you point at (or the page you're on).
+     Tabs further along the menu zoom it out further, from 24mm at Home to 200mm at the last tab. */
+  .nav { position: relative; }
+  .nav-lens {
+    --lens-w: 0px;
+    position: absolute; left: 0; bottom: -20px; height: 16px; width: var(--lens-w);
+    display: flex; align-items: center; pointer-events: none;
+    transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1); opacity: 0;
+  }
+  .nav-lens.is-ready { opacity: 1; }
+  .lens-mount { flex: none; width: 12px; height: 16px; border-radius: 2px; background: linear-gradient(#5b5955, #3a3936); }
+  /* Fixed zoom ring (ridged) near the camera, then the thinner tube that slides out. */
+  .lens-ring {
+    flex: none; width: 26px; height: 14px; border-radius: 1px;
+    background: repeating-linear-gradient(90deg, #2e2d2b 0 1.5px, #6b6863 1.5px 4px);
+  }
+  .lens-barrel {
+    flex: 1; height: 9px; min-width: 0; border-radius: 1px;
+    background: linear-gradient(#9a978f, #6a6762 55%, #4f4d49);
+  }
+  .lens-front {
+    flex: none; width: 8px; height: 16px; border-radius: 2px;
+    background: linear-gradient(90deg, #4a4845, #2c2b29); box-shadow: 2px 0 0 #6f8592;
+  }
+  .lens-mm {
+    position: absolute; left: 100%; margin-left: 10px; top: 50%; transform: translateY(-50%);
+    font-family: var(--font-label); font-size: 0.62rem; letter-spacing: 0.12em; color: var(--text-muted); white-space: nowrap;
+  }
+  @media (prefers-reduced-motion: reduce) { .nav-lens { transition: none; } }
 
   .nav > ul { list-style: none; margin: 0; padding: 0; display: flex; align-items: center; gap: 4px; }
   .nav li { position: relative; }
@@ -113,7 +179,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
     .nav { order: 2; width: 100%; margin-top: 10px; }
     .nav > ul { flex-wrap: wrap; gap: 2px; padding-bottom: 10px; }
     .nav > ul > li > a { padding: 8px 10px; font-size: 0.74rem; white-space: nowrap; }
-    .caret, .dropdown { display: none; }
+    .caret, .dropdown, .nav-lens { display: none; }
     .area { display: none; }
   }
 
