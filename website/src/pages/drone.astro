@@ -1,5 +1,4 @@
 ---
-import BrandMark from '../components/BrandMark.astro';
 import { getCollection } from 'astro:content';
 import Page from '../layouts/Page.astro';
 import { SITE } from '../site';
@@ -19,9 +18,10 @@ const uses = [
   image={`/videos/${DRONE_BANNER}.jpg`}
   video={`/videos/${DRONE_BANNER}.mp4`}
   title="Drone Video"
+  heading="Drone and aerial video in the Garden State"
+  kicker="Drone & aerial · New Jersey"
   description="Drone and aerial video across North Jersey: towns, contractors, businesses and events."
 >
-  <h1>Drone and aerial video in the Garden State<BrandMark /></h1>
   <p>
     Some stories only make sense from above. We fly over the towns of North Jersey to show the full picture: the
     project, the property, the street and the community around it. Every drone shoot can be its own piece or folded

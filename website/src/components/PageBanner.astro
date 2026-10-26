@@ -1,17 +1,27 @@
 ---
-// Video or photo strip at the top of an inner page. The page's own h1 carries the title.
+// Video or photo strip at the top of an inner page. With `heading`, the page title (h1) sits on the
+// video itself, like the homepage; otherwise the page's own h1 carries the title.
+import BrandMark from './BrandMark.astro';
 interface Props {
   image?: string;
   /** Silent looping video; `image` is its poster and fallback. */
   video?: string;
+  heading?: string;
+  kicker?: string;
 }
-const { image, video } = Astro.props;
+const { image, video, heading, kicker } = Astro.props;
 ---
 
 <section class:list={['banner', { 'has-video': video || image }]}>
   {video
     ? <video class="bg" src={video} poster={image} autoplay muted loop playsinline aria-hidden="true"></video>
     : image && <img class="bg" src={image} alt="" />}
+  {heading && (
+    <div class="container banner-text">
+      {kicker && <p class="kicker">{kicker}</p>}
+      <h1 class="banner-title">{heading}<BrandMark size="0.3em" /></h1>
+    </div>
+  )}
 </section>
 
 <style>
@@ -28,4 +38,19 @@ const { image, video } = Astro.props;
   .banner::before { content: ''; position: absolute; inset: 0; z-index: 1; }
   .has-video::before { background: linear-gradient(to top, rgb(0 0 0 / 0.7), rgb(0 0 0 / 0.1) 50%); }
   @media (prefers-reduced-motion: reduce) { .bg { display: none; } }
+  .banner-text { position: relative; z-index: 2; width: 100%; padding-bottom: clamp(16px, 4vw, 48px); }
+  @media (max-width: 860px) { .banner-text { padding-bottom: 76px; } } /* clear the Call / Free Quote bar */
+  .banner:has(.banner-text)::before {
+    background: linear-gradient(to right, rgb(0 0 0 / 0.75), rgb(0 0 0 / 0.25) 70%), linear-gradient(to top, rgb(0 0 0 / 0.65), transparent 55%);
+  }
+  .kicker {
+    font-family: var(--font-label); font-size: 0.8rem; letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--text); margin: 0 0 16px; display: flex; align-items: center; gap: 12px;
+  }
+  .kicker::before { content: ''; width: 28px; height: 2px; background: var(--text); }
+  .banner-title {
+    font-family: var(--font-display); font-size: clamp(2.2rem, 6.5vw, 4.6rem); line-height: 1.02;
+    text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; margin: 0; max-width: 16ch;
+    text-shadow: 0 2px 18px rgb(0 0 0 / 0.45);
+  }
 </style>

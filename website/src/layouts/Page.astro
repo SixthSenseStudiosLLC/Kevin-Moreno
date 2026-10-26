@@ -13,12 +13,15 @@ interface Props {
   image?: string;
   video?: string;
   quote?: boolean;
+  /** Title shown on the video banner (then the page has no separate h1). */
+  heading?: string;
+  kicker?: string;
 }
-const { title, description, crumbs, image, video, quote = true } = Astro.props;
+const { title, description, crumbs, image, video, quote = true, heading, kicker } = Astro.props;
 ---
 
 <Base title={title} description={description}>
-  {(video || image) && <PageBanner image={image} video={video} />}
+  {(video || image) && <PageBanner image={image} video={video} heading={heading} kicker={kicker} />}
   <div class:list={['container', 'page', { 'with-quote': quote }]}>
     <article class="content">
       <slot />
