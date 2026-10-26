@@ -8,7 +8,7 @@ served by GitHub Pages from the `docs/` folder on the `main` branch.
 
 1. Make changes in `website/src/` (business details are in `website/src/site.ts`).
 2. `cd website && npm ci && npm run build` to check it builds.
-3. `npm run publish` rebuilds the live site into `docs/`. Always commit `docs/` with the source change.
+3. `npm run publish` rebuilds the live site into `docs/` (via `scripts/publish.mjs`, which keeps old files in `docs/_astro` so cached pages never lose their stylesheet; never delete them). Always commit `docs/` with the source change.
 4. Get the change onto `main` (merge your working branch into `main` and push). Pushing to `main` puts it live in a minute or two.
 
 Links are rewritten to relative paths after each build (`website/integrations/relative-links.mjs`),

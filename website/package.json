@@ -6,7 +6,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "publish": "astro build --outDir ../docs",
+    "publish": "node scripts/publish.mjs",
     "check": "astro check"
   },
   "dependencies": {
