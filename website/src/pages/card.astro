@@ -1,4 +1,5 @@
 ---
+import BrandMark from '../components/BrandMark.astro';
 // Business card QR landing page: the studio's formal project intake. No site menu.
 // Leads arrive with the subject "Project intake (business card)". Kept out of Google and the sitemap.
 import Base from '../layouts/Base.astro';
@@ -10,13 +11,14 @@ import { SITE } from '../site';
 <Base title="Project Intake" description="Start a project with Reliable Kev Media." bare noindex>
   <div class="intake-page">
     <a href="/" class="lockup" aria-label={`${SITE.name} home`}>
+      <BrandMark size="44px" class="lockup-mark" />
       <span class="name">Reliable Kev</span>
       <span class="sub">Media</span>
     </a>
 
     <header class="head">
       <p class="kicker">Project intake</p>
-      <h1>Tell us about your project</h1>
+      <h1>Tell us about your project<BrandMark /></h1>
       <p class="intro">
         This takes about 2 minutes. Once we receive your intake form, our creative director will reach out to book a call
         and review your project needs.
@@ -55,4 +57,6 @@ import { SITE } from '../site';
   .foot nav a { font-family: var(--font-label); font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text); }
   .foot p a { text-decoration: none; }
 
+  .lockup { justify-items: center; }
+  .lockup :global(.lockup-mark) { vertical-align: middle; margin: 0 0 6px; color: var(--text); }
 </style>

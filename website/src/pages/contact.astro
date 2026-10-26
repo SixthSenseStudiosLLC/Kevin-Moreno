@@ -1,4 +1,5 @@
 ---
+import BrandMark from '../components/BrandMark.astro';
 import Page from '../layouts/Page.astro';
 import QuoteForm from '../components/QuoteForm.astro';
 import Socials from '../components/Socials.astro';
@@ -9,7 +10,7 @@ const hasSocials = Object.values(SITE.socials).some(Boolean);
 ---
 
 <Page title="Contact" description={`Contact ${SITE.name} for a free quote on video in ${SITE.area}.`} quote={false}>
-  <h1>Contact Reliable Kev Media</h1>
+  <h1>Contact Reliable Kev Media<BrandMark /></h1>
   <div class="intro">
     <div>
       <p>

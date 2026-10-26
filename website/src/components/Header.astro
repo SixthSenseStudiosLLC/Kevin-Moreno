@@ -1,4 +1,5 @@
 ---
+import BrandMark from './BrandMark.astro';
 import { NAV, SITE } from '../site';
 import TownTicker from './TownTicker.astro';
 
@@ -20,8 +21,11 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
 <header class="header">
   <div class="container bar">
     <a href="/" class="logo" aria-label={`${SITE.name} home`}>
-      <span class="logo-name">Reliable Kev</span>
-      <span class="logo-studio">Media</span>
+      <BrandMark size="38px" class="logo-mark" />
+      <span class="logo-text">
+        <span class="logo-name">Reliable Kev</span>
+        <span class="logo-studio">Media</span>
+      </span>
     </a>
 
     <nav id="site-nav" class="nav" aria-label="Main">
@@ -42,9 +46,10 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
       </ul>
       <div class="nav-lens" aria-hidden="true">
         <span class="lens-mount"></span>
-        <span class="lens-ring"></span>
-        <span class="lens-barrel"></span>
-        <span class="lens-front"></span>
+        <span class="lens-body"><span class="lens-grip"></span><span class="lens-scale"></span></span>
+        <span class="lens-tube t1"></span>
+        <span class="lens-tube t2"></span>
+        <span class="lens-front"><span class="lens-glass"></span></span>
         <span class="lens-mm">24mm</span>
       </div>
     </nav>
@@ -72,7 +77,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
       const i = tabs.indexOf(tab as HTMLAnchorElement);
       const navBox = nav.getBoundingClientRect();
       const box = tab.getBoundingClientRect();
-      lens.style.setProperty('--lens-w', `${Math.max(52, box.left + box.width / 2 - navBox.left)}px`);
+      lens.style.setProperty('--lens-w', `${Math.max(84, box.left + box.width / 2 - navBox.left)}px`);
       const focal = 24 + (i / Math.max(1, tabs.length - 1)) * (200 - 24);
       mm.textContent = `${i <= 0 ? 24 : Math.round(focal / 5) * 5}mm`;
     };
@@ -117,24 +122,57 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
   .nav { position: relative; }
   .nav-lens {
     --lens-w: 0px;
-    position: absolute; left: 0; bottom: -20px; height: 16px; width: var(--lens-w);
+    position: absolute; left: 0; bottom: -26px; height: 22px; width: var(--lens-w);
     display: flex; align-items: center; pointer-events: none;
-    transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1); opacity: 0;
+    transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1); opacity: 0;
+    filter: drop-shadow(0 3px 4px rgb(0 0 0 / 0.45));
   }
   .nav-lens.is-ready { opacity: 1; }
-  .lens-mount { flex: none; width: 12px; height: 16px; border-radius: 2px; background: linear-gradient(#5b5955, #3a3936); }
-  /* Fixed zoom ring (ridged) near the camera, then the thinner tube that slides out. */
-  .lens-ring {
-    flex: none; width: 26px; height: 14px; border-radius: 1px;
-    background: repeating-linear-gradient(90deg, #2e2d2b 0 1.5px, #6b6863 1.5px 4px);
+  /* Silver bayonet mount where the lens meets the camera. */
+  .lens-mount {
+    flex: none; width: 6px; height: 20px; border-radius: 1px 0 0 1px;
+    background: linear-gradient(#e4e1da, #9b978f 45%, #5d5a55);
   }
-  .lens-barrel {
-    flex: 1; height: 9px; min-width: 0; border-radius: 1px;
-    background: linear-gradient(#9a978f, #6a6762 55%, #4f4d49);
+  /* Main body: matte black, rubber zoom ring, a cream brand ring and a focal scale. */
+  .lens-body {
+    flex: none; position: relative; width: 58px; height: 22px; border-radius: 2px;
+    background: linear-gradient(#3a3937, #1b1b1a 45%, #0e0e0d);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12);
   }
+  .lens-grip {
+    position: absolute; left: 6px; top: 2px; bottom: 2px; width: 30px; border-radius: 1px;
+    background:
+      linear-gradient(rgb(255 255 255 / 0.1), transparent 40%, rgb(0 0 0 / 0.4)),
+      repeating-linear-gradient(90deg, #2a2a28 0 1.5px, #0c0c0b 1.5px 3.5px);
+  }
+  .lens-body::after { /* brand ring */
+    content: ''; position: absolute; right: 7px; top: 0; bottom: 0; width: 2px; background: var(--cream); opacity: 0.85;
+  }
+  .lens-scale { /* tiny focal-length tick marks */
+    position: absolute; left: 39px; right: 12px; top: 4px; height: 4px;
+    background: repeating-linear-gradient(90deg, rgb(241 234 218 / 0.55) 0 1px, transparent 1px 3px);
+  }
+  /* Inner tubes that slide out, each a step thinner, like a real zoom. */
+  .lens-tube {
+    flex: 1; min-width: 6px; position: relative; border-radius: 1px;
+    background: linear-gradient(#2c2c2a, #151514 50%, #080808);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1), inset 2px 0 2px rgb(0 0 0 / 0.6);
+  }
+  .t1 { height: 18px; }
+  .t2 { height: 15px; }
+  .lens-tube::before { /* thin seam where each tube comes out of the one behind it */
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: rgb(255 255 255 / 0.18);
+  }
+  /* Front of the lens with a glint of coated glass. */
   .lens-front {
-    flex: none; width: 8px; height: 16px; border-radius: 2px;
-    background: linear-gradient(90deg, #4a4845, #2c2b29); box-shadow: 2px 0 0 #6f8592;
+    flex: none; position: relative; width: 9px; height: 21px; border-radius: 1px 3px 3px 1px;
+    background: linear-gradient(#45443f, #1c1c1a 50%, #0a0a09);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14);
+  }
+  .lens-glass {
+    position: absolute; right: -2px; top: 3px; bottom: 3px; width: 3px; border-radius: 0 50% 50% 0 / 0 50% 50% 0;
+    background: linear-gradient(#7d6aa8, #3c6e78 45%, #9fb36c 70%, #2a2f36);
+    opacity: 0.9;
   }
   .lens-mm {
     position: absolute; left: 100%; margin-left: 10px; top: 50%; transform: translateY(-50%);
@@ -197,4 +235,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
     .mobile-cta .primary { background: var(--text); color: var(--bg); }
     :global(body) { padding-bottom: 56px; }
   }
+  .logo { display: flex !important; align-items: center; gap: 12px; }
+  .logo-text { display: grid; gap: 4px; }
+  .logo :global(.logo-mark) { vertical-align: middle; margin: 0; color: var(--text); }
 </style>

@@ -10,8 +10,11 @@ const hasSocials = Object.values(SITE.socials).some(Boolean);
   <div class="container cols">
     <div class="about">
       <a href="/" class="logo">
-        <span class="logo-name">Reliable Kev</span>
-        <span class="logo-studio">Media</span>
+        <BrandMark size="38px" class="logo-mark" />
+        <span class="logo-text">
+          <span class="logo-name">Reliable Kev</span>
+          <span class="logo-studio">Media</span>
+        </span>
       </a>
       <p class="muted">
         Get in touch with {SITE.name} for video content, events coverage and podcasts across {SITE.area}.{' '}
@@ -94,4 +97,7 @@ const hasSocials = Object.values(SITE.socials).some(Boolean);
   @media (min-width: 861px) { .to-top { bottom: 24px; } }
   .legal-row { display: flex; flex-direction: column; align-items: center; gap: 10px; }
   .legal-row :global(.brand-mark) { vertical-align: middle; margin: 0; color: var(--text); }
+  .logo { display: flex !important; align-items: center; gap: 12px; }
+  .logo-text { display: grid; gap: 4px; }
+  .logo :global(.logo-mark) { vertical-align: middle; margin: 0; color: var(--text); }
 </style>

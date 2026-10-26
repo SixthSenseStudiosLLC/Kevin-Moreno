@@ -1,4 +1,5 @@
 ---
+import BrandMark from '../../components/BrandMark.astro';
 import { getCollection } from 'astro:content';
 import Page from '../../layouts/Page.astro';
 import AreaMap from '../../components/AreaMap.astro';
@@ -8,7 +9,7 @@ const towns = (await getCollection('towns')).sort((a, b) => a.data.name.localeCo
 ---
 
 <Page title="Service Areas" description="Video production across North Jersey.">
-  <h1>Service areas across North Jersey</h1>
+  <h1>Service areas across North Jersey<BrandMark /></h1>
   <p>
     We film towns, downtowns, local businesses and trade companies across North Jersey. Every story is tied to the town
     it was made in. Find yours below. Don't see it? <a href="/start">Reach out anyway.</a>

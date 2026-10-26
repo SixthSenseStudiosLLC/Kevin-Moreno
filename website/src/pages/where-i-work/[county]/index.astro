@@ -1,4 +1,5 @@
 ---
+import BrandMark from '../../../components/BrandMark.astro';
 import { getCollection } from 'astro:content';
 import Page from '../../../layouts/Page.astro';
 import { SERVICES } from '../../../site';
@@ -20,7 +21,7 @@ const towns = (await getCollection('towns', (t) => t.data.county.id === county.i
   description={`Video content, events coverage and podcasts in ${name}, NJ.`}
   crumbs={[{ href: '/where-i-work', label: 'Service Areas' }]}
 >
-  <h1>Video production in {name}, NJ</h1>
+  <h1>Video production in {name}, NJ<BrandMark /></h1>
   <p>{county.data.blurb || `Video content, events coverage, podcasts and drone work for towns, businesses and trades across ${name}.`}</p>
 
   <h2>Towns we serve in {name}</h2>

@@ -1,4 +1,5 @@
 ---
+import BrandMark from '../components/BrandMark.astro';
 import { getCollection } from 'astro:content';
 import Page from '../layouts/Page.astro';
 import { SITE } from '../site';
@@ -10,7 +11,7 @@ const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'n
 ---
 
 <Page title="Blog" description={`Stories from the towns and businesses of ${SITE.area}.`}>
-  <h1>Local stories blog</h1>
+  <h1>Local stories blog<BrandMark /></h1>
   <p>
     Stories from the towns and the businesses in them, plus tips on getting more out of video for your business.{' '}
     <a href="/start">Contact us today</a> to schedule a free call.

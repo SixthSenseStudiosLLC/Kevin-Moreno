@@ -1,4 +1,5 @@
 ---
+import BrandMark from '../components/BrandMark.astro';
 import Page from '../layouts/Page.astro';
 import { REVIEWS, REVIEW_LINK } from '../data/reviews';
 import { SITE } from '../site';
@@ -8,7 +9,7 @@ const stars = (n: number) => '★'.repeat(Math.round(n)) + '☆'.repeat(5 - Math
 ---
 
 <Page title="Reviews" description={`What clients say about ${SITE.name}.`}>
-  <h1>Our reviews: video content, events and podcasts</h1>
+  <h1>Our reviews: video content, events and podcasts<BrandMark /></h1>
   <div class="intro">
     <p>
       The best proof is what clients say after the cameras are off. Here's what local businesses and organizations in{' '}

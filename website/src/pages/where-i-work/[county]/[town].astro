@@ -1,4 +1,5 @@
 ---
+import BrandMark from '../../../components/BrandMark.astro';
 import { getCollection, getEntry } from 'astro:content';
 import Page from '../../../layouts/Page.astro';
 import { SERVICES } from '../../../site';
@@ -30,7 +31,7 @@ const hasClips = DRONE_CLIPS.some((c) => c.shape === 'wide' && c.town === name);
     { href: `/where-i-work/${county.id}`, label: county.data.name },
   ]}
 >
-  <h1>Video production in {name}, NJ</h1>
+  <h1>Video production in {name}, NJ<BrandMark /></h1>
   <p>
     {town.data.blurb ||
       `We film towns, local businesses and trade companies in ${name} and across ${county.data.name}: the work, the people behind it and the town it belongs to.`}
