@@ -1,40 +1,36 @@
 ---
-// Dimmed photos behind the gray page gradient. One shows at a time; scrolling further down the
-// page dissolves to the next, so each part of the page has its own backdrop.
-import { BG_PHOTOS } from '../data/photos';
+// A dimmed drone loop behind the gray page gradient on every page (public/videos/bg-drone.mp4:
+// the homes montage, then the Jersey City skyline and waterfront). Its poster still shows while it
+// loads, and on its own when the visitor has reduced motion turned on.
+const VIDEO = '/videos/bg-drone';
 ---
 
 <div class="bg-photos" aria-hidden="true">
-  {BG_PHOTOS.map((p, i) => (
-    <div class:list={['bg-photo', { on: i === 0 }]} style={`background-image: url(${p.src}); background-position: ${p.focus}`}></div>
-  ))}
+  <video class="bg-video" src={`${VIDEO}.mp4`} poster={`${VIDEO}.jpg`} muted loop playsinline autoplay preload="auto"></video>
 </div>
 
 <script>
-  const layers = [...document.querySelectorAll<HTMLElement>('.bg-photo')];
-  if (layers.length > 1) {
-    let current = 0;
-    const update = () => {
-      const max = document.documentElement.scrollHeight - innerHeight;
-      const progress = max > 0 ? scrollY / max : 0;
-      const next = Math.min(layers.length - 1, Math.floor(progress * layers.length));
-      if (next === current) return;
-      layers[current].classList.remove('on');
-      layers[next].classList.add('on');
-      current = next;
-    };
-    addEventListener('scroll', update, { passive: true });
-    addEventListener('resize', update);
-    update();
+  const v = document.querySelector<HTMLVideoElement>('.bg-video');
+  if (v) {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      v.removeAttribute('autoplay');
+      v.pause();
+    } else {
+      v.muted = true;
+      const play = () => v.play().catch(() => {});
+      play();
+      // Phones in low-power mode block autoplay until the first touch.
+      for (const type of ['touchstart', 'pointerdown', 'keydown', 'wheel']) addEventListener(type, play, { once: true, passive: true });
+      // Pause while the tab is hidden, to save battery.
+      document.addEventListener('visibilitychange', () => (document.hidden ? v.pause() : play()));
+    }
   }
 </script>
 
 <style>
   .bg-photos { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
-  .bg-photo {
-    position: absolute; inset: 0; background-size: cover; background-repeat: no-repeat;
-    filter: grayscale(0.35); opacity: 0; transition: opacity 1.6s ease;
+  .bg-video {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    filter: grayscale(0.35); opacity: 0.22;
   }
-  .bg-photo.on { opacity: 0.22; }
-  @media (prefers-reduced-motion: reduce) { .bg-photo { transition: none; } }
 </style>
