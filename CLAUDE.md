@@ -53,7 +53,8 @@ day on a device, never on a refresh (`.intro` in `Base.astro`, styles at the end
 once more and is then removed from the address; skipped for reduced motion): the RK letters on black, then the page.
 On the homepage it is a short story (Kev's idea, from the Arcade app): RK letters, then Kev's before and after photos
 side by side in one frame (stacked on a phone held upright), in color with the exposure dimmed
-(`public/images/intro/`, cut from `kev-before-after.jpg`), under his quote "You deserve to be heard.", then the page (about
+(`public/images/intro/`: `kev-then.jpg` cut from `kev-before-after.jpg`, and `kev-now.jpg`, Kev smiling with his
+Canon; give replaced images a new file name so phones do not keep showing a cached copy), under his quote "You deserve to be heard.", then the page (about
 5 s; any tap, scroll or key skips it).
 Drone clips still belong in the Services page (`#drone`) as work samples. The old hero montage can be rebuilt with
 `website/scripts/build-hero-reel.sh` (shots in `hero-reel.txt`) only if Kev asks for it back.
