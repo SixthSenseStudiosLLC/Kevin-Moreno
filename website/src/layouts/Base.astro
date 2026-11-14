@@ -66,15 +66,22 @@ const business = {
     {Astro.url.pathname === '/' && <script type="application/ld+json" set:html={JSON.stringify(business)} />}
     <script is:inline>
       if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('js-reveal');
-      // Opening: the RK logo on black, then it dissolves into the page. Only on the first page of a visit (until the
-      // tab is closed), never for people who ask for less motion; ?intro=1 replays it. The fade is pure CSS, so the
-      // logo always clears by itself, even if a script fails.
+      // Opening: plays at most once a day on a device (refreshing or browsing never replays it), and never for people
+      // who ask for less motion. ?intro=1 plays it once more on demand; the address is then cleaned up, so a refresh
+      // does not replay it. The fade is pure CSS, so it always clears by itself, even if a script fails.
       (function () {
         try {
-          var replay = new URLSearchParams(location.search).get('intro') === '1';
+          var params = new URLSearchParams(location.search);
+          var replay = params.get('intro') === '1';
+          if (replay) {
+            params.delete('intro');
+            var qs = params.toString();
+            history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
+          }
           if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-          if (sessionStorage.getItem('intro-seen') && !replay) return;
-          sessionStorage.setItem('intro-seen', '1');
+          var last = Number(localStorage.getItem('intro-seen-at')) || 0;
+          if (!replay && Date.now() - last < 24 * 60 * 60 * 1000) return;
+          localStorage.setItem('intro-seen-at', String(Date.now()));
           document.documentElement.dataset.intro = '';
         } catch (e) {}
       })();
@@ -106,7 +113,8 @@ const business = {
   </head>
   <body id="top">
     {/* Opening (styles at the end of global.css). On the homepage it tells a short story: the RK letters, then Kev's
-        before and after photos (black and white, dimmed) under his quote, then the page. Other pages: the RK only. */}
+        before and after photos side by side in one frame (black and white, dimmed) under his quote, then the page.
+        Other pages: the RK only. */}
     <div class:list={['intro', { 'intro-story': isHome }]} aria-hidden="true">
       <BrandMark size="clamp(84px, 15vw, 120px)" />
       {isHome && (

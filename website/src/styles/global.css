@@ -200,9 +200,9 @@ html[data-look="black"] .content h2 { padding-bottom: 10px; border-bottom: 1px s
 
 /* Opening (Base.astro), on the first page of a visit only (the head script sets html[data-intro]).
    Every page: the RK letters fade in on black, hold a moment, then the black dissolves into the page (about 2 s).
-   Homepage (.intro-story, Kev's idea from the Arcade app): after the RK letters, his before photo fades in, black and
-   white and dimmed, with his quote over it; the after photo crossfades in under the same quote; then the page
-   dissolves in (about 5.5 s). Any tap, scroll or key skips it. */
+   Homepage (.intro-story, Kev's idea from the Arcade app): after the RK letters, his before and after photos appear
+   side by side in one frame (stacked on a phone), black and white and dimmed, with his quote over them; then the page
+   dissolves in (about 5 s). Any tap, scroll or key skips it. */
 .intro { display: none; }
 html[data-intro] .intro {
   display: grid; place-items: center; position: fixed; inset: 0; z-index: 100; pointer-events: none; overflow: hidden;
@@ -218,21 +218,25 @@ html[data-intro] .intro .brand-mark {
 @keyframes intro-out { to { opacity: 0; visibility: hidden; } }
 
 /* The homepage story. */
-html[data-intro] .intro.intro-story { pointer-events: auto; cursor: pointer; animation: intro-out 0.9s ease-in-out 4.7s forwards; }
+html[data-intro] .intro.intro-story { pointer-events: auto; cursor: pointer; animation: intro-out 0.9s ease-in-out 4.3s forwards; }
 html[data-intro] .intro-story .brand-mark { animation: intro-in 0.7s ease-out 0.1s forwards, intro-fade-out 0.45s ease-in 1.15s forwards; }
+/* One frame: before on the left, after on the right (before on top, after below on a phone held upright). */
 .intro-photos {
-  position: absolute; top: 0; bottom: 0; left: 50%; width: min(100%, 64vh); transform: translateX(-50%); z-index: 1;
-  /* On wide screens the portrait photos fade into the black at their sides. */
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
-  mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
+  position: absolute; top: 0; bottom: 0; left: 50%; width: min(100%, 128vh); transform: translateX(-50%); z-index: 1;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+  /* On wide screens the frame fades into the black at its sides. */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
 }
-@media (max-aspect-ratio: 3/4) { .intro-photos { width: 100%; -webkit-mask-image: none; mask-image: none; } }
+@media (max-aspect-ratio: 3/4) {
+  .intro-photos { width: 100%; grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; -webkit-mask-image: none; mask-image: none; }
+}
 .intro-photo {
-  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 28%;
+  display: block; width: 100%; height: 100%; min-height: 0; object-fit: cover; object-position: 50% 28%;
   opacity: 0; filter: brightness(0.42);
 }
 html[data-intro] .intro-photo.p1 { animation: intro-fade-in 0.8s ease 1.4s forwards, intro-drift 3.6s linear 1.4s forwards; }
-html[data-intro] .intro-photo.p2 { animation: intro-fade-in 0.9s ease 3s forwards, intro-drift 2.6s linear 3s forwards; }
+html[data-intro] .intro-photo.p2 { animation: intro-fade-in 0.8s ease 1.7s forwards, intro-drift 3.3s linear 1.7s forwards; }
 .intro-quote {
   position: absolute; left: 0; right: 0; bottom: 16%; z-index: 3; margin: 0 auto; padding: 0 24px; max-width: 22ch;
   text-align: center; font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2.5rem); line-height: 1.22;
@@ -243,7 +247,11 @@ html[data-intro] .intro-photo.p2 { animation: intro-fade-in 0.9s ease 3s forward
   font-family: var(--font-label); font-size: 0.74rem; letter-spacing: 0.26em; text-transform: uppercase; color: rgb(241 234 218 / 0.75);
 }
 .intro-quote span::before { content: ''; width: 26px; height: 2px; background: var(--red); }
-html[data-intro] .intro-quote { animation: intro-fade-in 0.8s ease 1.9s forwards; }
+html[data-intro] .intro-quote { animation: intro-fade-in 0.8s ease 2.1s forwards; }
+/* Phone held upright (photos stacked): the quote sits on the line between the two photos, clear of both faces. */
+@media (max-aspect-ratio: 3/4) {
+  .intro-quote { bottom: auto; top: 50%; transform: translateY(-50%); text-shadow: 0 2px 6px rgb(0 0 0 / 0.9), 0 0 28px rgb(0 0 0 / 0.9); }
+}
 .intro-skip-hint {
   position: absolute; left: 0; right: 0; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 3; margin: 0; text-align: center;
   font-family: var(--font-label); font-size: 0.64rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgb(241 234 218 / 0.4); opacity: 0;
