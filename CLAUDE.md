@@ -52,8 +52,8 @@ free first video). The RK mark appears only on the logo, the footer, the card pa
 day on a device, never on a refresh (`.intro` in `Base.astro`, styles at the end of `global.css`; `?intro=1` plays it
 once more and is then removed from the address; skipped for reduced motion): the RK letters on black, then the page.
 On the homepage it is a short story (Kev's idea, from the Arcade app): RK letters, then Kev's before and after photos
-side by side in one frame (stacked on a phone held upright), black and white and dimmed (`public/images/intro/`, cut
-from `kev-before-after.jpg`), under his quote "Wanting to be heard was never the problem.", then the page (about
+side by side in one frame (stacked on a phone held upright), in color with the exposure dimmed
+(`public/images/intro/`, cut from `kev-before-after.jpg`), under his quote "You deserve to be heard.", then the page (about
 5 s; any tap, scroll or key skips it).
 Drone clips still belong in the Services page (`#drone`) as work samples. The old hero montage can be rebuilt with
 `website/scripts/build-hero-reel.sh` (shots in `hero-reel.txt`) only if Kev asks for it back.

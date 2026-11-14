@@ -113,7 +113,7 @@ const business = {
   </head>
   <body id="top">
     {/* Opening (styles at the end of global.css). On the homepage it tells a short story: the RK letters, then Kev's
-        before and after photos side by side in one frame (black and white, dimmed) under his quote, then the page.
+        before and after photos side by side in one frame (in color, dimmed) under his quote, then the page.
         Other pages: the RK only. */}
     <div class:list={['intro', { 'intro-story': isHome }]} aria-hidden="true">
       <BrandMark size="clamp(84px, 15vw, 120px)" />
@@ -123,7 +123,7 @@ const business = {
             <img class="intro-photo p1" src="/images/intro/kev-before.jpg" alt="" loading="lazy" decoding="async" />
             <img class="intro-photo p2" src="/images/intro/kev-after.jpg" alt="" loading="lazy" decoding="async" />
           </div>
-          <p class="intro-quote">&ldquo;Wanting to be heard was never the problem.&rdquo;<span>Kev</span></p>
+          <p class="intro-quote">&ldquo;You deserve to be heard.&rdquo;<span>Kev</span></p>
           <p class="intro-skip-hint">Tap to skip</p>
         </>
       )}
