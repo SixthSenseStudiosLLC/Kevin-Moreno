@@ -202,7 +202,7 @@ html[data-look="black"] .content h2 { padding-bottom: 10px; border-bottom: 1px s
    Every page: the RK letters fade in on black, hold a moment, then the black dissolves into the page (about 2 s).
    Homepage (.intro-story, Kev's idea from the Arcade app): after the RK letters, his before and after photos appear
    side by side in one frame (stacked on a phone), in color with the exposure dimmed, with his quote over them; then the page
-   dissolves in (about 5 s). Any tap, scroll or key skips it. */
+   dissolves in (about 6 s). Any tap, scroll or key skips it. */
 .intro { display: none; }
 html[data-intro] .intro {
   display: grid; place-items: center; position: fixed; inset: 0; z-index: 100; pointer-events: none; overflow: hidden;
@@ -218,7 +218,7 @@ html[data-intro] .intro .brand-mark {
 @keyframes intro-out { to { opacity: 0; visibility: hidden; } }
 
 /* The homepage story. */
-html[data-intro] .intro.intro-story { pointer-events: auto; cursor: pointer; animation: intro-out 0.9s ease-in-out 4.3s forwards; }
+html[data-intro] .intro.intro-story { pointer-events: auto; cursor: pointer; animation: intro-out 0.9s ease-in-out 5.3s forwards; }
 html[data-intro] .intro-story .brand-mark { animation: intro-in 0.7s ease-out 0.1s forwards, intro-fade-out 0.45s ease-in 1.15s forwards; }
 /* One frame: before on the left, after on the right (before on top, after below on a phone held upright). */
 .intro-photos {
@@ -237,8 +237,8 @@ html[data-intro] .intro-story .brand-mark { animation: intro-in 0.7s ease-out 0.
 }
 /* The "now" photo: Kev smiling with his camera, face toward the top right. */
 .intro-photo.p2 { object-position: 96% 15%; }
-html[data-intro] .intro-photo.p1 { animation: intro-fade-in 0.8s ease 1.4s forwards, intro-drift 3.6s linear 1.4s forwards; }
-html[data-intro] .intro-photo.p2 { animation: intro-fade-in 0.8s ease 1.7s forwards, intro-drift 3.3s linear 1.7s forwards; }
+/* Both photos appear together, as one still frame (no zoom, no stagger). */
+html[data-intro] .intro-photo { animation: intro-fade-in 0.8s ease 1.4s forwards; }
 .intro-quote {
   position: absolute; left: 0; right: 0; bottom: 16%; z-index: 3; margin: 0 auto; padding: 0 24px; max-width: 22ch;
   text-align: center; font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2.5rem); line-height: 1.22;
@@ -252,6 +252,7 @@ html[data-intro] .intro-photo.p2 { animation: intro-fade-in 0.8s ease 1.7s forwa
 html[data-intro] .intro-quote { animation: intro-fade-in 0.8s ease 2.1s forwards; }
 /* Phone held upright (photos stacked): the quote sits on the line between the two photos, clear of both faces. */
 @media (max-aspect-ratio: 3/4) {
+  .intro-photo.p1 { object-position: 50% 52%; } /* face higher in the top photo, clear of the quote */
   .intro-photo.p2 { object-position: 60% 0%; }
   .intro-quote { bottom: auto; top: 45%; transform: translateY(-50%); text-shadow: 0 2px 6px rgb(0 0 0 / 0.9), 0 0 28px rgb(0 0 0 / 0.9); }
 }
@@ -263,7 +264,6 @@ html[data-intro] .intro-skip-hint { animation: intro-fade-in 0.6s ease 1.6s forw
 html.intro-skipped .intro { animation: intro-out 0.35s ease forwards !important; pointer-events: none !important; }
 @keyframes intro-fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes intro-fade-out { to { opacity: 0; transform: scale(1.06); } }
-@keyframes intro-drift { from { transform: scale(1.06); } to { transform: scale(1); } }
 
 /* Red accent on underlined links in the page content. */
 main a { text-decoration-color: var(--red); text-underline-offset: 3px; }
