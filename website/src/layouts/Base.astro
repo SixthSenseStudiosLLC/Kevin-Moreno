@@ -105,7 +105,38 @@ const business = {
     </script>
   </head>
   <body id="top">
-    <div class="intro" aria-hidden="true"><BrandMark size="clamp(84px, 15vw, 120px)" /></div>
+    {/* Opening (styles at the end of global.css). On the homepage it tells a short story: the RK letters, then Kev's
+        before and after photos (black and white, dimmed) under his quote, then the page. Other pages: the RK only. */}
+    <div class:list={['intro', { 'intro-story': isHome }]} aria-hidden="true">
+      <BrandMark size="clamp(84px, 15vw, 120px)" />
+      {isHome && (
+        <>
+          <div class="intro-photos">
+            <img class="intro-photo p1" src="/images/intro/kev-before.jpg" alt="" loading="lazy" decoding="async" />
+            <img class="intro-photo p2" src="/images/intro/kev-after.jpg" alt="" loading="lazy" decoding="async" />
+          </div>
+          <p class="intro-quote">&ldquo;Wanting to be heard was never the problem.&rdquo;<span>Kev</span></p>
+          <p class="intro-skip-hint">Tap to skip</p>
+        </>
+      )}
+    </div>
+    {isHome && (
+      <script is:inline>
+        // Any tap, scroll or key skips the homepage opening.
+        (function () {
+          var el = document.querySelector('.intro-story');
+          if (!el || !document.documentElement.hasAttribute('data-intro')) return;
+          var skip = function () {
+            document.documentElement.classList.add('intro-skipped');
+            removeEventListener('keydown', skip);
+            removeEventListener('wheel', skip);
+          };
+          el.addEventListener('pointerdown', skip);
+          addEventListener('keydown', skip);
+          addEventListener('wheel', skip, { passive: true });
+        })();
+      </script>
+    )}
     {!bare && <Header />}
     <main>
       <slot />

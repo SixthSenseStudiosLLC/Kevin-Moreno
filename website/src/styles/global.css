@@ -198,21 +198,61 @@ html[data-look="black"] .ticker { border-bottom: 1px solid var(--cream); }
 html[data-look="black"] .footer { border-top-color: var(--cream); }
 html[data-look="black"] .content h2 { padding-bottom: 10px; border-bottom: 1px solid var(--line); }
 
-/* Opening (Base.astro): the RK logo fades in on black, holds a moment, then the black dissolves into the page.
-   Shown only when the head script sets html[data-intro] (first page of a visit). About two seconds in all. */
+/* Opening (Base.astro), on the first page of a visit only (the head script sets html[data-intro]).
+   Every page: the RK letters fade in on black, hold a moment, then the black dissolves into the page (about 2 s).
+   Homepage (.intro-story, Kev's idea from the Arcade app): after the RK letters, his before photo fades in, black and
+   white and dimmed, with his quote over it; the after photo crossfades in under the same quote; then the page
+   dissolves in (about 5.5 s). Any tap, scroll or key skips it. */
 .intro { display: none; }
 html[data-intro] .intro {
-  display: grid; place-items: center; position: fixed; inset: 0; z-index: 100; pointer-events: none;
+  display: grid; place-items: center; position: fixed; inset: 0; z-index: 100; pointer-events: none; overflow: hidden;
   background: var(--bg); color: var(--cream);
   animation: intro-out 0.8s ease-in-out 1.25s forwards;
 }
 html[data-intro] .intro .brand-mark {
-  margin: 0; vertical-align: middle; opacity: 0;
+  margin: 0; vertical-align: middle; opacity: 0; position: relative; z-index: 3;
   animation: intro-in 0.7s ease-out 0.1s forwards, intro-grow 0.8s ease-in-out 1.25s forwards;
 }
 @keyframes intro-in { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: none; } }
 @keyframes intro-grow { from { opacity: 1; transform: none; } to { opacity: 1; transform: scale(1.06); } }
 @keyframes intro-out { to { opacity: 0; visibility: hidden; } }
+
+/* The homepage story. */
+html[data-intro] .intro.intro-story { pointer-events: auto; cursor: pointer; animation: intro-out 0.9s ease-in-out 4.7s forwards; }
+html[data-intro] .intro-story .brand-mark { animation: intro-in 0.7s ease-out 0.1s forwards, intro-fade-out 0.45s ease-in 1.15s forwards; }
+.intro-photos {
+  position: absolute; top: 0; bottom: 0; left: 50%; width: min(100%, 64vh); transform: translateX(-50%); z-index: 1;
+  /* On wide screens the portrait photos fade into the black at their sides. */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
+}
+@media (max-aspect-ratio: 3/4) { .intro-photos { width: 100%; -webkit-mask-image: none; mask-image: none; } }
+.intro-photo {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 28%;
+  opacity: 0; filter: brightness(0.42);
+}
+html[data-intro] .intro-photo.p1 { animation: intro-fade-in 0.8s ease 1.4s forwards, intro-drift 3.6s linear 1.4s forwards; }
+html[data-intro] .intro-photo.p2 { animation: intro-fade-in 0.9s ease 3s forwards, intro-drift 2.6s linear 3s forwards; }
+.intro-quote {
+  position: absolute; left: 0; right: 0; bottom: 16%; z-index: 3; margin: 0 auto; padding: 0 24px; max-width: 22ch;
+  text-align: center; font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2.5rem); line-height: 1.22;
+  text-shadow: 0 2px 20px rgb(0 0 0 / 0.7); opacity: 0;
+}
+.intro-quote span {
+  display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 18px;
+  font-family: var(--font-label); font-size: 0.74rem; letter-spacing: 0.26em; text-transform: uppercase; color: rgb(241 234 218 / 0.75);
+}
+.intro-quote span::before { content: ''; width: 26px; height: 2px; background: var(--red); }
+html[data-intro] .intro-quote { animation: intro-fade-in 0.8s ease 1.9s forwards; }
+.intro-skip-hint {
+  position: absolute; left: 0; right: 0; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 3; margin: 0; text-align: center;
+  font-family: var(--font-label); font-size: 0.64rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgb(241 234 218 / 0.4); opacity: 0;
+}
+html[data-intro] .intro-skip-hint { animation: intro-fade-in 0.6s ease 1.6s forwards; }
+html.intro-skipped .intro { animation: intro-out 0.35s ease forwards !important; pointer-events: none !important; }
+@keyframes intro-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes intro-fade-out { to { opacity: 0; transform: scale(1.06); } }
+@keyframes intro-drift { from { transform: scale(1.06); } to { transform: scale(1); } }
 
 /* Red accent on underlined links in the page content. */
 main a { text-decoration-color: var(--red); text-underline-offset: 3px; }

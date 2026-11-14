@@ -48,9 +48,12 @@ button reads "Free First Video", the phone bar "Free video", the Services page o
 quote form lists "My free first video" first. Offer links go to `/start?free=1`, which ticks that choice on the
 intake form. The short link `/free` (`src/pages/free.astro`, for Instagram stories and texts) forwards there. `FIRST_VIDEO_FREE.on = false` puts everything back to "Start a Project". The page is near black (`--bg`
 #0b0b0a fading to `--charcoal` #1c1b19), not gray. Keep the homepage short (intro, featured work, why choose, services,
-free first video). The RK mark appears only on the logo, the footer, the card page and the opening: on the first page of a visit the RK letters
-show on black for about a second, then dissolves into the page (Kev's request; `.intro` in `Base.astro` and at the
-end of `global.css`; `?intro=1` replays it; skipped for reduced motion).
+free first video). The RK mark appears only on the logo, the footer, the card page and the opening. The opening plays on the first page
+of a visit (`.intro` in `Base.astro`, styles at the end of `global.css`; `?intro=1` replays it; skipped for reduced
+motion): the RK letters on black, then the page. On the homepage it is a short story (Kev's idea, from the Arcade
+app): RK letters, then Kev's before photo and his after photo crossfading, black and white and dimmed
+(`public/images/intro/`, cut from `kev-before-after.jpg`), under his quote "Wanting to be heard was never the
+problem.", then the page (about 5.5 s; any tap, scroll or key skips it).
 Drone clips still belong in the Services page (`#drone`) as work samples. The old hero montage can be rebuilt with
 `website/scripts/build-hero-reel.sh` (shots in `hero-reel.txt`) only if Kev asks for it back.
 
